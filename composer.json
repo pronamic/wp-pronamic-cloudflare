@@ -1,0 +1,10 @@
+{
+    "require-dev": {
+        "pronamic/wp-coding-standards": "^1.2"
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
+    }
+}

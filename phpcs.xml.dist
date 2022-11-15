@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+
+<ruleset name="Pronamic Cloudflare">
+	<file>.</file>
+
+	<rule ref="PronamicWP">
+
+	</rule>
+</ruleset>
