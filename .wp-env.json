@@ -1,6 +1,16 @@
 {
 	"core": null,
 	"plugins": [
-		"."
-	]
+		"pronamic/wp-env-quick-login",
+		"https://downloads.wordpress.org/plugin/action-scheduler.zip",
+		"https://downloads.wordpress.org/plugin/cloudflare.zip",
+		"https://downloads.wordpress.org/plugin/code-profiler.zip",
+		"https://downloads.wordpress.org/plugin/log-http-requests.zip",
+		"https://downloads.wordpress.org/plugin/pronamic-client.zip",
+		"https://downloads.wordpress.org/plugin/query-monitor.zip"
+	],
+	"mappings": {
+		"wp-content/plugins/pronamic-cloudflare-dev": "./",
+		"wp-content/plugins/pronamic-cloudflare": "./build/project/"
+	}
 }

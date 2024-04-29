@@ -1,5 +1,5 @@
 {
   "devDependencies": {
-    "@wordpress/env": "^5.6.0"
+    "@wordpress/env": "^9.8.0"
   }
 }
