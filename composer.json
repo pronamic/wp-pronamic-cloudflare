@@ -1,6 +1,13 @@
 {
     "license": "GPL-2.0-or-later",
     "type": "wordpress-plugin",
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "automattic/jetpack-autoloader": true
+        },
+        "wp-slug": "pronamic-cloudflare"
+    },
     "autoload": {
         "psr-4": {
             "Pronamic\\WordPressCloudflare\\": "php/"
@@ -12,12 +19,7 @@
         "automattic/jetpack-autoloader": "^3.0"
     },
     "require-dev": {
-        "pronamic/wp-coding-standards": "^1.2"
-    },
-    "config": {
-        "allow-plugins": {
-            "dealerdirect/phpcodesniffer-composer-installer": true,
-            "automattic/jetpack-autoloader": true
-        }
+        "pronamic/wp-coding-standards": "^1.2",
+        "pronamic/pronamic-cli": "^1.1"
     }
 }
