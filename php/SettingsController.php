@@ -178,9 +178,8 @@ final class SettingsController {
 
 			echo \wp_kses(
 				\sprintf(
-					/* translators: 1: Value label, 2: Constant name, 3: wp-config.php.. */
-					\__( 'The %1$s value is defined in the named constant %2$s, probably in the WordPress configuration file %3$s.', 'pronamic-cloudflare' ),
-					\__( 'email', 'pronamic-mollie' ),
+					/* translators: 1: Constant name, 2: wp-config.php.. */
+					\__( 'This value is defined in the named constant %1$s, probably in the WordPress configuration file %2$s.', 'pronamic-cloudflare' ),
 					'<code>' . $constant_name . '</code>',
 					'<code>wp-config.php</code>'
 				),

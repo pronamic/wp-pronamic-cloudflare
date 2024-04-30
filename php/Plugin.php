@@ -440,7 +440,7 @@ final class Plugin {
 		/**
 		 * Home.
 		 */
-		$actions[] = new PurgeCacheAction( 'home', \home_url( '/' ) );
+		$actions[] = new PurgeCacheAction( 'home', [ \home_url( '/' ) ] );
 
 		/**
 		 * Ok.
