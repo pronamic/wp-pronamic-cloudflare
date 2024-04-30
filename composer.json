@@ -1,13 +1,23 @@
 {
+    "license": "GPL-2.0-or-later",
+    "type": "wordpress-plugin",
+    "autoload": {
+        "psr-4": {
+            "Pronamic\\WordPressCloudflare\\": "php/"
+        }
+    },
+    "require": {
+        "woocommerce/action-scheduler": "^3.7",
+        "pronamic/wp-html": "^2.2",
+        "automattic/jetpack-autoloader": "^3.0"
+    },
     "require-dev": {
         "pronamic/wp-coding-standards": "^1.2"
     },
     "config": {
         "allow-plugins": {
-            "dealerdirect/phpcodesniffer-composer-installer": true
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "automattic/jetpack-autoloader": true
         }
-    },
-    "require": {
-        "woocommerce/action-scheduler": "^3.7"
     }
 }
