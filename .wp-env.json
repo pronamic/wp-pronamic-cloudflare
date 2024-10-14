@@ -11,6 +11,6 @@
 	],
 	"mappings": {
 		"wp-content/plugins/pronamic-cloudflare-dev": "./",
-		"wp-content/plugins/pronamic-cloudflare": "./build/project/"
+		"wp-content/plugins/pronamic-cloudflare": "./build/stage-2/"
 	}
 }
