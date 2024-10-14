@@ -4,8 +4,43 @@ The Pronamic Cloudflare plugin adds a number of features, such as WP-CLI command
 
 ## Table of contents
 
+- [Configuration](#configuration)
 - [WP-CLI](#wp-cli)
 - [Links](#links)
+
+## Configuration
+
+This plugin offers advanced configuration options via `wp-config.php` constants for integrating with Cloudflare. These settings allow you to securely manage your Cloudflare credentials and zone ID directly from the WordPress configuration file.
+
+To configure these options, add the following constants to your `wp-config.php` file:
+
+### `CLOUDFLARE_EMAIL`
+
+Your Cloudflare account email address used to authenticate API requests.
+
+```php
+define( 'CLOUDFLARE_EMAIL', 'your-email@example.com' );
+```
+
+### `CLOUDFLARE_API_KEY`
+
+The Cloudflare API key associated with your account. You can find this in your Cloudflare dashboard under **API Tokens**.
+
+```php
+define( 'CLOUDFLARE_API_KEY', 'your-cloudflare-api-key' );
+```
+
+### `PRONAMIC_CLOUDFLARE_ZONE_ID`
+
+The Cloudflare Zone ID for the domain you are managing. You can locate this in your Cloudflare dashboard under the **Overview** tab.
+
+```php
+define( 'PRONAMIC_CLOUDFLARE_ZONE_ID', 'your-cloudflare-zone-id' );
+```
+
+### Security Note
+
+It's recommended to keep your API key and zone ID confidential by restricting access to the `wp-config.php` file.
 
 ## WP-CLI
 
