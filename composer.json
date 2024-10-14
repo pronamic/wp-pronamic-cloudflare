@@ -21,5 +21,18 @@
 	"require-dev": {
 		"pronamic/wp-coding-standards": "^1.2",
 		"pronamic/pronamic-cli": "^1.1"
+	},
+	"scripts": {
+		"build": [
+			"rm -rf ./build",
+			"mkdir ./build",
+			"mkdir ./build/stage-1",
+			"mkdir ./build/stage-2",
+			"rsync --recursive --verbose --exclude-from=.distignore --exclude-from=.gitignore ./ ./build/stage-1/",
+			"composer install --no-dev --prefer-dist --optimize-autoloader --working-dir=./build/stage-1/",
+			"rsync --recursive --verbose --exclude-from=.distignore ./build/stage-1/ ./build/stage-2/",
+			"vendor/bin/wp i18n make-pot ./build/stage-2/ --slug=pronamic-cloudflare",
+			"vendor/bin/wp dist-archive ./build/stage-2/ --plugin-dirname=pronamic-cloudflare"
+		]
 	}
 }
