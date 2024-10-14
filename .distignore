@@ -12,3 +12,6 @@
 .wp-env.json
 
 phpcs.xml.dist
+
+.phpcs.dir.phpcompatibility.xml
+.phpcs.dir.xml
