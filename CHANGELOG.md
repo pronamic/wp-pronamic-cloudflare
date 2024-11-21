@@ -14,3 +14,4 @@ This projects adheres to [Semantic Versioning](http://semver.org/) and [Keep a C
 
 [unreleased]: https://github.com/pronamic/wp-pronamic-cloudflare/compare/1.0.1...HEAD
 [1.0.1]: https://github.com/pronamic/wp-pronamic-cloudflare/compare/1.0.0...1.0.1
+[1.0.0]: https://github.com/pronamic/wp-pronamic-cloudflare/releases/tag/v1.0.0
