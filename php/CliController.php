@@ -83,7 +83,7 @@ final class CliController {
 						'id',
 						'name',
 						'status',
-					] 
+					]
 				);
 
 				$formatter->display_items( $items );
@@ -148,6 +148,7 @@ final class CliController {
 					$response = wp_remote_post(
 						$url,
 						[
+							'timeout' => 30,
 							'headers' => [
 								'Content-Type' => 'application/json',
 								'X-Auth-Email' => CLOUDFLARE_EMAIL,
