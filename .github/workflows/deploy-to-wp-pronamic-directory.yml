@@ -4,13 +4,8 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Tag to deploy to Pronamic WordPress directory'
-        required: true
+        description: 'Release tag to deploy'
         type: string
-      latest:
-        default: true
-        type: boolean
-        description: 'Deploy as "Latest"'
   release:
     types: [released]
 
@@ -34,4 +29,3 @@ jobs:
           password: ${{ secrets.WP_PRONAMIC_DIRECTORY_PASSWORD }}
           slug: pronamic-cloudflare
           tag: ${{ inputs.tag || github.event.release.tag_name }}
-          latest: ${{ inputs.latest || github.event.release.latest }}
