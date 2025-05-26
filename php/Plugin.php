@@ -172,9 +172,9 @@ final class Plugin {
 	}
 
 	/**
-	 * Purge cache URL.
-	 * 
-	 * @link https://developers.cloudflare.com/api/operations/zone-purge#purge-cached-content-by-url
+	 * Purge cache.
+	 *
+	 * @link https://developers.cloudflare.com/api/resources/cache/methods/purge/
 	 * @param string[] $tags Cache tags to purge.
 	 * @return void
 	 * @throws \Exception Throws exception if purge cache action fails.
@@ -227,35 +227,8 @@ final class Plugin {
 	}
 
 	/**
-	 * Paginate URL's.
-	 * 
-	 * @link https://wpdevelopment.courses/articles/wp-html-tag-processor/
-	 * @link https://developer.wordpress.org/reference/classes/wp_html_tag_processor/
-	 * @param string $url   URL.
-	 * @param int    $total Total.
-	 * @return string[]
-	 */
-	private function get_paginate_urls( $url, $total = 10 ) {
-		global $wp_rewrite;
-
-		$urls = [];
-
-		if ( ! $wp_rewrite->using_permalinks() ) {
-			return $urls;
-		}
-
-		$urls = [];
-
-		foreach ( \range( 2, $total ) as $page ) {
-			$urls[] = \trailingslashit( $url ) . $wp_rewrite->pagination_base . '/' . $page . '/';
-		}
-
-		return $urls;
-	}
-
-	/**
-	 * Get post related actions.
-	 * 
+	 * Get term related actions.
+	 *
 	 * @link https://github.com/cloudflare/Cloudflare-WordPress/blob/v4.12.7/src/WordPress/Hooks.php#L252-L281
 	 * @param WP_Term $term WordPress term object.
 	 * @return PurgeCacheAction[]
@@ -267,96 +240,44 @@ final class Plugin {
 			return $actions;
 		}
 
-		$result = \get_term_link( $term );
-
-		if ( ! \is_wp_error( $result ) ) {
-			$actions[] = new PurgeCacheAction( 'term', [ $result ] );
-
-			$actions[] = new PurgeCacheAction( 'term-pages', $this->get_paginate_urls( $result ) );
-		}
-
-		$result = \get_term_feed_link( $term );
-
-		if ( false !== $result ) {
-			$actions[] = new PurgeCacheAction( 'term-feed', [ $result ] );
-		}
+		$actions[] = new PurgeCacheAction( 'term', [ 'term-' . $term->term_id ] );
 
 		return $actions;
 	}
 
 	/**
 	 * Get post type related actions.
-	 * 
+	 *
 	 * @param string $post_type Post type.
 	 * @return PurgeCacheAction[]
 	 */
 	private function get_post_type_related_actions( $post_type ) {
-		$actions = [];
-
-		$result = \get_post_type_archive_link( $post_type );
-
-		if ( false !== $result ) {
-			$url = \trailingslashit( $result );
-
-			$actions[] = new PurgeCacheAction( 'post-archive', [ $url ] );
-
-			$paginate_urls = $this->get_paginate_urls( $url );
-
-			$actions[] = new PurgeCacheAction( 'post-archive-pages', $paginate_urls );
-		}
-
-		$result = \get_post_type_archive_feed_link( $post_type );
-
-		if ( false !== $result ) {
-			$actions[] = new PurgeCacheAction( 'post-archive-feed', [ $result ] );
-		}
+		$actions = [
+			new PurgeCacheAction( 'archive', [ 'archive-' . $post_type ] ),
+		];
 
 		return $actions;
 	}
 
 	/**
 	 * Get user related actions.
-	 * 
+	 *
 	 * @param WP_User $user User.
-	 * @return string[]
+	 * @return PurgeCacheAction[]
 	 */
 	private function get_user_related_actions( WP_User $user ) {
 		$actions = [
-			new PurgeCacheAction(
-				'author',
-				[
-					\get_author_posts_url( $user->ID ),
-					\get_author_feed_link( $user->ID ),
-				]
-			),
+			new PurgeCacheAction( 'author', [ 'author-' . $user->ID ] ),
 		];
 
 		return $actions;
 	}
 
 	/**
-	 * Get feed URL's.
-	 * 
-	 * @return string[]
-	 */
-	private function get_feed_urls() {
-		$urls = [
-			\get_bloginfo_rss( 'rdf_url' ),
-			\get_bloginfo_rss( 'rss_url' ),
-			\get_bloginfo_rss( 'rss2_url' ),
-			\get_bloginfo_rss( 'atom_url' ),
-			\get_bloginfo_rss( 'comments_rss2_url' ),
-		];
-
-		return $urls;
-	}
-
-	/**
-	 * Get post related URL's.
-	 * 
-	 * @link https://github.com/cloudflare/Cloudflare-WordPress/blob/v4.12.7/src/WordPress/Hooks.php#L252-L281
+	 * Get post related actions.
+	 *
 	 * @param WP_Post $post WordPress post object.
-	 * @return string[]
+	 * @return PurgeCacheAction[]
 	 */
 	private function get_post_related_actions( WP_Post $post ) {
 		$actions = [];
@@ -378,17 +299,7 @@ final class Plugin {
 		/**
 		 * Post.
 		 */
-		$result = \get_permalink( $post );
-
-		if ( false !== $result ) {
-			$actions[] = new PurgeCacheAction( 'post', [ $result ] );
-		}
-
-		$result = \get_post_comments_feed_link( $post->ID );
-
-		if ( '' !== $result ) {
-			$actions[] = new PurgeCacheAction( 'post-comments-feed', [ $result ] );
-		}
+		$actions[] = new PurgeCacheAction( 'post', [ 'post-' . $post->ID ] );
 
 		/**
 		 * Post type.
@@ -433,14 +344,9 @@ final class Plugin {
 		}
 
 		/**
-		 * Feeds.
-		 */
-		$actions[] = new PurgeCacheAction( 'feeds', $this->get_feed_urls() );
-
-		/**
 		 * Home.
 		 */
-		$actions[] = new PurgeCacheAction( 'home', [ \home_url( '/' ) ] );
+		$actions[] = new PurgeCacheAction( 'home', [ 'home' ] );
 
 		/**
 		 * Ok.
@@ -450,7 +356,7 @@ final class Plugin {
 
 	/**
 	 * Purge cache of post.
-	 * 
+	 *
 	 * @param WP_Post $post WordPress post object.
 	 * @return void
 	 */
@@ -461,8 +367,8 @@ final class Plugin {
 			$scheduled = \as_has_scheduled_action(
 				'pronamic_cloudflare_purge_cache',
 				[
-					'files' => $action->files,
-					'type'  => $action->type,
+					'tags' => $action->tags,
+					'type' => $action->type,
 				],
 				'pronamic-cloudflare',
 			);
@@ -475,8 +381,8 @@ final class Plugin {
 				$action->get_timestamp(),
 				'pronamic_cloudflare_purge_cache',
 				[
-					'files' => $action->files,
-					'type'  => $action->type,
+					'tags' => $action->tags,
+					'type' => $action->type,
 				],
 				'pronamic-cloudflare',
 				false,

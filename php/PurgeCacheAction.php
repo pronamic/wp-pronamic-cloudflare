@@ -22,21 +22,21 @@ final class PurgeCacheAction {
 	public $type;
 
 	/**
-	 * Files.
+	 * Cache tags.
 	 * 
 	 * @var string[]
 	 */
-	public $files;
+	public $tags;
 
 	/**
 	 * Cosntruct purge cache action.
 	 * 
 	 * @param string $type      Type.
-	 * @param array  $files     Files.
+	 * @param array  $files     Tags.
 	 */
-	public function __construct( $type, $files ) {
+	public function __construct( $type, $tags ) {
 		$this->type  = $type;
-		$this->files = $files;
+		$this->tags = $tags;
 	}
 
 	/**
