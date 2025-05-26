@@ -55,6 +55,8 @@ final class Plugin {
 
 		\add_filter( 'cloudflare_purge_by_url', [ $this, 'cloudflare_purge_by_url' ] );
 
+		\add_action( 'send_headers', [ $this, 'send_header_cache_tags' ] );
+
 		foreach ( $this->controllers as $controller ) {
 			$controller->setup();
 		}
@@ -130,6 +132,73 @@ final class Plugin {
 		);
 
 		return $number;
+	}
+
+	/**
+	 * Send Cache-Tag HTTP header.
+	 *
+	 * @return void
+	 */
+	public function send_header_cache_tags() {
+		$tags = $this->get_current_cache_tags();
+
+		if ( ! empty( $tags ) ) {
+			\header( 'Cache-Tag: ' . implode( ',', $tags ), false );
+		}
+	}
+
+	/**
+	 * Get current cache tags.
+	 *
+	 * @return array
+	 */
+	public function get_current_cache_tags(): array {
+		$tags = [];
+
+		if ( is_singular() ) {
+			$tags[] = 'post-' . get_the_ID();
+		}
+
+		if ( is_post_type_archive() ) {
+			$tags[] = 'archive-' . get_post_type();
+		}
+
+		if ( is_tax() || is_category() || is_tag() ) {
+			$term = get_queried_object();
+
+			if ( $term instanceof WP_Term ) {
+				$tags[] = 'term-' . $term->term_id;
+			}
+		}
+
+		if ( is_author() ) {
+			$author = get_queried_object();
+			if ( $author instanceof WP_User ) {
+				$tags[] = 'author-' . $author->ID;
+			}
+		}
+
+		if ( is_date() ) {
+			$tags[] = 'date-' . get_query_var( 'year' ) . get_query_var( 'monthnum' ) . get_query_var( 'day' );
+		}
+
+		if ( is_search() ) {
+			$tags[] = 'search';
+		}
+
+		if ( is_404() ) {
+			$tags[] = '404';
+		}
+
+		if ( is_home() ) {
+			$tags[] = 'home';
+		}
+
+		if ( is_front_page() ) {
+			$tags[] = 'front-page';
+		}
+
+		return array_unique( $tags );
 	}
 
 	/**
