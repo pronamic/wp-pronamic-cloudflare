@@ -175,11 +175,11 @@ final class Plugin {
 	 * Purge cache URL.
 	 * 
 	 * @link https://developers.cloudflare.com/api/operations/zone-purge#purge-cached-content-by-url
-	 * @param string[] $files Files.
+	 * @param string[] $tags Cache tags to purge.
 	 * @return void
 	 * @throws \Exception Throws exception if purge cache action fails.
 	 */
-	public function purge_cache( $files ) {
+	public function purge_cache( $tags ) {
 		$api_email = \get_option( 'pronamic_cloudflare_api_email' );
 		$api_key   = \get_option( 'pronamic_cloudflare_api_key' );
 		$zone_id   = \get_option( 'pronamic_cloudflare_zone_id' );
@@ -201,7 +201,7 @@ final class Plugin {
 				],
 				'body'    => \wp_json_encode(
 					[
-						'files' => $files,
+						'tags' => $tags,
 					]
 				),
 			]
