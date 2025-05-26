@@ -344,6 +344,11 @@ final class Plugin {
 		}
 
 		/**
+		 * Feeds.
+		 */
+		$actions[] = new PurgeCacheAction( 'feeds', [ 'feed' ] );
+
+		/**
 		 * Home.
 		 */
 		$actions[] = new PurgeCacheAction( 'home', [ 'home' ] );
