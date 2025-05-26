@@ -198,6 +198,10 @@ final class Plugin {
 			$tags[] = 'front-page';
 		}
 
+		if ( is_feed() && ! is_archive() && ! is_author() && ! is_search() ) {
+			$tags[] = 'feed';
+		}
+
 		return array_unique( $tags );
 	}
 
