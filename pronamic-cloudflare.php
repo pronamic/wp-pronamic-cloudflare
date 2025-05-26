@@ -12,8 +12,6 @@
  * Plugin URI: https://www.pronamic.eu/plugins/pronamic-cloudflare/
  * Description: The Pronamic Cloudflare plugin adds a number of features, such as WP-CLI commands, to the Cloudflare plugin.
  * 
- * Requires Plugins: cloudflare
- * 
  * Version: 1.0.1
  * Requires at least: 6.1
  * 
