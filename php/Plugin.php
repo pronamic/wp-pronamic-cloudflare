@@ -55,7 +55,7 @@ final class Plugin {
 
 		\add_filter( 'cloudflare_purge_by_url', [ $this, 'cloudflare_purge_by_url' ] );
 
-		\add_action( 'send_headers', [ $this, 'send_header_cache_tags' ] );
+		\add_action( 'send_headers', $this->send_header_cache_tags( ... ) );
 
 		foreach ( $this->controllers as $controller ) {
 			$controller->setup();
@@ -139,7 +139,7 @@ final class Plugin {
 	 *
 	 * @return void
 	 */
-	public function send_header_cache_tags() {
+	private function send_header_cache_tags() {
 		$tags = $this->get_current_cache_tags();
 
 		if ( ! empty( $tags ) ) {
