@@ -142,9 +142,11 @@ final class Plugin {
 	private function send_header_cache_tags() {
 		$tags = $this->get_current_cache_tags();
 
-		if ( ! empty( $tags ) ) {
-			\header( 'Cache-Tag: ' . implode( ',', $tags ), false );
+		if ( 0 === \count( $tags ) ) {
+			return;
 		}
+
+		\header( 'Cache-Tag: ' . implode( ',', $tags ), false );
 	}
 
 	/**
