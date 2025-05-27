@@ -175,6 +175,7 @@ final class Plugin {
 
 		if ( is_author() ) {
 			$author = get_queried_object();
+
 			if ( $author instanceof WP_User ) {
 				$tags[] = 'author-' . $author->ID;
 			}
