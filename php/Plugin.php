@@ -227,88 +227,82 @@ final class Plugin {
 	}
 
 	/**
-	 * Get term related actions.
+	 * Get term related tags.
 	 *
 	 * @link https://github.com/cloudflare/Cloudflare-WordPress/blob/v4.12.7/src/WordPress/Hooks.php#L252-L281
 	 * @param WP_Term $term WordPress term object.
-	 * @return PurgeCacheAction[]
+	 * @return string[]
 	 */
-	private function get_term_related_actions( WP_Term $term ) {
-		$actions = [];
+	private function get_term_related_tags( WP_Term $term ) {
+		$tags = [];
 
 		if ( ! \is_term_publicly_viewable( $term ) ) {
-			return $actions;
+			return $tags;
 		}
 
-		$actions[] = new PurgeCacheAction( 'term', [ 'term-' . $term->term_id ] );
-
-		return $actions;
+		return [
+			'term-' . $term->term_id,
+		];
 	}
 
 	/**
-	 * Get post type related actions.
+	 * Get post type related tags.
 	 *
 	 * @param string $post_type Post type.
-	 * @return PurgeCacheAction[]
+	 * @return string[]
 	 */
-	private function get_post_type_related_actions( $post_type ) {
-		$actions = [
-			new PurgeCacheAction( 'archive', [ 'archive-' . $post_type ] ),
+	private function get_post_type_related_tags( $post_type ) {
+		return [
+			'archive-' . $post_type,
 		];
-
-		return $actions;
 	}
 
 	/**
-	 * Get user related actions.
+	 * Get user related tags.
 	 *
 	 * @param WP_User $user User.
-	 * @return PurgeCacheAction[]
+	 * @return string[]
 	 */
-	private function get_user_related_actions( WP_User $user ) {
-		$actions = [
-			new PurgeCacheAction( 'author', [ 'author-' . $user->ID ] ),
+	private function get_user_related_tags( WP_User $user ) {
+		return [
+			'author-' . $user->ID,
 		];
-
-		return $actions;
 	}
 
 	/**
-	 * Get post related actions.
+	 * Get post related tags.
 	 *
 	 * @param WP_Post $post WordPress post object.
-	 * @return PurgeCacheAction[]
+	 * @return string[]
 	 */
-	private function get_post_related_actions( WP_Post $post ) {
-		$actions = [];
+	private function get_post_related_tags( WP_Post $post ) {
+		$tags = [];
 
 		if ( \wp_is_post_autosave( $post->ID ) ) {
-			return $actions;
+			return $tags;
 		}
 
 		if ( \wp_is_post_revision( $post->ID ) ) {
-			return $actions;
+			return $tags;
 		}
 
 		$post_type = \get_post_type( $post->ID );
 
 		if ( ! \is_post_type_viewable( $post_type ) ) {
-			return $actions;
+			return $tags;
 		}
 
 		/**
 		 * Post.
 		 */
-		$actions[] = new PurgeCacheAction( 'post', [ 'post-' . $post->ID ] );
+		$tags[] = 'post-' . $post->ID;
 
 		/**
 		 * Post type.
 		 */
 		$post_type = \get_post_type( $post->ID );
 
-		$post_type_actions = $this->get_post_type_related_actions( $post_type );
-
-		$actions = \array_merge( $actions, $post_type_actions );
+		$tags = \array_merge( $tags, $this->get_post_type_related_tags( $post_type ) );
 
 		/**
 		 * Author.
@@ -316,9 +310,7 @@ final class Plugin {
 		$user = \get_user_by( 'id', \get_post_field( 'post_author', $post ) );
 
 		if ( false !== $user ) {
-			$user_actions = $this->get_user_related_actions( $user );
-
-			$actions = \array_merge( $actions, $user_actions );
+			$tags = \array_merge( $tags, $this->get_user_related_tags( $user ) );
 		}
 
 		/**
@@ -337,26 +329,31 @@ final class Plugin {
 
 		if ( ! \is_wp_error( $terms ) ) {
 			foreach ( $terms as $term ) {
-				$term_actions = $this->get_term_related_actions( $term );
-
-				$actions = \array_merge( $actions, $term_actions );
+				$tags = \array_merge( $tags, $this->get_term_related_tags( $term ) );
 			}
 		}
 
 		/**
+		 * Date.
+		 */
+		$tags[] = 'date-' . \get_the_date( 'Y', $post );
+		$tags[] = 'date-' . \get_the_date( 'Y-m', $post );
+		$tags[] = 'date-' . \get_the_date( 'Y-m-d', $post );
+
+		/**
 		 * Feeds.
 		 */
-		$actions[] = new PurgeCacheAction( 'feeds', [ 'feed' ] );
+		$tags[] = 'feed';
 
 		/**
 		 * Home.
 		 */
-		$actions[] = new PurgeCacheAction( 'home', [ 'home' ] );
+		$tags[] = 'home';
 
 		/**
 		 * Ok.
 		 */
-		return $actions;
+		return $tags;
 	}
 
 	/**
@@ -366,33 +363,27 @@ final class Plugin {
 	 * @return void
 	 */
 	private function purge_cache_of_post( WP_Post $post ) {
-		$actions = $this->get_post_related_actions( $post );
+		$tags = $this->get_post_related_tags( $post );
 
-		foreach ( $actions as $action ) {
-			$scheduled = \as_has_scheduled_action(
-				'pronamic_cloudflare_purge_cache',
-				[
-					'tags' => $action->tags,
-					'type' => $action->type,
-				],
-				'pronamic-cloudflare',
-			);
+		$scheduled = \as_has_scheduled_action(
+			'pronamic_cloudflare_purge_cache',
+			[
+				'tags' => $tags,
+			],
+			'pronamic-cloudflare',
+		);
 
-			if ( $scheduled ) {
-				continue;
-			}
-
-			\as_schedule_single_action(
-				$action->get_timestamp(),
-				'pronamic_cloudflare_purge_cache',
-				[
-					'tags' => $action->tags,
-					'type' => $action->type,
-				],
-				'pronamic-cloudflare',
-				false,
-				$action->get_priority()
-			);
+		if ( $scheduled ) {
+			return;
 		}
+
+		\as_enqueue_async_action(
+			'pronamic_cloudflare_purge_cache',
+			[
+				'tags' => $tags,
+			],
+			'pronamic-cloudflare',
+			false
+		);
 	}
 }
