@@ -181,8 +181,25 @@ final class Plugin {
 			}
 		}
 
-		if ( is_date() ) {
-			$tags[] = 'date-' . get_query_var( 'year' ) . get_query_var( 'monthnum' ) . get_query_var( 'day' );
+		if ( is_year() ) {
+			$tags[] = 'date-' . get_query_var( 'year' );
+		}
+
+		if ( is_month() ) {
+			$tags[] = \sprintf(
+				'date-%02d-%02d',
+				get_query_var( 'year' ),
+				get_query_var( 'monthnum' )
+			);
+		}
+
+		if ( is_day() ) {
+			$tags[] = \sprintf(
+				'date-%02d-%02d-%02d',
+				get_query_var( 'year' ),
+				get_query_var( 'monthnum' ),
+				get_query_var( 'day' )
+			);
 		}
 
 		if ( is_search() ) {
