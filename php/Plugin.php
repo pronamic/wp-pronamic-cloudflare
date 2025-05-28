@@ -175,11 +175,11 @@ final class Plugin {
 	 * Purge cache.
 	 *
 	 * @link https://developers.cloudflare.com/api/resources/cache/methods/purge/
-	 * @param string[] $tags Cache tags to purge.
+	 * @param array $data Data to purge.
 	 * @return void
 	 * @throws \Exception Throws exception if purge cache action fails.
 	 */
-	public function purge_cache( $tags ) {
+	public function purge_cache( $data ) {
 		$api_email = \get_option( 'pronamic_cloudflare_api_email' );
 		$api_key   = \get_option( 'pronamic_cloudflare_api_key' );
 		$zone_id   = \get_option( 'pronamic_cloudflare_zone_id' );
@@ -199,11 +199,7 @@ final class Plugin {
 					'X-Auth-Email' => $api_email,
 					'X-Auth-Key'   => $api_key,
 				],
-				'body'    => \wp_json_encode(
-					[
-						'tags' => $tags,
-					]
-				),
+				'body'    => \wp_json_encode( $data ),
 			]
 		);
 
