@@ -32,6 +32,20 @@ final class Plugin {
 	private $controllers;
 
 	/**
+	 * Tags to purge.
+	 * 
+	 * @var string[]
+	 */
+	private $purge_tags = [];
+
+	/**
+	 * Purge everything.
+	 * 
+	 * @var bool
+	 */
+	private $purge_everything = false;
+
+	/**
 	 * Construct plugin
 	 */
 	public function __construct() {
@@ -47,11 +61,37 @@ final class Plugin {
 	 * @return void
 	 */
 	public function setup() {
-		\add_action( 'transition_post_status', [ $this, 'transition_post_status' ], 10, 3 );
-
 		\add_action( 'admin_bar_menu', [ $this, 'admin_bar_menu' ], 500 );
-
 		\add_action( 'pronamic_cloudflare_purge_cache', [ $this, 'purge_cache' ] );
+
+		// Post actions.
+		\add_action( 'save_post', $this->purge_cache_by_post( ... ), 10, 1 );
+		\add_action( 'delete_post', $this->purge_cache_by_post( ... ), 10, 1 );
+		\add_action( 'trashed_post', $this->purge_cache_by_post( ... ), 10, 1 );
+		\add_action( 'untrashed_post', $this->purge_cache_by_post( ... ), 10, 1 );
+		\add_action( 'transition_post_status', $this->transition_post_status( ... ), 10, 3 );
+
+		// Comment actions.
+		\add_action( 'comment_post', $this->purge_cache_by_comment( ... ), 10, 1 );
+		\add_action( 'edit_comment', $this->purge_cache_by_comment( ... ), 10, 1 );
+		\add_action( 'delete_comment', $this->purge_cache_by_comment( ... ), 10, 1 );
+
+		// Term actions.
+		\add_action( 'created_term', $this->purge_cache_by_term( ... ), 10, 3 );
+		\add_action( 'edited_term', $this->purge_cache_by_term( ... ), 10, 3 );
+		\add_action( 'delete_term', $this->purge_cache_by_deleted_term( ... ), 10, 4 );
+		\add_action( 'set_object_terms', $this->set_object_terms( ... ), 10, 6 );
+
+		// User actions.
+		\add_action( 'profile_update', $this->purge_cache_by_user( ... ), 10, 1 );
+		\add_action( 'deleted_user', $this->purge_cache_by_deleted_user( ... ), 10, 3 );
+
+		// Purge everything actions.
+		\add_action( 'switch_theme', $this->purge_everything( ... ) );
+		\add_action( 'customize_save_after', $this->purge_everything( ... ) );
+		\add_action( 'save_post_wp_template', $this->purge_everything( ... ) );
+		\add_action( 'save_post_wp_template_part', $this->purge_everything( ... ) );
+		\add_action( 'save_post_wp_global_styles', $this->purge_everything( ... ) );
 
 		\add_filter( 'cloudflare_purge_by_url', [ $this, 'cloudflare_purge_by_url' ] );
 
@@ -148,30 +188,6 @@ final class Plugin {
 	}
 
 	/**
-	 * Transition post status.
-	 * 
-	 * Please note that the name transition_post_status is misleading.
-	 * The hook does not only fire on a post status transition but also when a
-	 * post is updated while the status is not changed from one to another at
-	 * all.
-	 *
-	 * @link https://developer.wordpress.org/reference/hooks/transition_post_status/
-	 * @link https://github.com/cloudflare/Cloudflare-WordPress/blob/v4.12.7/cloudflare.loader.php#L106-L113
-	 * @link https://github.com/cloudflare/Cloudflare-WordPress/blob/v4.12.7/src/WordPress/Hooks.php#L445-L450
-	 * @param string  $new_status New status.
-	 * @param string  $old_status Old status.
-	 * @param WP_Post $post       WordPress post object.
-	 * @return void
-	 */
-	public function transition_post_status( $new_status, $old_status, WP_Post $post ) {
-		if ( 'publish' !== $new_status || 'publish' !== $old_status ) {
-			return;
-		}
-
-		$this->purge_cache_of_post( $post );
-	}
-
-	/**
 	 * Purge cache.
 	 *
 	 * @link https://developers.cloudflare.com/api/resources/cache/methods/purge/
@@ -220,6 +236,222 @@ final class Plugin {
 				)
 			);
 		}
+	}
+
+	/**
+	 * Purge cache by post.
+	 *
+	 * @param int $post_id WordPress post ID.
+	 * @return void
+	 */
+	private function purge_cache_by_post( $post_id ): void {
+		$post = \get_post( $post_id );
+
+		if ( ! ( $post instanceof \WP_Post ) ) {
+			return;
+		}
+
+		$tags = $this->get_post_related_tags( $post );
+
+		$this->purge_by_tags( $tags );
+	}
+
+	/**
+	 * Transition post status.
+	 * 
+	 * Please note that the name transition_post_status is misleading.
+	 * The hook does not only fire on a post status transition but also when a
+	 * post is updated while the status is not changed from one to another at
+	 * all.
+	 *
+	 * @link https://developer.wordpress.org/reference/hooks/transition_post_status/
+	 * @link https://github.com/cloudflare/Cloudflare-WordPress/blob/v4.12.7/cloudflare.loader.php#L106-L113
+	 * @link https://github.com/cloudflare/Cloudflare-WordPress/blob/v4.12.7/src/WordPress/Hooks.php#L445-L450
+	 * @param string  $new_status New status.
+	 * @param string  $old_status Old status.
+	 * @param WP_Post $post       WordPress post object.
+	 * @return void
+	 */
+	public function transition_post_status( $new_status, $old_status, WP_Post $post ): void {
+		if ( 'publish' !== $new_status || 'publish' !== $old_status ) {
+			return;
+		}
+
+		$this->purge_cache_by_post( $post );
+	}
+
+	/**
+	 * Purge cache by comment.
+	 *
+	 * @param int $comment_id Comment ID.
+	 * @return void
+	 */
+	private function purge_cache_by_comment( $comment_id ) {
+		$comment = \get_comment( $comment_id );
+
+		if ( ! ( $comment instanceof \WP_Comment ) ) {
+			return;
+		}
+
+		$tags = $this->get_comment_related_tags( $comment );
+
+		$this->purge_by_tags( $tags );
+	}
+
+	/**
+	 * Purge cache by comment.
+	 *
+	 * @param int         $term_id  Term ID.
+	 * @param int|null    $tt_id    Term taxonomy ID.
+	 * @param string|null $taxonomy Taxonomy slug.
+	 * @return void
+	 */
+	private function purge_cache_by_term( $term_id, $tt_id = null, $taxonomy = null ) {
+		$term = null;
+
+		if ( $term_id && $taxonomy ) {
+			$term = \get_term( $term_id, $taxonomy );
+		}
+
+		if ( ! ( $term instanceof \WP_Term ) ) {
+			return;
+		}
+
+		$tags = $this->get_term_related_tags( $term );
+
+		$this->purge_by_tags( $tags );
+	}
+
+	/**
+	 * Purge cache by deleted term.
+	 *
+	 * @param int      $term_id      Term ID.
+	 * @param int      $tt_id        Term taxonomy ID.
+	 * @param string   $taxonomy     Taxonomy slug.
+	 * @param \WP_Term $deleted_term Deleted term object.
+	 * @return void
+	 */
+	private function purge_cache_by_deleted_term( $term_id, $tt_id = null, $taxonomy = null, $deleted_term ): void {
+		if ( ! ( $deleted_term instanceof \WP_Term ) ) {
+			return;
+		}
+
+		$tags = $this->get_term_related_tags( $deleted_term );
+
+		$this->purge_by_tags( $tags );
+	}
+
+	/**
+	 * Purge cache by deleted term.
+	 *
+	 * @param int    $object_id  Object ID.
+	 * @param array  $terms      An array of object term IDs or slugs.
+	 * @param array  $tt_ids     An array of term taxonomy IDs.
+	 * @param string $taxonomy   Taxonomy slug.
+	 * @param bool   $append     Whether to append new terms to the old terms.
+	 * @param array  $old_tt_ids Old array of term taxonomy IDs.
+	 * @return void
+	 */
+	private function set_object_terms( $object_id, $terms, $tt_ids, $taxonomy, $append, $old_tt_ids ): void {
+		$tags = [];
+
+		foreach ( $terms as $term_id ) {
+			$term = \get_term( $term_id, $taxonomy );
+
+			if ( ! ( $term instanceof \WP_Term ) ) {
+				continue;
+			}
+
+			$tags = \array_merge( $tags, $this->get_term_related_tags( $term ) );
+		}
+
+		foreach ( $old_tt_ids as $tt_id ) {
+			$term = \get_term_by( 'term_taxonomy_id', $tt_id, $taxonomy );
+
+			if ( ! ( $term instanceof \WP_Term ) ) {
+				continue;
+			}
+
+			$tags = \array_merge( $tags, $this->get_term_related_tags( $term ) );
+		}
+
+		$tags = array_unique( $tags );
+
+		$this->purge_by_tags( $tags );
+	}
+
+	/**
+	 * Purge cache by user.
+	 *
+	 * @param \WP_User $user WordPress user object.
+	 * @return void
+	 */
+	private function purge_cache_by_user( \WP_User $user ): void {
+		$tags = $this->get_user_related_tags( $user );
+
+		$this->purge_by_tags( $tags );
+	}
+
+	/**
+	 * Purge cache by deleted user.
+	 *
+	 * @param int      $id        ID of the deleted user.
+	 * @param int|null $reassign  ID of the user to reassign posts and links to.
+	 *                            Default null, for no reassignment.
+	 * @param \WP_User $user     WP_User object of the deleted user.
+	 * @return void
+	 */
+	private function purge_cache_by_deleted_user( $id, $reassign, \WP_User $user ): void {
+		$tags = $this->get_user_related_tags( $user );
+
+		$this->purge_by_tags( $tags );
+	}
+
+	/**
+	 * Purge everything.
+	 * 
+	 * @return void
+	 */
+	private function purge_everything(): void {
+		$this->purge_everything = true;
+
+		if ( ! \has_action( 'shutdown', $this->shutdown( ... ) ) ) {
+			\add_action( 'shutdown', $this->shutdown( ... ) );
+		}
+	}
+
+	/**
+	 * Get comment related tags.
+	 *
+	 * @param \WP_Comment|null $comment Comment object.
+	 * @return string[]
+	 */
+	private function get_comment_related_tags( $comment ) {
+		$tags = [];
+
+		if ( ! ( $comment instanceof \WP_Comment ) ) {
+			return $tags;
+		}
+
+		$tags[] = 'comment-' . $comment->comment_ID;
+
+		if ( $comment->user_id ) {
+			$user = \get_user_by( 'id', $comment->user_id );
+
+			if ( false !== $user ) {
+				$tags = \array_merge( $tags, $this->get_user_related_tags( $user ) );
+			}
+		}
+
+		if ( $comment->comment_post_ID ) {
+			$post = \get_post( $comment->comment_post_ID );
+
+			if ( false !== $post ) {
+				$tags = \array_merge( $tags, $this->get_post_related_tags( $post ) );
+			}
+		}
+
+		return $tags;
 	}
 
 	/**
@@ -353,19 +585,41 @@ final class Plugin {
 	}
 
 	/**
-	 * Purge cache of post.
+	 * Schedule purge cache action for tags.
 	 *
-	 * @param WP_Post $post WordPress post object.
+	 * @param string[] $tags Tags to purge.
 	 * @return void
 	 */
-	private function purge_cache_of_post( WP_Post $post ) {
-		$tags = $this->get_post_related_tags( $post );
+	private function purge_by_tags( $tags ) {
+		if ( 0 === count( $tags ) ) {
+			return;
+		}
+
+		$updated_tags = \array_merge( $this->purge_tags, $tags );
+
+		$updated_tags = \array_unique( $updated_tags );
+
+		$this->purge_tags = $updated_tags;
+
+		if ( ! \has_action( 'shutdown', $this->shutdown( ... ) ) ) {
+			\add_action( 'shutdown', $this->shutdown( ... ) );
+		}
+	}
+
+	/**
+	 * Schedule purge cache action.
+	 *
+	 * @param array $data Data to purge.
+	 * @return void
+	 */
+	private function schedule_purge_cache_action( $data ): void {
+		if ( 0 === count( $data ) ) {
+			return;
+		}
 
 		$scheduled = \as_has_scheduled_action(
 			'pronamic_cloudflare_purge_cache',
-			[
-				'tags' => $tags,
-			],
+			$data,
 			'pronamic-cloudflare',
 		);
 
@@ -375,9 +629,7 @@ final class Plugin {
 
 		\as_enqueue_async_action(
 			'pronamic_cloudflare_purge_cache',
-			[
-				'tags' => $tags,
-			],
+			$data,
 			'pronamic-cloudflare',
 			false
 		);
