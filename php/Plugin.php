@@ -634,4 +634,33 @@ final class Plugin {
 			false
 		);
 	}
+
+	/**
+	 * Schedule purge cache action on shutdown.
+	 *
+	 * @return void
+	 */
+	private function shutdown(): void {
+		if ( 0 === count( $this->purge_tags ) && false === $this->purge_everything ) {
+			return;
+		}
+
+		$data = [
+			'tags' => $this->purge_tags,
+		];
+
+		if ( true === $this->purge_everything ) {
+			$data = [
+				'purge_everything' => true,
+			];
+
+			\as_unschedule_all_actions(
+				'pronamic_cloudflare_purge_cache',
+				null,
+				'pronamic-cloudflare'
+			);
+		}
+
+		$this->schedule_purge_cache_action( $data );
+	}
 }
