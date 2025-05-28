@@ -574,9 +574,16 @@ final class Plugin {
 		$tags[] = 'feed';
 
 		/**
-		 * Home.
+		 * Front page.
 		 */
-		$tags[] = 'home';
+		$tags[] = 'front-page';
+
+		/**
+		 * Blog home.
+		 */
+		if ( 'post' === $post_type ) {
+			$tags[] = 'home';
+		}
 
 		/**
 		 * Ok.
