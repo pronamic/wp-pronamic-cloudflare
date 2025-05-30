@@ -53,8 +53,6 @@ final class Plugin {
 
 		\add_action( 'pronamic_cloudflare_purge_cache', [ $this, 'purge_cache' ] );
 
-		\add_filter( 'cloudflare_purge_by_url', [ $this, 'cloudflare_purge_by_url' ] );
-
 		\add_action( 'send_headers', $this->send_header_cache_tags( ... ) );
 
 		foreach ( $this->controllers as $controller ) {
@@ -226,21 +224,6 @@ final class Plugin {
 	}
 
 	/**
-	 * Cloudflare purge by URL.
-	 * 
-	 * This plugin takes over the cache purging from the Cloudflare plugin.
-	 *
-	 * @link https://github.com/cloudflare/Cloudflare-WordPress/blob/58db13b91fbd5e8613a8599d58cf05d04914d7e6/src/WordPress/Hooks.php#L140-L241
-	 * @param string[] $urls URLs.
-	 * @return string[]
-	 */
-	public function cloudflare_purge_by_url( $urls ) {
-		$urls = [];
-
-		return $urls;
-	}
-
-	/**
 	 * Transition post status.
 	 * 
 	 * Please note that the name transition_post_status is misleading.
@@ -257,7 +240,7 @@ final class Plugin {
 	 * @return void
 	 */
 	public function transition_post_status( $new_status, $old_status, WP_Post $post ) {
-		if ( 'publish' !== $new_status || 'publish' !== $old_status ) {
+		if ( 'publish' !== $new_status && 'publish' !== $old_status ) {
 			return;
 		}
 
