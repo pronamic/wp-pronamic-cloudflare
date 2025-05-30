@@ -191,11 +191,11 @@ final class Plugin {
 	 * Purge cache.
 	 *
 	 * @link https://developers.cloudflare.com/api/resources/cache/methods/purge/
-	 * @param array $data Data to purge.
+	 * @param array $args Arguments for purge cache request.
 	 * @return void
 	 * @throws \Exception Throws exception if purge cache action fails.
 	 */
-	public function purge_cache( $data ) {
+	public function purge_cache( $args ) {
 		$api_email = \get_option( 'pronamic_cloudflare_api_email' );
 		$api_key   = \get_option( 'pronamic_cloudflare_api_key' );
 		$zone_id   = \get_option( 'pronamic_cloudflare_zone_id' );
@@ -215,7 +215,7 @@ final class Plugin {
 					'X-Auth-Email' => $api_email,
 					'X-Auth-Key'   => $api_key,
 				],
-				'body'    => \wp_json_encode( $data ),
+				'body'    => \wp_json_encode( $args ),
 			]
 		);
 
@@ -616,17 +616,17 @@ final class Plugin {
 	/**
 	 * Schedule purge cache action.
 	 *
-	 * @param array $data Data to purge.
+	 * @param array $args Arguments for purge cache action.
 	 * @return void
 	 */
-	private function schedule_purge_cache_action( $data ): void {
-		if ( 0 === count( $data ) ) {
+	private function schedule_purge_cache_action( $args ): void {
+		if ( 0 === count( $args ) ) {
 			return;
 		}
 
 		$scheduled = \as_has_scheduled_action(
 			'pronamic_cloudflare_purge_cache',
-			$data,
+			$args,
 			'pronamic-cloudflare',
 		);
 
@@ -636,7 +636,7 @@ final class Plugin {
 
 		\as_enqueue_async_action(
 			'pronamic_cloudflare_purge_cache',
-			$data,
+			$args,
 			'pronamic-cloudflare',
 			false
 		);
@@ -652,12 +652,12 @@ final class Plugin {
 			return;
 		}
 
-		$data = [
+		$args = [
 			'tags' => $this->purge_tags,
 		];
 
 		if ( true === $this->purge_everything ) {
-			$data = [
+			$args = [
 				'purge_everything' => true,
 			];
 
@@ -668,6 +668,6 @@ final class Plugin {
 			);
 		}
 
-		$this->schedule_purge_cache_action( $data );
+		$this->schedule_purge_cache_action( $args );
 	}
 }
