@@ -53,8 +53,6 @@ final class Plugin {
 
 		\add_action( 'pronamic_cloudflare_purge_cache', [ $this, 'purge_cache' ] );
 
-		\add_filter( 'cloudflare_purge_by_url', [ $this, 'cloudflare_purge_by_url' ] );
-
 		foreach ( $this->controllers as $controller ) {
 			$controller->setup();
 		}
@@ -130,21 +128,6 @@ final class Plugin {
 		);
 
 		return $number;
-	}
-
-	/**
-	 * Cloudflare purge by URL.
-	 * 
-	 * This plugin takes over the cache purging from the Cloudflare plugin.
-	 *
-	 * @link https://github.com/cloudflare/Cloudflare-WordPress/blob/58db13b91fbd5e8613a8599d58cf05d04914d7e6/src/WordPress/Hooks.php#L140-L241
-	 * @param string[] $urls URLs.
-	 * @return string[]
-	 */
-	public function cloudflare_purge_by_url( $urls ) {
-		$urls = [];
-
-		return $urls;
 	}
 
 	/**
