@@ -33,6 +33,8 @@
 			"rsync --recursive --verbose --exclude-from=.distignore ./build/stage-1/ ./build/stage-2/",
 			"vendor/bin/wp i18n make-pot ./build/stage-2/ --slug=pronamic-cloudflare",
 			"vendor/bin/wp dist-archive ./build/stage-2/ --plugin-dirname=pronamic-cloudflare"
-		]
+		],
+		"phpcbf": "XDEBUG_MODE=off vendor/bin/phpcbf",
+		"phpcs": "XDEBUG_MODE=off vendor/bin/phpcs -s -v"
 	}
 }
