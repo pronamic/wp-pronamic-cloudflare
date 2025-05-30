@@ -32,6 +32,20 @@ final class Plugin {
 	private $controllers;
 
 	/**
+	 * Tags to purge.
+	 * 
+	 * @var string[]
+	 */
+	private $purge_tags = [];
+
+	/**
+	 * Purge everything.
+	 * 
+	 * @var bool
+	 */
+	private $purge_everything = false;
+
+	/**
 	 * Construct plugin
 	 */
 	public function __construct() {
@@ -47,11 +61,37 @@ final class Plugin {
 	 * @return void
 	 */
 	public function setup() {
-		\add_action( 'transition_post_status', [ $this, 'transition_post_status' ], 10, 3 );
-
 		\add_action( 'admin_bar_menu', [ $this, 'admin_bar_menu' ], 500 );
-
 		\add_action( 'pronamic_cloudflare_purge_cache', [ $this, 'purge_cache' ] );
+
+		// Post actions.
+		\add_action( 'save_post', $this->purge_cache_by_post( ... ), 10, 1 );
+		\add_action( 'delete_post', $this->purge_cache_by_post( ... ), 10, 1 );
+		\add_action( 'trashed_post', $this->purge_cache_by_post( ... ), 10, 1 );
+		\add_action( 'untrashed_post', $this->purge_cache_by_post( ... ), 10, 1 );
+		\add_action( 'transition_post_status', $this->transition_post_status( ... ), 10, 3 );
+
+		// Comment actions.
+		\add_action( 'comment_post', $this->purge_cache_by_comment( ... ), 10, 1 );
+		\add_action( 'edit_comment', $this->purge_cache_by_comment( ... ), 10, 1 );
+		\add_action( 'delete_comment', $this->purge_cache_by_comment( ... ), 10, 1 );
+
+		// Term actions.
+		\add_action( 'created_term', $this->purge_cache_by_term( ... ), 10, 3 );
+		\add_action( 'edited_term', $this->purge_cache_by_term( ... ), 10, 3 );
+		\add_action( 'delete_term', $this->purge_cache_by_deleted_term( ... ), 10, 4 );
+		\add_action( 'set_object_terms', $this->set_object_terms( ... ), 10, 6 );
+
+		// User actions.
+		\add_action( 'profile_update', $this->purge_cache_by_user( ... ), 10, 1 );
+		\add_action( 'deleted_user', $this->purge_cache_by_deleted_user( ... ), 10, 3 );
+
+		// Purge everything actions.
+		\add_action( 'switch_theme', $this->purge_everything( ... ) );
+		\add_action( 'customize_save_after', $this->purge_everything( ... ) );
+		\add_action( 'save_post_wp_template', $this->purge_everything( ... ) );
+		\add_action( 'save_post_wp_template_part', $this->purge_everything( ... ) );
+		\add_action( 'save_post_wp_global_styles', $this->purge_everything( ... ) );
 
 		\add_action( 'send_headers', $this->send_header_cache_tags( ... ) );
 
@@ -224,38 +264,14 @@ final class Plugin {
 	}
 
 	/**
-	 * Transition post status.
-	 * 
-	 * Please note that the name transition_post_status is misleading.
-	 * The hook does not only fire on a post status transition but also when a
-	 * post is updated while the status is not changed from one to another at
-	 * all.
+	 * Purge cache.
 	 *
-	 * @link https://developer.wordpress.org/reference/hooks/transition_post_status/
-	 * @link https://github.com/cloudflare/Cloudflare-WordPress/blob/v4.12.7/cloudflare.loader.php#L106-L113
-	 * @link https://github.com/cloudflare/Cloudflare-WordPress/blob/v4.12.7/src/WordPress/Hooks.php#L445-L450
-	 * @param string  $new_status New status.
-	 * @param string  $old_status Old status.
-	 * @param WP_Post $post       WordPress post object.
-	 * @return void
-	 */
-	public function transition_post_status( $new_status, $old_status, WP_Post $post ) {
-		if ( 'publish' !== $new_status && 'publish' !== $old_status ) {
-			return;
-		}
-
-		$this->purge_cache_of_post( $post );
-	}
-
-	/**
-	 * Purge cache URL.
-	 * 
-	 * @link https://developers.cloudflare.com/api/operations/zone-purge#purge-cached-content-by-url
-	 * @param string[] $files Files.
+	 * @link https://developers.cloudflare.com/api/resources/cache/methods/purge/
+	 * @param array $args Arguments for purge cache request.
 	 * @return void
 	 * @throws \Exception Throws exception if purge cache action fails.
 	 */
-	public function purge_cache( $files ) {
+	public function purge_cache( $args ) {
 		$api_email = \get_option( 'pronamic_cloudflare_api_email' );
 		$api_key   = \get_option( 'pronamic_cloudflare_api_key' );
 		$zone_id   = \get_option( 'pronamic_cloudflare_zone_id' );
@@ -275,11 +291,7 @@ final class Plugin {
 					'X-Auth-Email' => $api_email,
 					'X-Auth-Key'   => $api_key,
 				],
-				'body'    => \wp_json_encode(
-					[
-						'files' => $files,
-					]
-				),
+				'body'    => \wp_json_encode( $args ),
 			]
 		);
 
@@ -303,177 +315,298 @@ final class Plugin {
 	}
 
 	/**
-	 * Paginate URL's.
+	 * Purge cache by post.
+	 *
+	 * @param int $post_id WordPress post ID.
+	 * @return void
+	 */
+	private function purge_cache_by_post( $post_id ): void {
+		$post = \get_post( $post_id );
+
+		if ( ! ( $post instanceof \WP_Post ) ) {
+			return;
+		}
+
+		$tags = $this->get_post_related_tags( $post );
+
+		$this->purge_by_tags( $tags );
+	}
+
+	/**
+	 * Transition post status.
 	 * 
-	 * @link https://wpdevelopment.courses/articles/wp-html-tag-processor/
-	 * @link https://developer.wordpress.org/reference/classes/wp_html_tag_processor/
-	 * @param string $url   URL.
-	 * @param int    $total Total.
+	 * Please note that the name transition_post_status is misleading.
+	 * The hook does not only fire on a post status transition but also when a
+	 * post is updated while the status is not changed from one to another at
+	 * all.
+	 *
+	 * @link https://developer.wordpress.org/reference/hooks/transition_post_status/
+	 * @link https://github.com/cloudflare/Cloudflare-WordPress/blob/v4.12.7/cloudflare.loader.php#L106-L113
+	 * @link https://github.com/cloudflare/Cloudflare-WordPress/blob/v4.12.7/src/WordPress/Hooks.php#L445-L450
+	 * @param string  $new_status New status.
+	 * @param string  $old_status Old status.
+	 * @param WP_Post $post       WordPress post object.
+	 * @return void
+	 */
+	public function transition_post_status( $new_status, $old_status, WP_Post $post ): void {
+		if ( 'publish' !== $new_status && 'publish' !== $old_status ) {
+			return;
+		}
+
+		$this->purge_cache_by_post( $post );
+	}
+
+	/**
+	 * Purge cache by comment.
+	 *
+	 * @param int $comment_id Comment ID.
+	 * @return void
+	 */
+	private function purge_cache_by_comment( $comment_id ) {
+		$comment = \get_comment( $comment_id );
+
+		if ( ! ( $comment instanceof \WP_Comment ) ) {
+			return;
+		}
+
+		$tags = $this->get_comment_related_tags( $comment );
+
+		$this->purge_by_tags( $tags );
+	}
+
+	/**
+	 * Purge cache by comment.
+	 *
+	 * @param int         $term_id  Term ID.
+	 * @param int|null    $tt_id    Term taxonomy ID.
+	 * @param string|null $taxonomy Taxonomy slug.
+	 * @return void
+	 */
+	private function purge_cache_by_term( $term_id, $tt_id = null, $taxonomy = null ) {
+		$term = null;
+
+		if ( $term_id && $taxonomy ) {
+			$term = \get_term( $term_id, $taxonomy );
+		}
+
+		if ( ! ( $term instanceof \WP_Term ) ) {
+			return;
+		}
+
+		$tags = $this->get_term_related_tags( $term );
+
+		$this->purge_by_tags( $tags );
+	}
+
+	/**
+	 * Purge cache by deleted term.
+	 *
+	 * @param int      $term_id      Term ID.
+	 * @param int      $tt_id        Term taxonomy ID.
+	 * @param string   $taxonomy     Taxonomy slug.
+	 * @param \WP_Term $deleted_term Deleted term object.
+	 * @return void
+	 */
+	private function purge_cache_by_deleted_term( $term_id, $tt_id = null, $taxonomy = null, $deleted_term ): void {
+		if ( ! ( $deleted_term instanceof \WP_Term ) ) {
+			return;
+		}
+
+		$tags = $this->get_term_related_tags( $deleted_term );
+
+		$this->purge_by_tags( $tags );
+	}
+
+	/**
+	 * Purge cache by deleted term.
+	 *
+	 * @param int    $object_id  Object ID.
+	 * @param array  $terms      An array of object term IDs or slugs.
+	 * @param array  $tt_ids     An array of term taxonomy IDs.
+	 * @param string $taxonomy   Taxonomy slug.
+	 * @param bool   $append     Whether to append new terms to the old terms.
+	 * @param array  $old_tt_ids Old array of term taxonomy IDs.
+	 * @return void
+	 */
+	private function set_object_terms( $object_id, $terms, $tt_ids, $taxonomy, $append, $old_tt_ids ): void {
+		$tags = [];
+
+		foreach ( $terms as $term_id ) {
+			$term = \get_term( $term_id, $taxonomy );
+
+			if ( ! ( $term instanceof \WP_Term ) ) {
+				continue;
+			}
+
+			$tags = \array_merge( $tags, $this->get_term_related_tags( $term ) );
+		}
+
+		foreach ( $old_tt_ids as $tt_id ) {
+			$term = \get_term_by( 'term_taxonomy_id', $tt_id, $taxonomy );
+
+			if ( ! ( $term instanceof \WP_Term ) ) {
+				continue;
+			}
+
+			$tags = \array_merge( $tags, $this->get_term_related_tags( $term ) );
+		}
+
+		$tags = array_unique( $tags );
+
+		$this->purge_by_tags( $tags );
+	}
+
+	/**
+	 * Purge cache by user.
+	 *
+	 * @param \WP_User $user WordPress user object.
+	 * @return void
+	 */
+	private function purge_cache_by_user( \WP_User $user ): void {
+		$tags = $this->get_user_related_tags( $user );
+
+		$this->purge_by_tags( $tags );
+	}
+
+	/**
+	 * Purge cache by deleted user.
+	 *
+	 * @param int      $id        ID of the deleted user.
+	 * @param int|null $reassign  ID of the user to reassign posts and links to.
+	 *                            Default null, for no reassignment.
+	 * @param \WP_User $user     WP_User object of the deleted user.
+	 * @return void
+	 */
+	private function purge_cache_by_deleted_user( $id, $reassign, \WP_User $user ): void {
+		$tags = $this->get_user_related_tags( $user );
+
+		$this->purge_by_tags( $tags );
+	}
+
+	/**
+	 * Purge everything.
+	 * 
+	 * @return void
+	 */
+	private function purge_everything(): void {
+		$this->purge_everything = true;
+
+		if ( ! \has_action( 'shutdown', $this->shutdown( ... ) ) ) {
+			\add_action( 'shutdown', $this->shutdown( ... ) );
+		}
+	}
+
+	/**
+	 * Get comment related tags.
+	 *
+	 * @param \WP_Comment|null $comment Comment object.
 	 * @return string[]
 	 */
-	private function get_paginate_urls( $url, $total = 10 ) {
-		global $wp_rewrite;
+	private function get_comment_related_tags( $comment ) {
+		$tags = [];
 
-		$urls = [];
-
-		if ( ! $wp_rewrite->using_permalinks() ) {
-			return $urls;
+		if ( ! ( $comment instanceof \WP_Comment ) ) {
+			return $tags;
 		}
 
-		$urls = [];
+		$tags[] = 'comment-' . $comment->comment_ID;
 
-		foreach ( \range( 2, $total ) as $page ) {
-			$urls[] = \trailingslashit( $url ) . $wp_rewrite->pagination_base . '/' . $page . '/';
+		if ( $comment->user_id ) {
+			$user = \get_user_by( 'id', $comment->user_id );
+
+			if ( false !== $user ) {
+				$tags = \array_merge( $tags, $this->get_user_related_tags( $user ) );
+			}
 		}
 
-		return $urls;
+		if ( $comment->comment_post_ID ) {
+			$post = \get_post( $comment->comment_post_ID );
+
+			if ( false !== $post ) {
+				$tags = \array_merge( $tags, $this->get_post_related_tags( $post ) );
+			}
+		}
+
+		return $tags;
 	}
 
 	/**
-	 * Get post related actions.
-	 * 
+	 * Get term related tags.
+	 *
 	 * @link https://github.com/cloudflare/Cloudflare-WordPress/blob/v4.12.7/src/WordPress/Hooks.php#L252-L281
 	 * @param WP_Term $term WordPress term object.
-	 * @return PurgeCacheAction[]
+	 * @return string[]
 	 */
-	private function get_term_related_actions( WP_Term $term ) {
-		$actions = [];
+	private function get_term_related_tags( WP_Term $term ) {
+		$tags = [];
 
 		if ( ! \is_term_publicly_viewable( $term ) ) {
-			return $actions;
+			return $tags;
 		}
 
-		$result = \get_term_link( $term );
-
-		if ( ! \is_wp_error( $result ) ) {
-			$actions[] = new PurgeCacheAction( 'term', [ $result ] );
-
-			$actions[] = new PurgeCacheAction( 'term-pages', $this->get_paginate_urls( $result ) );
-		}
-
-		$result = \get_term_feed_link( $term );
-
-		if ( false !== $result ) {
-			$actions[] = new PurgeCacheAction( 'term-feed', [ $result ] );
-		}
-
-		return $actions;
+		return [
+			'term-' . $term->term_id,
+		];
 	}
 
 	/**
-	 * Get post type related actions.
-	 * 
+	 * Get post type related tags.
+	 *
 	 * @param string $post_type Post type.
-	 * @return PurgeCacheAction[]
+	 * @return string[]
 	 */
-	private function get_post_type_related_actions( $post_type ) {
-		$actions = [];
-
-		$result = \get_post_type_archive_link( $post_type );
-
-		if ( false !== $result ) {
-			$url = \trailingslashit( $result );
-
-			$actions[] = new PurgeCacheAction( 'post-archive', [ $url ] );
-
-			$paginate_urls = $this->get_paginate_urls( $url );
-
-			$actions[] = new PurgeCacheAction( 'post-archive-pages', $paginate_urls );
-		}
-
-		$result = \get_post_type_archive_feed_link( $post_type );
-
-		if ( false !== $result ) {
-			$actions[] = new PurgeCacheAction( 'post-archive-feed', [ $result ] );
-		}
-
-		return $actions;
+	private function get_post_type_related_tags( $post_type ) {
+		return [
+			'archive-' . $post_type,
+		];
 	}
 
 	/**
-	 * Get user related actions.
-	 * 
+	 * Get user related tags.
+	 *
 	 * @param WP_User $user User.
 	 * @return string[]
 	 */
-	private function get_user_related_actions( WP_User $user ) {
-		$actions = [
-			new PurgeCacheAction(
-				'author',
-				[
-					\get_author_posts_url( $user->ID ),
-					\get_author_feed_link( $user->ID ),
-				]
-			),
+	private function get_user_related_tags( WP_User $user ) {
+		return [
+			'author-' . $user->ID,
 		];
-
-		return $actions;
 	}
 
 	/**
-	 * Get feed URL's.
-	 * 
-	 * @return string[]
-	 */
-	private function get_feed_urls() {
-		$urls = [
-			\get_bloginfo_rss( 'rdf_url' ),
-			\get_bloginfo_rss( 'rss_url' ),
-			\get_bloginfo_rss( 'rss2_url' ),
-			\get_bloginfo_rss( 'atom_url' ),
-			\get_bloginfo_rss( 'comments_rss2_url' ),
-		];
-
-		return $urls;
-	}
-
-	/**
-	 * Get post related URL's.
-	 * 
-	 * @link https://github.com/cloudflare/Cloudflare-WordPress/blob/v4.12.7/src/WordPress/Hooks.php#L252-L281
+	 * Get post related tags.
+	 *
 	 * @param WP_Post $post WordPress post object.
 	 * @return string[]
 	 */
-	private function get_post_related_actions( WP_Post $post ) {
-		$actions = [];
+	private function get_post_related_tags( WP_Post $post ) {
+		$tags = [];
 
 		if ( \wp_is_post_autosave( $post->ID ) ) {
-			return $actions;
+			return $tags;
 		}
 
 		if ( \wp_is_post_revision( $post->ID ) ) {
-			return $actions;
+			return $tags;
 		}
 
 		$post_type = \get_post_type( $post->ID );
 
 		if ( ! \is_post_type_viewable( $post_type ) ) {
-			return $actions;
+			return $tags;
 		}
 
 		/**
 		 * Post.
 		 */
-		$result = \get_permalink( $post );
-
-		if ( false !== $result ) {
-			$actions[] = new PurgeCacheAction( 'post', [ $result ] );
-		}
-
-		$result = \get_post_comments_feed_link( $post->ID );
-
-		if ( '' !== $result ) {
-			$actions[] = new PurgeCacheAction( 'post-comments-feed', [ $result ] );
-		}
+		$tags[] = 'post-' . $post->ID;
 
 		/**
 		 * Post type.
 		 */
 		$post_type = \get_post_type( $post->ID );
 
-		$post_type_actions = $this->get_post_type_related_actions( $post_type );
-
-		$actions = \array_merge( $actions, $post_type_actions );
+		$tags = \array_merge( $tags, $this->get_post_type_related_tags( $post_type ) );
 
 		/**
 		 * Author.
@@ -481,9 +614,7 @@ final class Plugin {
 		$user = \get_user_by( 'id', \get_post_field( 'post_author', $post ) );
 
 		if ( false !== $user ) {
-			$user_actions = $this->get_user_related_actions( $user );
-
-			$actions = \array_merge( $actions, $user_actions );
+			$tags = \array_merge( $tags, $this->get_user_related_tags( $user ) );
 		}
 
 		/**
@@ -502,62 +633,117 @@ final class Plugin {
 
 		if ( ! \is_wp_error( $terms ) ) {
 			foreach ( $terms as $term ) {
-				$term_actions = $this->get_term_related_actions( $term );
-
-				$actions = \array_merge( $actions, $term_actions );
+				$tags = \array_merge( $tags, $this->get_term_related_tags( $term ) );
 			}
 		}
+
+		/**
+		 * Date.
+		 */
+		$tags[] = 'date-' . \get_the_date( 'Y', $post );
+		$tags[] = 'date-' . \get_the_date( 'Y-m', $post );
+		$tags[] = 'date-' . \get_the_date( 'Y-m-d', $post );
 
 		/**
 		 * Feeds.
 		 */
-		$actions[] = new PurgeCacheAction( 'feeds', $this->get_feed_urls() );
+		$tags[] = 'feed';
 
 		/**
-		 * Home.
+		 * Front page.
 		 */
-		$actions[] = new PurgeCacheAction( 'home', [ \home_url( '/' ) ] );
+		$tags[] = 'front-page';
+
+		/**
+		 * Blog home.
+		 */
+		if ( 'post' === $post_type ) {
+			$tags[] = 'home';
+		}
 
 		/**
 		 * Ok.
 		 */
-		return $actions;
+		return $tags;
 	}
 
 	/**
-	 * Purge cache of post.
-	 * 
-	 * @param WP_Post $post WordPress post object.
+	 * Schedule purge cache action for tags.
+	 *
+	 * @param string[] $tags Tags to purge.
 	 * @return void
 	 */
-	private function purge_cache_of_post( WP_Post $post ) {
-		$actions = $this->get_post_related_actions( $post );
+	private function purge_by_tags( $tags ) {
+		if ( 0 === count( $tags ) ) {
+			return;
+		}
 
-		foreach ( $actions as $action ) {
-			$scheduled = \as_has_scheduled_action(
+		$updated_tags = \array_merge( $this->purge_tags, $tags );
+
+		$updated_tags = \array_unique( $updated_tags );
+
+		$this->purge_tags = $updated_tags;
+
+		if ( ! \has_action( 'shutdown', $this->shutdown( ... ) ) ) {
+			\add_action( 'shutdown', $this->shutdown( ... ) );
+		}
+	}
+
+	/**
+	 * Schedule purge cache action.
+	 *
+	 * @param array $args Arguments for purge cache action.
+	 * @return void
+	 */
+	private function schedule_purge_cache_action( $args ): void {
+		if ( 0 === count( $args ) ) {
+			return;
+		}
+
+		$scheduled = \as_has_scheduled_action(
+			'pronamic_cloudflare_purge_cache',
+			$args,
+			'pronamic-cloudflare',
+		);
+
+		if ( $scheduled ) {
+			return;
+		}
+
+		\as_enqueue_async_action(
+			'pronamic_cloudflare_purge_cache',
+			$args,
+			'pronamic-cloudflare',
+			false
+		);
+	}
+
+	/**
+	 * Schedule purge cache action on shutdown.
+	 *
+	 * @return void
+	 */
+	private function shutdown(): void {
+		if ( 0 === count( $this->purge_tags ) && false === $this->purge_everything ) {
+			return;
+		}
+
+		$args = [
+			'tags' => $this->purge_tags,
+		];
+
+		if ( true === $this->purge_everything ) {
+			$args = [
+				'purge_everything' => true,
+			];
+
+			\as_unschedule_all_actions(
 				'pronamic_cloudflare_purge_cache',
-				[
-					'files' => $action->files,
-					'type'  => $action->type,
-				],
-				'pronamic-cloudflare',
-			);
-
-			if ( $scheduled ) {
-				continue;
-			}
-
-			\as_schedule_single_action(
-				$action->get_timestamp(),
-				'pronamic_cloudflare_purge_cache',
-				[
-					'files' => $action->files,
-					'type'  => $action->type,
-				],
-				'pronamic-cloudflare',
-				false,
-				$action->get_priority()
+				null,
+				'pronamic-cloudflare'
 			);
 		}
+
+		$this->schedule_purge_cache_action( $args );
 	}
 }
