@@ -29,7 +29,7 @@ final class CliController {
 	public function cli_init() {
 		WP_CLI::add_command(
 			'pronamic cloudflare zones',
-			function( $args, $assoc_args ) {
+			function ( $args, $assoc_args ) {
 				if ( ! defined( 'CLOUDFLARE_EMAIL' ) ) {
 					WP_CLI::error( 'The constant `CLOUDFLARE_EMAIL` is not defined.' );
 				}
@@ -63,7 +63,7 @@ final class CliController {
 				$data = json_decode( $body );
 
 				$items = \array_map(
-					function( $item ) {
+					function ( $item ) {
 						return [
 							'id'     => $item->id,
 							'name'   => $item->name,
@@ -128,7 +128,7 @@ final class CliController {
 
 		WP_CLI::add_command(
 			'pronamic cloudflare purge',
-			function( $args, $assoc_args ) {
+			function ( $args, $assoc_args ) {
 				if ( ! defined( 'CLOUDFLARE_EMAIL' ) ) {
 					WP_CLI::error( 'The constant `CLOUDFLARE_EMAIL` is not defined.' );
 				}

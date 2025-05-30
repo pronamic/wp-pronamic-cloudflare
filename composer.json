@@ -19,7 +19,7 @@
 		"automattic/jetpack-autoloader": "^3.0"
 	},
 	"require-dev": {
-		"pronamic/wp-coding-standards": "^1.2",
+		"pronamic/wp-coding-standards": "^2.3",
 		"pronamic/pronamic-cli": "^1.1"
 	},
 	"scripts": {

@@ -296,7 +296,7 @@ final class Plugin {
 		);
 
 		if ( \is_wp_error( $response ) ) {
-			throw new \Exception( 'Cloudflare purge cache action went wrong: ' . $response->get_error_message() );
+			throw new \Exception( \esc_html( 'Cloudflare purge cache action went wrong: ' . $response->get_error_message() ) );
 		}
 
 		$response_code = (string) \wp_remote_retrieve_response_code( $response );
@@ -307,8 +307,8 @@ final class Plugin {
 			throw new \Exception(
 				\sprintf(
 					'Cloudflare purge cache action failed with code %s: %s',
-					$response_code,
-					$response_body
+					\esc_html( $response_code ),
+					\esc_html( $response_body )
 				)
 			);
 		}

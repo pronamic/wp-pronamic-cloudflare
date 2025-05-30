@@ -28,21 +28,21 @@ final class SettingsController {
 
 		\add_filter(
 			'pre_option_pronamic_cloudflare_api_email',
-			function( $value ) {
+			function ( $value ) {
 				return $this->maybe_retrieve_option_from_constant( 'CLOUDFLARE_EMAIL', $value );
 			}
 		);
 
 		\add_filter(
 			'pre_option_pronamic_cloudflare_api_key',
-			function( $value ) {
+			function ( $value ) {
 				return $this->maybe_retrieve_option_from_constant( 'CLOUDFLARE_API_KEY', $value );
 			}
 		);
 
 		\add_filter(
 			'pre_option_pronamic_cloudflare_zone_id',
-			function( $value ) {
+			function ( $value ) {
 				return $this->maybe_retrieve_option_from_constant( 'PRONAMIC_CLOUDFLARE_ZONE_ID', $value );
 			}
 		);
