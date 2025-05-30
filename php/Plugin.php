@@ -93,7 +93,7 @@ final class Plugin {
 		\add_action( 'save_post_wp_template_part', $this->purge_everything( ... ) );
 		\add_action( 'save_post_wp_global_styles', $this->purge_everything( ... ) );
 
-		\add_filter( 'cloudflare_purge_by_url', [ $this, 'cloudflare_purge_by_url' ] );
+		\add_action( 'send_headers', $this->send_header_cache_tags( ... ) );
 
 		foreach ( $this->controllers as $controller ) {
 			$controller->setup();
@@ -173,18 +173,94 @@ final class Plugin {
 	}
 
 	/**
-	 * Cloudflare purge by URL.
-	 * 
-	 * This plugin takes over the cache purging from the Cloudflare plugin.
+	 * Send Cache-Tag HTTP header.
 	 *
-	 * @link https://github.com/cloudflare/Cloudflare-WordPress/blob/58db13b91fbd5e8613a8599d58cf05d04914d7e6/src/WordPress/Hooks.php#L140-L241
-	 * @param string[] $urls URLs.
-	 * @return string[]
+	 * @return void
 	 */
-	public function cloudflare_purge_by_url( $urls ) {
-		$urls = [];
+	private function send_header_cache_tags() {
+		$tags = $this->get_current_cache_tags();
 
-		return $urls;
+		if ( 0 === \count( $tags ) ) {
+			return;
+		}
+
+		\header( 'Cache-Tag: ' . implode( ',', $tags ), false );
+	}
+
+	/**
+	 * Get current cache tags.
+	 *
+	 * @return array
+	 */
+	public function get_current_cache_tags(): array {
+		$tags = [];
+
+		if ( is_singular() ) {
+			$tags[] = 'post-' . get_the_ID();
+		}
+
+		if ( is_post_type_archive() ) {
+			$tags[] = 'archive-' . get_post_type();
+		}
+
+		if ( is_tax() || is_category() || is_tag() ) {
+			$term = get_queried_object();
+
+			if ( $term instanceof WP_Term ) {
+				$tags[] = 'term-' . $term->term_id;
+			}
+		}
+
+		if ( is_author() ) {
+			$author = get_queried_object();
+
+			if ( $author instanceof WP_User ) {
+				$tags[] = 'author-' . $author->ID;
+			}
+		}
+
+		if ( is_year() ) {
+			$tags[] = 'date-' . get_query_var( 'year' );
+		}
+
+		if ( is_month() ) {
+			$tags[] = \sprintf(
+				'date-%02d-%02d',
+				get_query_var( 'year' ),
+				get_query_var( 'monthnum' )
+			);
+		}
+
+		if ( is_day() ) {
+			$tags[] = \sprintf(
+				'date-%02d-%02d-%02d',
+				get_query_var( 'year' ),
+				get_query_var( 'monthnum' ),
+				get_query_var( 'day' )
+			);
+		}
+
+		if ( is_search() ) {
+			$tags[] = 'search';
+		}
+
+		if ( is_404() ) {
+			$tags[] = '404';
+		}
+
+		if ( is_home() ) {
+			$tags[] = 'home';
+		}
+
+		if ( is_front_page() ) {
+			$tags[] = 'front-page';
+		}
+
+		if ( is_feed() && ! is_archive() && ! is_author() && ! is_search() ) {
+			$tags[] = 'feed';
+		}
+
+		return array_unique( $tags );
 	}
 
 	/**
