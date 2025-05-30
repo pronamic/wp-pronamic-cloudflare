@@ -273,7 +273,7 @@ final class Plugin {
 	 * @return void
 	 */
 	public function transition_post_status( $new_status, $old_status, WP_Post $post ): void {
-		if ( 'publish' !== $new_status || 'publish' !== $old_status ) {
+		if ( 'publish' !== $new_status && 'publish' !== $old_status ) {
 			return;
 		}
 
