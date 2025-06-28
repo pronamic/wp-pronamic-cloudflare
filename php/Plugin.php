@@ -459,10 +459,16 @@ final class Plugin {
 	/**
 	 * Purge cache by user.
 	 *
-	 * @param \WP_User $user WordPress user object.
+	 * @param int $user_id WordPress user ID.
 	 * @return void
 	 */
-	private function purge_cache_by_user( \WP_User $user ): void {
+	private function purge_cache_by_user( int $user_id ): void {
+		$user = get_user_by( 'ID', $user_id );
+
+		if ( ! ( $user instanceof \WP_User ) ) {
+			return;
+		}
+
 		$tags = $this->get_user_related_tags( $user );
 
 		$this->purge_by_tags( $tags );
