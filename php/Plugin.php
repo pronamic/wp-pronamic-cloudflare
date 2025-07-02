@@ -272,9 +272,13 @@ final class Plugin {
 	 * @throws \Exception Throws exception if purge cache action fails.
 	 */
 	public function purge_cache( $args ) {
-		$api_email = \get_option( 'pronamic_cloudflare_api_email' );
-		$api_key   = \get_option( 'pronamic_cloudflare_api_key' );
-		$zone_id   = \get_option( 'pronamic_cloudflare_zone_id' );
+		$api_email = (string) \get_option( 'pronamic_cloudflare_api_email' );
+		$api_key   = (string) \get_option( 'pronamic_cloudflare_api_key' );
+		$zone_id   = (string) \get_option( 'pronamic_cloudflare_zone_id' );
+
+		if ( '' === $api_email || '' === $api_key || '' === $zone_id ) {
+			throw new \Exception( \esc_html( 'Pronamic Cloudflare plugin settings are invalid.' ) );
+		}
 
 		$url = strtr(
 			'https://api.cloudflare.com/client/v4/zones/{zone_id}/purge_cache',
