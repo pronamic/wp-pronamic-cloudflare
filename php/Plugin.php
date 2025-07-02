@@ -710,6 +710,8 @@ final class Plugin {
 			return;
 		}
 
+		$args = [ $args ];
+
 		$scheduled = \as_has_scheduled_action(
 			'pronamic_cloudflare_purge_cache',
 			$args,
