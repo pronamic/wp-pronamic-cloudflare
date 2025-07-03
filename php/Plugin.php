@@ -411,7 +411,7 @@ final class Plugin {
 	 * @param \WP_Term $deleted_term Deleted term object.
 	 * @return void
 	 */
-	private function purge_cache_by_deleted_term( $term_id, $tt_id = null, $taxonomy = null, $deleted_term ): void {
+	private function purge_cache_by_deleted_term( $term_id, $tt_id, $taxonomy, $deleted_term ): void {
 		if ( ! ( $deleted_term instanceof \WP_Term ) ) {
 			return;
 		}
