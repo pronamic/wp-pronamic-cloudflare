@@ -62,7 +62,8 @@ final class Plugin {
 	 */
 	public function setup() {
 		\add_action( 'admin_bar_menu', [ $this, 'admin_bar_menu' ], 500 );
-		\add_action( 'pronamic_cloudflare_purge_cache', [ $this, 'purge_cache' ] );
+		\add_action( 'pronamic_cloudflare_purge_cache_tags', $this->request_purge_cache_tags( ... ) );
+		\add_action( 'pronamic_cloudflare_purge_everything', $this->request_purge_everything( ... ) );
 
 		// Post actions.
 		\add_action( 'save_post', $this->purge_cache_by_post( ... ), 10, 1 );
@@ -115,7 +116,7 @@ final class Plugin {
 		$url = \add_query_arg(
 			[
 				'page' => 'action-scheduler',
-				's'    => 'pronamic_cloudflare_purge_cache',
+				's'    => 'pronamic_cloudflare_purge',
 			],
 			\admin_url( 'tools.php' )
 		);
@@ -162,7 +163,6 @@ final class Plugin {
 
 		$number = $store->query_actions(
 			[ 
-				'hook'   => 'pronamic_cloudflare_purge_cache',
 				'group'  => 'pronamic-cloudflare',
 				'status' => ActionScheduler_Store::STATUS_PENDING,
 			],
@@ -271,7 +271,7 @@ final class Plugin {
 	 * @return void
 	 * @throws \Exception Throws exception if purge cache action fails.
 	 */
-	public function purge_cache( $args ) {
+	private function send_request( $args ) {
 		$api_email = (string) \get_option( 'pronamic_cloudflare_api_email' );
 		$api_key   = (string) \get_option( 'pronamic_cloudflare_api_key' );
 		$zone_id   = (string) \get_option( 'pronamic_cloudflare_zone_id' );
@@ -316,6 +316,33 @@ final class Plugin {
 				)
 			);
 		}
+	}
+
+	/**
+	 * Request purge cache tags.
+	 *
+	 * @param string[] $tags Tags to purge.
+	 * @return void
+	 */
+	private function request_purge_cache_tags( array $tags ): void {
+		$args = [
+			'tags' => $tags,
+		];
+
+		$this->send_request( $args );
+	}
+
+	/**
+	 * Request purge everything.
+	 *
+	 * @return void
+	 */
+	private function request_purge_everything(): void {
+		$args = [
+			'purge_everything' => true,
+		];
+
+		$this->send_request( $args );
 	}
 
 	/**
@@ -703,62 +730,43 @@ final class Plugin {
 	}
 
 	/**
-	 * Schedule purge cache action.
-	 *
-	 * @param array $args Arguments for purge cache action.
-	 * @return void
-	 */
-	private function schedule_purge_cache_action( $args ): void {
-		if ( 0 === count( $args ) ) {
-			return;
-		}
-
-		$args = [ $args ];
-
-		$scheduled = \as_has_scheduled_action(
-			'pronamic_cloudflare_purge_cache',
-			$args,
-			'pronamic-cloudflare',
-		);
-
-		if ( $scheduled ) {
-			return;
-		}
-
-		\as_enqueue_async_action(
-			'pronamic_cloudflare_purge_cache',
-			$args,
-			'pronamic-cloudflare',
-			false
-		);
-	}
-
-	/**
 	 * Schedule purge cache action on shutdown.
 	 *
 	 * @return void
 	 */
 	private function shutdown(): void {
-		if ( 0 === count( $this->purge_tags ) && false === $this->purge_everything ) {
+		// Purge everything.
+		if ( true === $this->purge_everything ) {
+			// Remove all scheduled purge cache tags actions
+			// as purge everything action will purge everything.
+			\as_unschedule_all_actions(
+				'pronamic_cloudflare_purge_cache_tags',
+				null,
+				'pronamic-cloudflare'
+			);
+
+			\as_enqueue_async_action(
+				'pronamic_cloudflare_purge_everything',
+				[],
+				'pronamic-cloudflare',
+				true
+			);
+		}
+
+		// Purge tags.
+		if ( 0 === count( $this->purge_tags ) || true === $this->purge_everything ) {
 			return;
 		}
 
 		$args = [
-			'tags' => $this->purge_tags,
+			$this->purge_tags,
 		];
 
-		if ( true === $this->purge_everything ) {
-			$args = [
-				'purge_everything' => true,
-			];
-
-			\as_unschedule_all_actions(
-				'pronamic_cloudflare_purge_cache',
-				null,
-				'pronamic-cloudflare'
-			);
-		}
-
-		$this->schedule_purge_cache_action( $args );
+		\as_enqueue_async_action(
+			'pronamic_cloudflare_purge_cache_tags',
+			$args,
+			'pronamic-cloudflare',
+			true
+		);
 	}
 }
