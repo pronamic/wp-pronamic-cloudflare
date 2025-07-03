@@ -16,7 +16,7 @@
 	"require": {
 		"woocommerce/action-scheduler": "^3.7",
 		"pronamic/wp-html": "^2.2",
-		"automattic/jetpack-autoloader": "^3.0"
+		"automattic/jetpack-autoloader": "^5.0"
 	},
 	"require-dev": {
 		"pronamic/wp-coding-standards": "^2.3",
