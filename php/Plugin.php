@@ -159,7 +159,7 @@ final class Plugin {
 		$store = ActionScheduler::store();
 
 		$number = $store->query_actions(
-			[ 
+			[
 				'group'  => 'pronamic-cloudflare',
 				'status' => ActionScheduler_Store::STATUS_PENDING,
 			],
@@ -189,7 +189,7 @@ final class Plugin {
 	 *
 	 * @return array
 	 */
-	public function get_current_cache_tags(): array {
+	private function get_current_cache_tags(): array {
 		$tags = [];
 
 		if ( is_singular() ) {
