@@ -6,6 +6,23 @@ This projects adheres to [Semantic Versioning](http://semver.org/) and [Keep a C
 
 ## [Unreleased][unreleased]
 
+## [1.1.1] - 2025-07-03
+
+### Fixed
+
+- Fixed incomplete action arguments. ([d30f71b](https://github.com/pronamic/wp-pronamic-cloudflare/commit/d30f71bb4f50a41d0f749e138220a340d9e6dbc0))
+- Fixed "Uncaught TypeError: Pronamic\WordPressCloudflare\Plugin::purge_cache_by_user(): Argument #1 ($user) must be of type WP_User, int given". ([4706bed](https://github.com/pronamic/wp-pronamic-cloudflare/commit/4706beddd6d725f9d43458053b037c1f7786f80f))
+- Prevent sending cache purge request with empty plugin settings. ([909434a](https://github.com/pronamic/wp-pronamic-cloudflare/commit/909434a52ea27cdf246f93540544c35cf0a15e62))
+
+### Composer
+
+- Changed `automattic/jetpack-autoloader` from `v3.1.3` to `v5.0.8`.
+	Release notes: https://github.com/Automattic/jetpack-autoloader/releases/tag/v5.0.8
+
+Full set of changes: [`1.1.0...1.1.1`][1.1.1]
+
+[1.1.1]: https://github.com/pronamic/wp-pronamic-cloudflare/compare/v1.1.0...v1.1.1
+
 ## [1.1.0] - 2025-05-30
 
 ### Fixed
