@@ -692,6 +692,9 @@ final class Plugin {
 
 		$updated_tags = \array_unique( $updated_tags );
 
+		// Make sure keys are sequentially numbered for JSON encoding as array.
+		$updated_tags = \array_values( $updated_tags );
+
 		$this->purge_tags = $updated_tags;
 
 		if ( ! \has_action( 'shutdown', $this->shutdown( ... ) ) ) {
