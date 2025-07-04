@@ -6,6 +6,22 @@ This projects adheres to [Semantic Versioning](http://semver.org/) and [Keep a C
 
 ## [Unreleased][unreleased]
 
+## [1.1.2] - 2025-07-04
+
+### Fixed
+
+- Make sure keys are sequentially numbered for array JSON encoding. ([bb55694](https://github.com/pronamic/wp-pronamic-cloudflare/commit/bb5569414d7fe9efe8aad479eeaf9681c245ce73))
+- Fixed "PHP Deprecated:  Optional parameter $taxonomy declared before required parameter $deleted_term is implicitly treated as a required parameter". ([658d549](https://github.com/pronamic/wp-pronamic-cloudflare/commit/658d5499653c9efacff4cbbf8a51422b1b2a1423))
+
+### Changed
+
+- Updated visibility of `get_current_cache_tags()` function. ([f618ed5](https://github.com/pronamic/wp-pronamic-cloudflare/commit/f618ed5936dd458ae57471ba3ae1966ee266a87e))
+- Separate cache purge actions for tags and everything. ([7615c76](https://github.com/pronamic/wp-pronamic-cloudflare/commit/7615c76101588954631335533df39c4947376a3f))
+
+Full set of changes: [`1.1.1...1.1.2`][1.1.2]
+
+[1.1.2]: https://github.com/pronamic/wp-pronamic-cloudflare/compare/v1.1.1...v1.1.2
+
 ## [1.1.1] - 2025-07-03
 
 ### Fixed
