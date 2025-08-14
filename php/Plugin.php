@@ -748,7 +748,7 @@ final class Plugin {
 		}
 
 		// Determine related post IDs.
-		$content = \get_the_content( '', false, $post->ID );
+		$content = \get_post_field( 'post_content', $post->ID );
 
 		$content = \apply_filters( 'the_content', $content );
 
