@@ -36,6 +36,13 @@ final class Plugin {
 	private $purge_tags = [];
 
 	/**
+	 * Related post IDs.
+	 *
+	 * @var string[]
+	 */
+	private $related_post_ids = [];
+
+	/**
 	 * Purge everything.
 	 * 
 	 * @var bool
@@ -90,6 +97,12 @@ final class Plugin {
 		\add_action( 'save_post_wp_template', $this->purge_everything( ... ) );
 		\add_action( 'save_post_wp_template_part', $this->purge_everything( ... ) );
 		\add_action( 'save_post_wp_global_styles', $this->purge_everything( ... ) );
+
+		// Determine related posts via template filters.
+		\add_filter( 'the_title', $this->add_related_post_id( ... ), 10, 2 );
+		\add_filter( 'the_content', $this->add_related_post_id( ... ), 10, 2 );
+		\add_filter( 'get_the_excerpt', $this->add_related_post_id( ... ), 10, 2 );
+		\add_filter( 'the_permalink', $this->add_related_post_id( ... ), 10, 2 );
 
 		\add_action( 'send_headers', $this->send_header_cache_tags( ... ) );
 
@@ -193,7 +206,9 @@ final class Plugin {
 		$tags = [];
 
 		if ( is_singular() ) {
-			$tags[] = 'post-' . get_the_ID();
+			global $post;
+
+			$tags = \array_merge( $tags, $this->get_post_related_tags( $post ) );
 		}
 
 		if ( is_post_type_archive() ) {
@@ -257,7 +272,42 @@ final class Plugin {
 			$tags[] = 'feed';
 		}
 
+		foreach ( $this->related_post_ids as $related_post_id ) {
+			$related_post = \get_post( $related_post_id );
+
+			$related_tags = $this->get_post_related_tags( $related_post );
+
+			$tags = \array_merge( $tags, $related_tags );
+		}
+
 		return array_unique( $tags );
+	}
+
+	/**
+	 * Add related post ID.
+	 *
+	 * @param string            $content Filtered content.
+	 * @param \WP_Post|int|null $post    Post.
+	 * @return string
+	 */
+	private function add_related_post_id( $content, $post = null ) {
+		if ( null === $post ) {
+			$post = \get_the_ID();
+		}
+
+		$post = \get_post( $post );
+
+		if ( ! ( $post instanceof \WP_Post ) ) {
+			return $content;
+		}
+
+		if ( \in_array( $post->ID, $this->related_post_ids, true ) ) {
+			return $content;
+		}
+
+		$this->related_post_ids[] = $post->ID;
+
+		return $content;
 	}
 
 	/**
@@ -357,6 +407,37 @@ final class Plugin {
 
 		$tags = $this->get_post_related_tags( $post );
 
+		$post_type = \get_post_type( $post->ID );
+
+		/**
+		 * Post type.
+		 */
+		$tags = \array_merge( $tags, $this->get_post_type_related_tags( $post_type ) );
+
+		/**
+		 * Date.
+		 */
+		$tags[] = 'date-' . \get_the_date( 'Y', $post );
+		$tags[] = 'date-' . \get_the_date( 'Y-m', $post );
+		$tags[] = 'date-' . \get_the_date( 'Y-m-d', $post );
+
+		/**
+		 * Feeds.
+		 */
+		$tags[] = 'feed';
+
+		/**
+		 * Front page.
+		 */
+		$tags[] = 'front-page';
+
+		/**
+		 * Blog home.
+		 */
+		if ( 'post' === $post_type ) {
+			$tags[] = 'home';
+		}
+
 		$this->purge_by_tags( $tags );
 	}
 
@@ -399,11 +480,13 @@ final class Plugin {
 
 		$tags = $this->get_comment_related_tags( $comment );
 
+		$this->purge_cache_by_post( $comment->comment_post_ID );
+
 		$this->purge_by_tags( $tags );
 	}
 
 	/**
-	 * Purge cache by comment.
+	 * Purge cache by term.
 	 *
 	 * @param int         $term_id  Term ID.
 	 * @param int|null    $tt_id    Term taxonomy ID.
@@ -636,13 +719,6 @@ final class Plugin {
 		$tags[] = 'post-' . $post->ID;
 
 		/**
-		 * Post type.
-		 */
-		$post_type = \get_post_type( $post->ID );
-
-		$tags = \array_merge( $tags, $this->get_post_type_related_tags( $post_type ) );
-
-		/**
 		 * Author.
 		 */
 		$user = \get_user_by( 'id', \get_post_field( 'post_author', $post ) );
@@ -671,29 +747,10 @@ final class Plugin {
 			}
 		}
 
-		/**
-		 * Date.
-		 */
-		$tags[] = 'date-' . \get_the_date( 'Y', $post );
-		$tags[] = 'date-' . \get_the_date( 'Y-m', $post );
-		$tags[] = 'date-' . \get_the_date( 'Y-m-d', $post );
+		// Determine related post IDs.
+		$content = \get_the_content( $post->ID );
 
-		/**
-		 * Feeds.
-		 */
-		$tags[] = 'feed';
-
-		/**
-		 * Front page.
-		 */
-		$tags[] = 'front-page';
-
-		/**
-		 * Blog home.
-		 */
-		if ( 'post' === $post_type ) {
-			$tags[] = 'home';
-		}
+		$content = \apply_filters( 'the_content', $content );
 
 		/**
 		 * Ok.
