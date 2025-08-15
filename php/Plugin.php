@@ -626,8 +626,6 @@ final class Plugin {
 			return $tags;
 		}
 
-		$tags[] = 'comment-' . $comment->comment_ID;
-
 		if ( $comment->user_id ) {
 			$user = \get_user_by( 'id', $comment->user_id );
 
