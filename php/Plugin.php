@@ -98,13 +98,7 @@ final class Plugin {
 		\add_action( 'save_post_wp_template_part', $this->purge_everything( ... ) );
 		\add_action( 'save_post_wp_global_styles', $this->purge_everything( ... ) );
 
-		// Determine related posts via template filters.
-		\add_filter( 'the_title', $this->add_related_post_id( ... ), 10, 2 );
-		\add_filter( 'the_content', $this->add_related_post_id( ... ), 10, 2 );
-		\add_filter( 'get_the_excerpt', $this->add_related_post_id( ... ), 10, 2 );
-		\add_filter( 'the_permalink', $this->add_related_post_id( ... ), 10, 2 );
-
-		\add_action( 'send_headers', $this->send_header_cache_tags( ... ) );
+		\add_action( 'template_redirect', $this->setup_cache_tag( ... ), 0 );
 
 		foreach ( $this->controllers as $controller ) {
 			$controller->setup();
@@ -308,6 +302,31 @@ final class Plugin {
 		$this->related_post_ids[] = $post->ID;
 
 		return $content;
+	}
+
+	/**
+	 * Setup cache tag header and output buffering.
+	 */
+	private function setup_cache_tag(): void {
+		\add_action( 'shutdown', $this->send_header_cache_tags( ... ), 0 );
+
+		/*
+		 * We use output buffering and hook into template filters to
+		 * include cache tags of posts being used on the page.
+		 */
+		\ob_start();
+
+		\add_filter( 'the_title', $this->add_related_post_id( ... ), 10, 2 );
+		\add_filter( 'the_content', $this->add_related_post_id( ... ), 10, 2 );
+		\add_filter( 'get_the_excerpt', $this->add_related_post_id( ... ), 10, 2 );
+		\add_filter( 'the_permalink', $this->add_related_post_id( ... ), 10, 2 );
+
+		/*
+		 * WordPress flushes all output buffer levels automatically on shutdown.
+		 *
+		 * @link https://github.com/WordPress/WordPress/blob/6.8.2/wp-includes/default-filters.php#L430
+		 * @link https://github.com/WordPress/WordPress/blob/6.8.2/wp-includes/functions.php#L5461-L5473
+		 */
 	}
 
 	/**
@@ -744,11 +763,6 @@ final class Plugin {
 				$tags = \array_merge( $tags, $this->get_term_related_tags( $term ) );
 			}
 		}
-
-		// Determine related post IDs.
-		$content = \get_post_field( 'post_content', $post->ID );
-
-		$content = \apply_filters( 'the_content', $content );
 
 		/**
 		 * Ok.
