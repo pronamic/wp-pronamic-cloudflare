@@ -2,5 +2,5 @@
 	"devDependencies": {
 		"@wordpress/env": "^9.8.0"
 	},
-	"version": "1.1.2"
+	"version": "1.2.0"
 }

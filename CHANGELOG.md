@@ -6,6 +6,23 @@ This projects adheres to [Semantic Versioning](http://semver.org/) and [Keep a C
 
 ## [Unreleased][unreleased]
 
+## [1.2.0] - 2025-08-20
+
+### Added
+
+- Added post content related cache tags (using output buffering). ([d095868](https://github.com/pronamic/wp-pronamic-cloudflare/commit/d09586884c92ad72c531acaaa03da556a25bd2dd))
+
+### Composer
+
+- Changed `woocommerce/action-scheduler` from `3.9.2` to `3.9.3`.
+	Release notes: https://github.com/woocommerce/action-scheduler/releases/tag/3.9.3
+- Changed `automattic/jetpack-autoloader` from `v5.0.8` to `v5.0.9`.
+	Release notes: https://github.com/Automattic/jetpack-autoloader/releases/tag/v5.0.9
+
+Full set of changes: [`1.1.2...1.2.0`][1.2.0]
+
+[1.2.0]: https://github.com/pronamic/wp-pronamic-cloudflare/compare/v1.1.2...v1.2.0
+
 ## [1.1.2] - 2025-07-04
 
 ### Fixed
