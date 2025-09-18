@@ -175,7 +175,13 @@ final class CliController {
 					}
 
 					if ( true !== $data->success ) {
-						WP_CLI::error( sprintf( 'Cloudflare zone `%s` cache not purged.', $identifier ) );
+						WP_CLI::error(
+							\sprintf(
+								'Cloudflare zone `%s` cache not purged: %s',
+								$identifier,
+								\wp_json_encode( $data, JSON_PRETTY_PRINT )
+							)
+						);
 					}
 				}
 			},
