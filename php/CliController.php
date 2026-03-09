@@ -30,7 +30,7 @@ final class CliController {
 		WP_CLI::add_command(
 			'pronamic cloudflare zones',
 			function ( $args, $assoc_args ) {
-				$headers = $this->get_auth_headers();
+				$headers = Plugin::get_auth_headers();
 
 				if ( null === $headers ) {
 					WP_CLI::error( 'The Cloudflare API credentials are not configured. Define either `CLOUDFLARE_API_TOKEN` or both `CLOUDFLARE_EMAIL` and `CLOUDFLARE_API_KEY`.' );
@@ -128,7 +128,7 @@ final class CliController {
 		WP_CLI::add_command(
 			'pronamic cloudflare purge',
 			function ( $args, $assoc_args ) {
-				$headers = $this->get_auth_headers();
+				$headers = Plugin::get_auth_headers();
 
 				if ( null === $headers ) {
 					WP_CLI::error( 'The Cloudflare API credentials are not configured. Define either `CLOUDFLARE_API_TOKEN` or both `CLOUDFLARE_EMAIL` and `CLOUDFLARE_API_KEY`.' );
@@ -184,7 +184,7 @@ final class CliController {
 				}
 			},
 			[
-				'shortdesc' => "Removes ALL files from Cloudflare's cache.",
+				'shortdesc' => 'Removes ALL files from Cloudflare’s cache.',
 				'synopsis'  => [
 					[
 						'type'        => 'positional',
@@ -196,27 +196,5 @@ final class CliController {
 				],
 			]
 		);
-	}
-
-	/**
-	 * Get authentication headers for Cloudflare API.
-	 *
-	 * @return array|null Returns array of headers or null if no credentials are configured.
-	 */
-	private function get_auth_headers() {
-		if ( defined( 'CLOUDFLARE_API_TOKEN' ) ) {
-			return [
-				'Authorization' => 'Bearer ' . trim( CLOUDFLARE_API_TOKEN ),
-			];
-		}
-
-		if ( defined( 'CLOUDFLARE_EMAIL' ) && defined( 'CLOUDFLARE_API_KEY' ) ) {
-			return [
-				'X-Auth-Email' => CLOUDFLARE_EMAIL,
-				'X-Auth-Key'   => CLOUDFLARE_API_KEY,
-			];
-		}
-
-		return null;
 	}
 }

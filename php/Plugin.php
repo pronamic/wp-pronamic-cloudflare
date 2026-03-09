@@ -330,6 +330,36 @@ final class Plugin {
 	}
 
 	/**
+	 * Get authentication headers for Cloudflare API.
+	 *
+	 * This method checks for API Token first (recommended), then falls back to
+	 * Global API Key authentication. It uses WordPress options which can be
+	 * overridden by constants via the `pre_option_*` filters in SettingsController.
+	 *
+	 * @return array|null Returns array of auth headers or null if no credentials are configured.
+	 */
+	public static function get_auth_headers() {
+		$api_token = (string) \get_option( 'pronamic_cloudflare_api_token' );
+		$api_email = (string) \get_option( 'pronamic_cloudflare_api_email' );
+		$api_key   = (string) \get_option( 'pronamic_cloudflare_api_key' );
+
+		if ( '' !== $api_token ) {
+			return [
+				'Authorization' => 'Bearer ' . $api_token,
+			];
+		}
+
+		if ( '' !== $api_email && '' !== $api_key ) {
+			return [
+				'X-Auth-Email' => $api_email,
+				'X-Auth-Key'   => $api_key,
+			];
+		}
+
+		return null;
+	}
+
+	/**
 	 * Purge cache.
 	 *
 	 * @link https://developers.cloudflare.com/api/resources/cache/methods/purge/
@@ -338,27 +368,24 @@ final class Plugin {
 	 * @throws \Exception Throws exception if purge cache action fails.
 	 */
 	private function send_request( $args ) {
-		$api_token = (string) \get_option( 'pronamic_cloudflare_api_token' );
-		$api_email = (string) \get_option( 'pronamic_cloudflare_api_email' );
-		$api_key   = (string) \get_option( 'pronamic_cloudflare_api_key' );
-		$zone_id   = (string) \get_option( 'pronamic_cloudflare_zone_id' );
+		$zone_id = (string) \get_option( 'pronamic_cloudflare_zone_id' );
 
-		$headers = [
-			'Content-Type' => 'application/json',
-		];
+		$auth_headers = self::get_auth_headers();
 
-		if ( '' !== $api_token ) {
-			$headers['Authorization'] = 'Bearer ' . trim( $api_token );
-		} elseif ( '' !== $api_email && '' !== $api_key ) {
-			$headers['X-Auth-Email'] = $api_email;
-			$headers['X-Auth-Key']   = $api_key;
-		} else {
+		if ( null === $auth_headers ) {
 			throw new \Exception( \esc_html( 'Pronamic Cloudflare plugin settings are invalid.' ) );
 		}
 
 		if ( '' === $zone_id ) {
 			throw new \Exception( \esc_html( 'Pronamic Cloudflare plugin settings are invalid.' ) );
 		}
+
+		$headers = \array_merge(
+			[
+				'Content-Type' => 'application/json',
+			],
+			$auth_headers
+		);
 
 		$url = strtr(
 			'https://api.cloudflare.com/client/v4/zones/{zone_id}/purge_cache',
