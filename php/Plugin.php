@@ -3,7 +3,7 @@
  * Plugin
  *
  * @author    Pronamic <info@pronamic.eu>
- * @copyright 2005-2024 Pronamic
+ * @copyright 2005-2026 Pronamic
  * @license   GPL-2.0-or-later
  * @package   Pronamic\WordPress\CloudflarePlugin
  */
@@ -23,14 +23,14 @@ use WP_User;
 final class Plugin {
 	/**
 	 * Controllers.
-	 * 
+	 *
 	 * @var array
 	 */
 	private $controllers;
 
 	/**
 	 * Tags to purge.
-	 * 
+	 *
 	 * @var string[]
 	 */
 	private $purge_tags = [];
@@ -44,7 +44,7 @@ final class Plugin {
 
 	/**
 	 * Purge everything.
-	 * 
+	 *
 	 * @var bool
 	 */
 	private $purge_everything = false;
@@ -61,7 +61,7 @@ final class Plugin {
 
 	/**
 	 * Setup.
-	 * 
+	 *
 	 * @return void
 	 */
 	public function setup() {
@@ -107,7 +107,7 @@ final class Plugin {
 
 	/**
 	 * Admin bar menu.
-	 * 
+	 *
 	 * @param WP_Admin_Bar $admin_bar Admin bar.
 	 */
 	public function admin_bar_menu( WP_Admin_Bar $admin_bar ) {
@@ -159,7 +159,7 @@ final class Plugin {
 
 	/**
 	 * Count actions.
-	 * 
+	 *
 	 * @return int
 	 */
 	private function count_actions() {
@@ -497,7 +497,7 @@ final class Plugin {
 
 	/**
 	 * Transition post status.
-	 * 
+	 *
 	 * Please note that the name transition_post_status is misleading.
 	 * The hook does not only fire on a post status transition but also when a
 	 * post is updated while the status is not changed from one to another at
@@ -656,7 +656,7 @@ final class Plugin {
 
 	/**
 	 * Purge everything.
-	 * 
+	 *
 	 * @return void
 	 */
 	private function purge_everything(): void {
@@ -781,7 +781,7 @@ final class Plugin {
 
 		/**
 		 * Terms
-		 * 
+		 *
 		 * @link https://github.com/cloudflare/Cloudflare-WordPress/blob/v4.12.7/src/WordPress/Hooks.php#L257C11-L281
 		 * @link https://developer.wordpress.org/reference/functions/get_terms/
 		 * @link https://developer.wordpress.org/reference/classes/wp_term_query/__construct/
