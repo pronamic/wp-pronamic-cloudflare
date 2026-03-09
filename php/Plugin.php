@@ -380,12 +380,10 @@ final class Plugin {
 			throw new \Exception( \esc_html( 'Pronamic Cloudflare plugin settings are invalid.' ) );
 		}
 
-		$headers = \array_merge(
-			[
-				'Content-Type' => 'application/json',
-			],
-			$auth_headers
-		);
+		$headers = [
+			'Content-Type' => 'application/json',
+			...$auth_headers,
+		];
 
 		$url = strtr(
 			'https://api.cloudflare.com/client/v4/zones/{zone_id}/purge_cache',

@@ -44,12 +44,10 @@ final class CliController {
 				$response = wp_remote_get(
 					$url,
 					[
-						'headers' => \array_merge(
-							[
-								'Content-Type' => 'application/json',
-							],
-							$headers
-						),
+						'headers' => [
+							'Content-Type' => 'application/json',
+							...$headers,
+						],
 					]
 				);
 
@@ -146,12 +144,10 @@ final class CliController {
 						$url,
 						[
 							'timeout' => 30,
-							'headers' => \array_merge(
-								[
-									'Content-Type' => 'application/json',
-								],
-								$headers
-							),
+							'headers' => [
+								'Content-Type' => 'application/json',
+								...$headers,
+							],
 							'body'    => wp_json_encode(
 								[
 									'purge_everything' => true,
