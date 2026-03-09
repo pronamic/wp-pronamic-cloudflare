@@ -348,7 +348,7 @@ final class Plugin {
 		];
 
 		if ( '' !== $api_token ) {
-			$headers['Authorization'] = 'Bearer ' . $api_token;
+			$headers['Authorization'] = 'Bearer ' . trim( $api_token );
 		} elseif ( '' !== $api_email && '' !== $api_key ) {
 			$headers['X-Auth-Email'] = $api_email;
 			$headers['X-Auth-Key']   = $api_key;

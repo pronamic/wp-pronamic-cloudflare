@@ -206,7 +206,7 @@ final class CliController {
 	private function get_auth_headers() {
 		if ( defined( 'CLOUDFLARE_API_TOKEN' ) ) {
 			return [
-				'Authorization' => 'Bearer ' . CLOUDFLARE_API_TOKEN,
+				'Authorization' => 'Bearer ' . trim( CLOUDFLARE_API_TOKEN ),
 			];
 		}
 
