@@ -12,5 +12,6 @@
 	"mappings": {
 		"wp-content/plugins/pronamic-cloudflare-dev": "./",
 		"wp-content/plugins/pronamic-cloudflare": "./build/stage-2/"
-	}
+	},
+	"testsEnvironment": false
 }
