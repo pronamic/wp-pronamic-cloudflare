@@ -373,11 +373,11 @@ final class Plugin {
 		$auth_headers = self::get_auth_headers();
 
 		if ( null === $auth_headers ) {
-			throw new \Exception( \esc_html( 'Pronamic Cloudflare plugin settings are invalid.' ) );
+			throw new \Exception( \esc_html( 'Cloudflare API credentials are not configured. Please set the API Token or Global API Key.' ) );
 		}
 
 		if ( '' === $zone_id ) {
-			throw new \Exception( \esc_html( 'Pronamic Cloudflare plugin settings are invalid.' ) );
+			throw new \Exception( \esc_html( 'Cloudflare Zone ID is not configured.' ) );
 		}
 
 		$headers = [
