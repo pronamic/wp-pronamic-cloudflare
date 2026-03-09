@@ -4,7 +4,7 @@
  *
  * @package   Pronamic\WordPress\CloudflarePlugin
  * @author    Pronamic
- * @copyright 2022 Pronamic
+ * @copyright 2005-2026 Pronamic
  * @license   GPL-2.0-or-later
  *
  * @wordpress-plugin
