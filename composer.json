@@ -20,7 +20,9 @@
 	},
 	"require-dev": {
 		"pronamic/wp-coding-standards": "^2.3",
-		"pronamic/pronamic-cli": "^1.1"
+		"pronamic/pronamic-cli": "^1.1",
+		"wp-cli/wp-cli": "*",
+		"wp-cli/dist-archive-command": "*"
 	},
 	"scripts": {
 		"build": [

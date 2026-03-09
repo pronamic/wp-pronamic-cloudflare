@@ -4,6 +4,30 @@ All notable changes to this project will be documented in this file.
 
 This projects adheres to [Semantic Versioning](http://semver.org/) and [Keep a CHANGELOG](http://keepachangelog.com/).
 
+
+## [1.3.0-rc.1] - 2026-03-09
+
+### Added
+
+- Add support for Cloudflare API Tokens with Bearer authentication. ([6a2b555](https://github.com/pronamic/wp-pronamic-cloudflare/commit/6a2b555))
+- Add response JSON to WP CLI error message. ([37b2d2c](https://github.com/pronamic/wp-pronamic-cloudflare/commit/37b2d2c))
+
+### Changed
+
+- Refactor: DRY auth headers, remove trim, restore Cloudflare's apostrophe. ([45a57dc](https://github.com/pronamic/wp-pronamic-cloudflare/commit/45a57dc))
+- Use array unpacking instead of array_merge for headers. ([03e6815](https://github.com/pronamic/wp-pronamic-cloudflare/commit/03e6815))
+- Trim trailing whitespace in PHP docs. ([d60bfe3](https://github.com/pronamic/wp-pronamic-cloudflare/commit/d60bfe3))
+- Update copyright years to 2005-2026. ([f9d2e77](https://github.com/pronamic/wp-pronamic-cloudflare/commit/f9d2e77))
+- Update dependencies and regenerate lockfile. ([c653c34](https://github.com/pronamic/wp-pronamic-cloudflare/commit/c653c34))
+- Disable test environment in .wp-env.json. ([877a140](https://github.com/pronamic/wp-pronamic-cloudflare/commit/877a140))
+
+### Fixed
+
+- Sanitize API token by trimming whitespace before use. ([551bf44](https://github.com/pronamic/wp-pronamic-cloudflare/commit/551bf44))
+- Improve exception messages to be more specific for debugging. ([ae0b1e7](https://github.com/pronamic/wp-pronamic-cloudflare/commit/ae0b1e7))
+
+Full set of changes: [`v1.2.0...v1.3.0-rc.1`][1.3.0-rc.1]
+
 ## [Unreleased][unreleased]
 
 ## [1.2.0] - 2025-08-20
@@ -21,6 +45,8 @@ This projects adheres to [Semantic Versioning](http://semver.org/) and [Keep a C
 
 Full set of changes: [`1.1.2...1.2.0`][1.2.0]
 
+
+[1.3.0-rc.1]: https://github.com/pronamic/wp-pronamic-cloudflare/compare/v1.2.0...v1.3.0-rc.1
 [1.2.0]: https://github.com/pronamic/wp-pronamic-cloudflare/compare/v1.1.2...v1.2.0
 
 ## [1.1.2] - 2025-07-04
