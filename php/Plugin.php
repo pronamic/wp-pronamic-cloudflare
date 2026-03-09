@@ -338,11 +338,25 @@ final class Plugin {
 	 * @throws \Exception Throws exception if purge cache action fails.
 	 */
 	private function send_request( $args ) {
+		$api_token = (string) \get_option( 'pronamic_cloudflare_api_token' );
 		$api_email = (string) \get_option( 'pronamic_cloudflare_api_email' );
 		$api_key   = (string) \get_option( 'pronamic_cloudflare_api_key' );
 		$zone_id   = (string) \get_option( 'pronamic_cloudflare_zone_id' );
 
-		if ( '' === $api_email || '' === $api_key || '' === $zone_id ) {
+		$headers = [
+			'Content-Type' => 'application/json',
+		];
+
+		if ( '' !== $api_token ) {
+			$headers['Authorization'] = 'Bearer ' . $api_token;
+		} elseif ( '' !== $api_email && '' !== $api_key ) {
+			$headers['X-Auth-Email'] = $api_email;
+			$headers['X-Auth-Key']   = $api_key;
+		} else {
+			throw new \Exception( \esc_html( 'Pronamic Cloudflare plugin settings are invalid.' ) );
+		}
+
+		if ( '' === $zone_id ) {
 			throw new \Exception( \esc_html( 'Pronamic Cloudflare plugin settings are invalid.' ) );
 		}
 
@@ -356,11 +370,7 @@ final class Plugin {
 		$response = \wp_remote_post(
 			$url,
 			[
-				'headers' => [
-					'Content-Type' => 'application/json',
-					'X-Auth-Email' => $api_email,
-					'X-Auth-Key'   => $api_key,
-				],
+				'headers' => $headers,
 				'body'    => \wp_json_encode( $args ),
 			]
 		);
