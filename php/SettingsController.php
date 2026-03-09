@@ -50,7 +50,7 @@ final class SettingsController {
 
 	/**
 	 * Maybe retrieve option from contstant.
-	 * 
+	 *
 	 * @param string $name The constant name.
 	 * @param mixed  $value The value.
 	 * @return mixed
@@ -148,7 +148,7 @@ final class SettingsController {
 
 	/**
 	 * Input text.
-	 * 
+	 *
 	 * @param array $args Arguments.
 	 * @return void
 	 */
@@ -194,7 +194,7 @@ final class SettingsController {
 
 	/**
 	 * Admin menu.
-	 * 
+	 *
 	 * @link https://developer.wordpress.org/reference/functions/add_options_page/
 	 * @return void
 	 */

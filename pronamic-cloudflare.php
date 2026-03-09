@@ -11,18 +11,18 @@
  * Plugin Name: Pronamic Cloudflare
  * Plugin URI: https://www.pronamic.eu/plugins/pronamic-cloudflare/
  * Description: The Pronamic Cloudflare plugin manages cache purging and adds WP-CLI commands.
- * 
+ *
  * Version: 1.2.0
  * Requires at least: 6.1
- * 
+ *
  * Author: Pronamic
  * Author URI: https://www.pronamic.eu/
- * 
+ *
  * Text Domain: pronamic-cloudflare
  * Domain Path: /languages/
- * 
+ *
  * License: GPL
- * 
+ *
  * GitHub URI: https://github.com/pronamic/wp-pronamic-cloudflare
  */
 
