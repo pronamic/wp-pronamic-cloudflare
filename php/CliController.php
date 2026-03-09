@@ -30,12 +30,10 @@ final class CliController {
 		WP_CLI::add_command(
 			'pronamic cloudflare zones',
 			function ( $args, $assoc_args ) {
-				if ( ! defined( 'CLOUDFLARE_EMAIL' ) ) {
-					WP_CLI::error( 'The constant `CLOUDFLARE_EMAIL` is not defined.' );
-				}
+				$headers = Plugin::get_auth_headers();
 
-				if ( ! defined( 'CLOUDFLARE_API_KEY' ) ) {
-					WP_CLI::error( 'The constant `CLOUDFLARE_API_KEY` is not defined.' );
+				if ( null === $headers ) {
+					WP_CLI::error( 'The Cloudflare API credentials are not configured. Define either `CLOUDFLARE_API_TOKEN` or both `CLOUDFLARE_EMAIL` and `CLOUDFLARE_API_KEY`.' );
 				}
 
 				$url = add_query_arg(
@@ -48,8 +46,7 @@ final class CliController {
 					[
 						'headers' => [
 							'Content-Type' => 'application/json',
-							'X-Auth-Email' => CLOUDFLARE_EMAIL,
-							'X-Auth-Key'   => CLOUDFLARE_API_KEY,
+							...$headers,
 						],
 					]
 				);
@@ -129,12 +126,10 @@ final class CliController {
 		WP_CLI::add_command(
 			'pronamic cloudflare purge',
 			function ( $args, $assoc_args ) {
-				if ( ! defined( 'CLOUDFLARE_EMAIL' ) ) {
-					WP_CLI::error( 'The constant `CLOUDFLARE_EMAIL` is not defined.' );
-				}
+				$headers = Plugin::get_auth_headers();
 
-				if ( ! defined( 'CLOUDFLARE_API_KEY' ) ) {
-					WP_CLI::error( 'The constant `CLOUDFLARE_API_KEY` is not defined.' );
+				if ( null === $headers ) {
+					WP_CLI::error( 'The Cloudflare API credentials are not configured. Define either `CLOUDFLARE_API_TOKEN` or both `CLOUDFLARE_EMAIL` and `CLOUDFLARE_API_KEY`.' );
 				}
 
 				foreach ( $args as $identifier ) {
@@ -151,8 +146,7 @@ final class CliController {
 							'timeout' => 30,
 							'headers' => [
 								'Content-Type' => 'application/json',
-								'X-Auth-Email' => CLOUDFLARE_EMAIL,
-								'X-Auth-Key'   => CLOUDFLARE_API_KEY,
+								...$headers,
 							],
 							'body'    => wp_json_encode(
 								[
