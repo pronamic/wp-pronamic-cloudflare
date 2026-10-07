@@ -36,6 +36,13 @@ final class Plugin {
 	private $purge_tags = [];
 
 	/**
+	 * Tags to invalidate.
+	 *
+	 * @var string[]
+	 */
+	private $invalidate_tags = [];
+
+	/**
 	 * Related post IDs.
 	 *
 	 * @var string[]
@@ -67,6 +74,7 @@ final class Plugin {
 	public function setup() {
 		\add_action( 'admin_bar_menu', [ $this, 'admin_bar_menu' ], 500 );
 		\add_action( 'pronamic_cloudflare_purge_cache_tags', $this->request_purge_cache_tags( ... ) );
+		\add_action( 'pronamic_cloudflare_invalidate_cache_tags', $this->request_invalidate_cache_tags( ... ) );
 		\add_action( 'pronamic_cloudflare_purge_everything', $this->request_purge_everything( ... ) );
 
 		// Post actions.
@@ -74,18 +82,18 @@ final class Plugin {
 		\add_action( 'before_delete_post', $this->purge_cache_by_deleted_post( ... ), 10, 2 );
 
 		// Comment actions.
-		\add_action( 'comment_post', $this->purge_cache_by_comment( ... ), 10, 1 );
-		\add_action( 'edit_comment', $this->purge_cache_by_comment( ... ), 10, 1 );
+		\add_action( 'comment_post', $this->invalidate_cache_by_comment( ... ), 10, 1 );
+		\add_action( 'edit_comment', $this->invalidate_cache_by_comment( ... ), 10, 1 );
 		\add_action( 'delete_comment', $this->purge_cache_by_comment( ... ), 10, 1 );
 
 		// Term actions.
-		\add_action( 'created_term', $this->purge_cache_by_term( ... ), 10, 3 );
-		\add_action( 'edited_term', $this->purge_cache_by_term( ... ), 10, 3 );
+		\add_action( 'created_term', $this->invalidate_cache_by_term( ... ), 10, 3 );
+		\add_action( 'edited_term', $this->invalidate_cache_by_term( ... ), 10, 3 );
 		\add_action( 'delete_term', $this->purge_cache_by_deleted_term( ... ), 10, 4 );
 		\add_action( 'set_object_terms', $this->set_object_terms( ... ), 10, 6 );
 
 		// User actions.
-		\add_action( 'profile_update', $this->purge_cache_by_user( ... ), 10, 1 );
+		\add_action( 'profile_update', $this->invalidate_cache_by_user( ... ), 10, 1 );
 		\add_action( 'deleted_user', $this->purge_cache_by_deleted_user( ... ), 10, 3 );
 
 		// Purge everything actions.
@@ -117,7 +125,7 @@ final class Plugin {
 		$url = \add_query_arg(
 			[
 				'page' => 'action-scheduler',
-				's'    => 'pronamic_cloudflare_purge',
+				's'    => 'pronamic_cloudflare',
 			],
 			\admin_url( 'tools.php' )
 		);
@@ -146,7 +154,7 @@ final class Plugin {
 				'group'  => null,
 				'title'  => \sprintf(
 					/* translators: %s: Number pending actions. */
-					\__( 'Purge cache actions (%s)', 'pronamic-cloudflare' ),
+					\__( 'Cache actions (%s)', 'pronamic-cloudflare' ),
 					$number_pending_actions
 				),
 				'href'   => \add_query_arg( 'status', 'pending', $url ),
@@ -174,7 +182,7 @@ final class Plugin {
 	}
 
 	/**
-	 * Send Cache-Tag HTTP header.
+	 * Send cache HTTP headers.
 	 *
 	 * @return void
 	 */
@@ -361,10 +369,11 @@ final class Plugin {
 	 *
 	 * @link https://developers.cloudflare.com/api/resources/cache/methods/purge/
 	 * @param array $args Arguments for purge cache request.
+	 * @param bool  $invalidate Whether to invalidate instead of purge.
 	 * @return void
 	 * @throws \Exception Throws exception if purge cache action fails.
 	 */
-	private function send_request( $args ) {
+	private function send_request( $args, bool $invalidate = false ) {
 		$zone_id = (string) \get_option( 'pronamic_cloudflare_zone_id' );
 
 		$auth_headers = self::get_auth_headers();
@@ -383,9 +392,10 @@ final class Plugin {
 		];
 
 		$url = strtr(
-			'https://api.cloudflare.com/client/v4/zones/{zone_id}/purge_cache',
+			'https://api.cloudflare.com/client/v4/zones/{zone_id}/{action}',
 			[
 				'{zone_id}' => $zone_id,
+				'{action}'  => $invalidate ? 'invalidate_cache' : 'purge_cache',
 			]
 		);
 
@@ -398,7 +408,7 @@ final class Plugin {
 		);
 
 		if ( \is_wp_error( $response ) ) {
-			throw new \Exception( \esc_html( 'Cloudflare purge cache action went wrong: ' . $response->get_error_message() ) );
+			throw new \Exception( \esc_html( 'Cloudflare cache action went wrong: ' . $response->get_error_message() ) );
 		}
 
 		$response_code = (string) \wp_remote_retrieve_response_code( $response );
@@ -408,7 +418,7 @@ final class Plugin {
 
 			throw new \Exception(
 				\sprintf(
-					'Cloudflare purge cache action failed with code %s: %s',
+					'Cloudflare cache action failed with code %s: %s',
 					\esc_html( $response_code ),
 					\esc_html( $response_body )
 				)
@@ -440,6 +450,20 @@ final class Plugin {
 	}
 
 	/**
+	 * Request invalidation of cache tags.
+	 *
+	 * @param string[] $tags Tags to invalidate.
+	 * @return void
+	 */
+	private function request_invalidate_cache_tags( array $tags ): void {
+		$args = [
+			'tags' => $tags,
+		];
+
+		$this->send_request( $args, true );
+	}
+
+	/**
 	 * Request purge everything.
 	 *
 	 * @return void
@@ -458,7 +482,28 @@ final class Plugin {
 	 * @param int $post_id WordPress post ID.
 	 * @return void
 	 */
+	private function invalidate_cache_by_post( $post_id ): void {
+		$this->cache_by_post( $post_id, true );
+	}
+
+	/**
+	 * Purge cache by post.
+	 *
+	 * @param int $post_id WordPress post ID.
+	 * @return void
+	 */
 	private function purge_cache_by_post( $post_id ): void {
+		$this->cache_by_post( $post_id, false );
+	}
+
+	/**
+	 * Process cache tags related to a post.
+	 *
+	 * @param int  $post_id    WordPress post ID.
+	 * @param bool $invalidate Whether to invalidate instead of purge.
+	 * @return void
+	 */
+	private function cache_by_post( $post_id, bool $invalidate ): void {
 		$post = \get_post( $post_id );
 
 		if ( ! ( $post instanceof \WP_Post ) ) {
@@ -498,6 +543,12 @@ final class Plugin {
 			$tags[] = 'home';
 		}
 
+		if ( $invalidate ) {
+			$this->invalidate_by_tags( $tags );
+
+			return;
+		}
+
 		$this->purge_by_tags( $tags );
 	}
 
@@ -523,11 +574,25 @@ final class Plugin {
 	 * @return void
 	 */
 	public function transition_post_status( $new_status, $old_status, WP_Post $post ): void {
-		if ( 'publish' !== $new_status && 'publish' !== $old_status ) {
+		if ( 'publish' === $new_status ) {
+			$this->invalidate_cache_by_post( $post->ID );
+
 			return;
 		}
 
-		$this->purge_cache_by_post( $post );
+		if ( 'publish' === $old_status ) {
+			$this->purge_cache_by_post( $post->ID );
+		}
+	}
+
+	/**
+	 * Invalidate cache by comment.
+	 *
+	 * @param int $comment_id Comment ID.
+	 * @return void
+	 */
+	private function invalidate_cache_by_comment( $comment_id ): void {
+		$this->cache_by_comment( $comment_id, true );
 	}
 
 	/**
@@ -557,7 +622,18 @@ final class Plugin {
 	 * @param int $comment_id Comment ID.
 	 * @return void
 	 */
-	private function purge_cache_by_comment( $comment_id ) {
+	private function purge_cache_by_comment( $comment_id ): void {
+		$this->cache_by_comment( $comment_id, false );
+	}
+
+	/**
+	 * Process cache tags related to a comment.
+	 *
+	 * @param int  $comment_id Comment ID.
+	 * @param bool $invalidate Whether to invalidate instead of purge.
+	 * @return void
+	 */
+	private function cache_by_comment( $comment_id, bool $invalidate ): void {
 		$comment = \get_comment( $comment_id );
 
 		if ( ! ( $comment instanceof \WP_Comment ) ) {
@@ -566,9 +642,27 @@ final class Plugin {
 
 		$tags = $this->get_comment_related_tags( $comment );
 
-		$this->purge_cache_by_post( $comment->comment_post_ID );
+		if ( $invalidate ) {
+			$this->invalidate_cache_by_post( $comment->comment_post_ID );
+			$this->invalidate_by_tags( $tags );
 
+			return;
+		}
+
+		$this->purge_cache_by_post( $comment->comment_post_ID );
 		$this->purge_by_tags( $tags );
+	}
+
+	/**
+	 * Invalidate cache by term.
+	 *
+	 * @param int         $term_id  Term ID.
+	 * @param int|null    $tt_id    Term taxonomy ID.
+	 * @param string|null $taxonomy Taxonomy slug.
+	 * @return void
+	 */
+	private function invalidate_cache_by_term( $term_id, $tt_id = null, $taxonomy = null ): void {
+		$this->cache_by_term( $term_id, $tt_id, $taxonomy, true );
 	}
 
 	/**
@@ -579,7 +673,20 @@ final class Plugin {
 	 * @param string|null $taxonomy Taxonomy slug.
 	 * @return void
 	 */
-	private function purge_cache_by_term( $term_id, $tt_id = null, $taxonomy = null ) {
+	private function purge_cache_by_term( $term_id, $tt_id = null, $taxonomy = null ): void {
+		$this->cache_by_term( $term_id, $tt_id, $taxonomy, false );
+	}
+
+	/**
+	 * Process cache tags related to a term.
+	 *
+	 * @param int         $term_id    Term ID.
+	 * @param int|null    $tt_id      Term taxonomy ID.
+	 * @param string|null $taxonomy   Taxonomy slug.
+	 * @param bool        $invalidate Whether to invalidate instead of purge.
+	 * @return void
+	 */
+	private function cache_by_term( $term_id, $tt_id, $taxonomy, bool $invalidate ): void {
 		$term = null;
 
 		if ( $term_id && $taxonomy ) {
@@ -591,6 +698,12 @@ final class Plugin {
 		}
 
 		$tags = $this->get_term_related_tags( $term );
+
+		if ( $invalidate ) {
+			$this->invalidate_by_tags( $tags );
+
+			return;
+		}
 
 		$this->purge_by_tags( $tags );
 	}
@@ -615,7 +728,7 @@ final class Plugin {
 	}
 
 	/**
-	 * Purge cache by deleted term.
+	 * Invalidate cache by deleted term.
 	 *
 	 * @param int    $object_id  Object ID.
 	 * @param array  $terms      An array of object term IDs or slugs.
@@ -656,16 +769,16 @@ final class Plugin {
 
 		$tags = array_unique( $tags );
 
-		$this->purge_by_tags( $tags );
+		$this->invalidate_by_tags( $tags );
 	}
 
 	/**
-	 * Purge cache by user.
+	 * Invalidate cache by user.
 	 *
 	 * @param int $user_id WordPress user ID.
 	 * @return void
 	 */
-	private function purge_cache_by_user( int $user_id ): void {
+	private function invalidate_cache_by_user( int $user_id ): void {
 		$user = get_user_by( 'ID', $user_id );
 
 		if ( ! ( $user instanceof \WP_User ) ) {
@@ -674,7 +787,7 @@ final class Plugin {
 
 		$tags = $this->get_user_related_tags( $user );
 
-		$this->purge_by_tags( $tags );
+		$this->invalidate_by_tags( $tags );
 	}
 
 	/**
@@ -844,15 +957,41 @@ final class Plugin {
 	}
 
 	/**
+	 * Schedule invalidation action for tags.
+	 *
+	 * @param string[] $tags Tags to invalidate.
+	 * @return void
+	 */
+	private function invalidate_by_tags( $tags ): void {
+		if ( 0 === \count( $tags ) || true === $this->purge_everything ) {
+			return;
+		}
+
+		$tags = \array_values( \array_diff( $tags, $this->purge_tags ) );
+
+		if ( 0 === \count( $tags ) ) {
+			return;
+		}
+
+		$this->invalidate_tags = \array_values( \array_unique( \array_merge( $this->invalidate_tags, $tags ) ) );
+
+		if ( ! \has_action( 'shutdown', $this->shutdown( ... ) ) ) {
+			\add_action( 'shutdown', $this->shutdown( ... ) );
+		}
+	}
+
+	/**
 	 * Schedule purge cache action for tags.
 	 *
 	 * @param string[] $tags Tags to purge.
 	 * @return void
 	 */
 	private function purge_by_tags( $tags ) {
-		if ( 0 === count( $tags ) ) {
+		if ( 0 === \count( $tags ) || true === $this->purge_everything ) {
 			return;
 		}
+
+		$this->invalidate_tags = \array_values( \array_diff( $this->invalidate_tags, $tags ) );
 
 		$updated_tags = \array_merge( $this->purge_tags, $tags );
 
@@ -876,10 +1015,15 @@ final class Plugin {
 	private function shutdown(): void {
 		// Purge everything.
 		if ( true === $this->purge_everything ) {
-			// Remove all scheduled purge cache tags actions
-			// as purge everything action will purge everything.
+			// Remove all scheduled tag actions as purge everything supersedes them.
 			\as_unschedule_all_actions(
 				'pronamic_cloudflare_purge_cache_tags',
+				null,
+				'pronamic-cloudflare'
+			);
+
+			\as_unschedule_all_actions(
+				'pronamic_cloudflare_invalidate_cache_tags',
 				null,
 				'pronamic-cloudflare'
 			);
@@ -890,11 +1034,19 @@ final class Plugin {
 				'pronamic-cloudflare',
 				true
 			);
+
+			return;
 		}
 
-		// Purge tags.
-		if ( 0 === count( $this->purge_tags ) || true === $this->purge_everything ) {
-			return;
+		if ( 0 !== \count( $this->invalidate_tags ) ) {
+			foreach ( \array_chunk( $this->invalidate_tags, 100 ) as $chunk ) {
+				\as_enqueue_async_action(
+					'pronamic_cloudflare_invalidate_cache_tags',
+					[ $chunk ],
+					'pronamic-cloudflare',
+					true
+				);
+			}
 		}
 
 		/**

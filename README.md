@@ -5,6 +5,7 @@ The Pronamic Cloudflare plugin adds a number of features, such as WP-CLI command
 ## Table of contents
 
 - [Configuration](#configuration)
+- [Cache invalidation](#cache-invalidation)
 - [WP-CLI](#wp-cli)
 - [Links](#links)
 
@@ -41,6 +42,10 @@ define( 'PRONAMIC_CLOUDFLARE_ZONE_ID', 'your-cloudflare-zone-id' );
 ### Security Note
 
 It's recommended to keep your API key and zone ID confidential by restricting access to the `wp-config.php` file.
+
+## Cache invalidation
+
+The plugin invalidates cache tags when content changes but remains public, allowing Cloudflare to revalidate its cached response. If the origin supports `ETag` or `Last-Modified`, Cloudflare can reuse the cached response after a `304 Not Modified` response. When stale-serving directives are configured at Cloudflare, invalidation also leaves the cached response available for `stale-while-revalidate` or `stale-if-error`. Deleted, trashed, or unpublished content is hard-purged so it is no longer served from Cloudflare's cache.
 
 ## WP-CLI
 
