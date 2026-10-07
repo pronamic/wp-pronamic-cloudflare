@@ -15,3 +15,9 @@ phpcs.xml.dist
 
 .phpcs.dir.phpcompatibility.xml
 .phpcs.dir.xml
+
+/build/
+
+/node_modules/
+
+gha-creds-*.json

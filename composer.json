@@ -26,15 +26,12 @@
 	},
 	"scripts": {
 		"build": [
-			"rm -rf ./build",
-			"mkdir ./build",
-			"mkdir ./build/stage-1",
-			"mkdir ./build/stage-2",
-			"rsync --recursive --verbose --exclude-from=.distignore --exclude-from=.gitignore ./ ./build/stage-1/",
+			"rm -rf ./build/stage-1",
+			"rsync --recursive --verbose --exclude-from=.distignore --exclude=/vendor/ ./ ./build/stage-1/",
 			"composer install --no-dev --prefer-dist --optimize-autoloader --working-dir=./build/stage-1/",
-			"rsync --recursive --verbose --exclude-from=.distignore ./build/stage-1/ ./build/stage-2/",
-			"vendor/bin/wp i18n make-pot ./build/stage-2/ --slug=pronamic-cloudflare",
-			"vendor/bin/wp dist-archive ./build/stage-2/ --plugin-dirname=pronamic-cloudflare"
+			"rsync --recursive --delete --delete-excluded --verbose --exclude-from=.distignore ./build/stage-1/ ./build/pronamic-cloudflare/",
+			"vendor/bin/wp i18n make-pot ./build/pronamic-cloudflare/ --slug=pronamic-cloudflare",
+			"vendor/bin/wp dist-archive ./build/pronamic-cloudflare/ --plugin-dirname=pronamic-cloudflare --force"
 		],
 		"phpcbf": "XDEBUG_MODE=off vendor/bin/phpcbf",
 		"phpcs": "XDEBUG_MODE=off vendor/bin/phpcs -s -v"
