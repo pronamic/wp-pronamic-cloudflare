@@ -71,6 +71,7 @@ final class Plugin {
 
 		// Post actions.
 		\add_action( 'transition_post_status', $this->transition_post_status( ... ), 10, 3 );
+		\add_action( 'before_delete_post', $this->purge_cache_by_deleted_post( ... ), 10, 2 );
 
 		// Comment actions.
 		\add_action( 'comment_post', $this->purge_cache_by_comment( ... ), 10, 1 );
@@ -523,6 +524,27 @@ final class Plugin {
 	 */
 	public function transition_post_status( $new_status, $old_status, WP_Post $post ): void {
 		if ( 'publish' !== $new_status && 'publish' !== $old_status ) {
+			return;
+		}
+
+		$this->purge_cache_by_post( $post );
+	}
+
+	/**
+	 * Purge cache by deleted post.
+	 *
+	 * Permanently deleting a published post, for example with
+	 * `wp_delete_post( $post_id, true )`, does not trigger a post status
+	 * transition. We use the `before_delete_post` hook because the term
+	 * relationships are already removed when the `delete_post` hook fires.
+	 *
+	 * @link https://developer.wordpress.org/reference/hooks/before_delete_post/
+	 * @param int          $post_id Post ID.
+	 * @param WP_Post|null $post    Post object.
+	 * @return void
+	 */
+	private function purge_cache_by_deleted_post( $post_id, $post ): void {
+		if ( ! ( $post instanceof WP_Post ) || 'publish' !== $post->post_status ) {
 			return;
 		}
 
