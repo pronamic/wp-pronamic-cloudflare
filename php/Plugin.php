@@ -70,10 +70,6 @@ final class Plugin {
 		\add_action( 'pronamic_cloudflare_purge_everything', $this->request_purge_everything( ... ) );
 
 		// Post actions.
-		\add_action( 'save_post', $this->purge_cache_by_post( ... ), 10, 1 );
-		\add_action( 'delete_post', $this->purge_cache_by_post( ... ), 10, 1 );
-		\add_action( 'trashed_post', $this->purge_cache_by_post( ... ), 10, 1 );
-		\add_action( 'untrashed_post', $this->purge_cache_by_post( ... ), 10, 1 );
 		\add_action( 'transition_post_status', $this->transition_post_status( ... ), 10, 3 );
 
 		// Comment actions.
@@ -503,6 +499,11 @@ final class Plugin {
 	 * post is updated while the status is not changed from one to another at
 	 * all.
 	 *
+	 * This hook therefore also handles updates of published posts and moving
+	 * published posts to and from the trash. We don't use the `save_post` hook
+	 * because it also fires for drafts, autosaves and revisions, which don't
+	 * require a cache purge.
+	 *
 	 * @link https://developer.wordpress.org/reference/hooks/transition_post_status/
 	 * @link https://github.com/cloudflare/Cloudflare-WordPress/blob/v4.12.7/cloudflare.loader.php#L106-L113
 	 * @link https://github.com/cloudflare/Cloudflare-WordPress/blob/v4.12.7/src/WordPress/Hooks.php#L445-L450
@@ -594,6 +595,12 @@ final class Plugin {
 	 * @return void
 	 */
 	private function set_object_terms( $object_id, $terms, $tt_ids, $taxonomy, $append, $old_tt_ids ): void {
+		$post = \get_post( $object_id );
+
+		if ( $post instanceof WP_Post && 'publish' !== $post->post_status ) {
+			return;
+		}
+
 		$tags = [];
 
 		foreach ( $terms as $term_id ) {
