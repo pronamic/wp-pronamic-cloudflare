@@ -5,7 +5,6 @@ The Pronamic Cloudflare plugin adds a number of features, such as WP-CLI command
 ## Table of contents
 
 - [Configuration](#configuration)
-- [Cache headers](#cache-headers)
 - [WP-CLI](#wp-cli)
 - [Links](#links)
 
@@ -42,21 +41,6 @@ define( 'PRONAMIC_CLOUDFLARE_ZONE_ID', 'your-cloudflare-zone-id' );
 ### Security Note
 
 It's recommended to keep your API key and zone ID confidential by restricting access to the `wp-config.php` file.
-
-## Cache headers
-
-Cache headers are opt-in and disabled by default under **Settings > Pronamic Cloudflare**. The plugin provides separate browser and Cloudflare edge TTLs, `stale-while-revalidate`, and `stale-if-error` values for the homepage and other public pages.
-
-The initial values are:
-
-| Profile | Browser TTL | Cloudflare edge TTL | Stale while revalidate | Stale if error |
-| --- | ---: | ---: | ---: | ---: |
-| Homepage | 30 seconds | 1 hour | 5 minutes | 24 hours |
-| Other public pages | 2 minutes | 7 days | 5 minutes | 24 hours |
-
-When enabled, the plugin adds `Cache-Control` for browsers and `Cloudflare-CDN-Cache-Control` for Cloudflare. Existing cache policy headers are left unchanged. Headers are limited to anonymous public `GET` responses with status 200. Search results, 404s, admin, previews, redirects, embeds, trackbacks, and authenticated requests are excluded; feeds remain eligible.
-
-The settings page generates expressions for two Cloudflare Cache Rules. Add the cache expression to a rule configured to use the origin `Cache-Control` header for Edge TTL when present and bypass cache when absent. Add the bypass expression to a separate rule with Cache eligibility set to **Bypass cache**, above the cache rule. The bypass expression matches WordPress authentication and personalization cookies, protected WordPress routes, and search or preview requests. A logged-in cookie matches on every frontend path, so WordPress can render the page with its admin bar instead of serving a cached response. WooCommerce cookies and routes are included only when WooCommerce is active; additional cookies can be configured. The plugin does not create or manage Cloudflare rules.
 
 ## WP-CLI
 
