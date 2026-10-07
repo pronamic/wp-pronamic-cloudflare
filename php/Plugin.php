@@ -749,7 +749,7 @@ final class Plugin {
 	}
 
 	/**
-	 * Invalidate cache by deleted term.
+	 * Invalidate cache when object terms are assigned or changed.
 	 *
 	 * @param int    $object_id  Object ID.
 	 * @param array  $terms      An array of object term IDs or slugs.
