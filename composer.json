@@ -31,7 +31,13 @@
 			"composer install --no-dev --prefer-dist --optimize-autoloader --working-dir=./build/stage-1/",
 			"rsync --recursive --delete --delete-excluded --verbose --exclude-from=.distignore ./build/stage-1/ ./build/pronamic-cloudflare/",
 			"vendor/bin/wp i18n make-pot ./build/pronamic-cloudflare/ --slug=pronamic-cloudflare",
+			"vendor/bin/wp i18n make-mo ./build/pronamic-cloudflare/languages/",
 			"vendor/bin/wp dist-archive ./build/pronamic-cloudflare/ --plugin-dirname=pronamic-cloudflare --force"
+		],
+		"make-pot": [
+			"@build",
+			"rsync --recursive --delete --verbose ./build/pronamic-cloudflare/languages/ ./languages/",
+			"vendor/bin/wp i18n update-po ./languages/pronamic-cloudflare.pot"
 		],
 		"phpcbf": "XDEBUG_MODE=off vendor/bin/phpcbf",
 		"phpcs": "XDEBUG_MODE=off vendor/bin/phpcs -s -v"

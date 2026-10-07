@@ -1,0 +1,96 @@
+# Copyright (C) 2026 Pronamic
+# This file is distributed under the GPL.
+msgid ""
+msgstr ""
+"Project-Id-Version: Pronamic Cloudflare 1.3.0-rc.1\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/pronamic-cloudflare\n"
+"POT-Creation-Date: 2026-10-07T09:31:23+00:00\n"
+"PO-Revision-Date: 2026-10-07 11:31+0200\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: nl_NL\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.9\n"
+"X-Domain: pronamic-cloudflare\n"
+
+#. Plugin Name of the plugin
+#: pronamic-cloudflare.php php/Plugin.php:137 php/SettingsController.php:254
+#: php/SettingsController.php:255
+msgid "Pronamic Cloudflare"
+msgstr "Pronamic Cloudflare"
+
+#. Plugin URI of the plugin
+#: pronamic-cloudflare.php
+msgid "https://www.pronamic.eu/plugins/pronamic-cloudflare/"
+msgstr "https://www.pronamic.eu/plugins/pronamic-cloudflare/"
+
+#. Description of the plugin
+#: pronamic-cloudflare.php
+msgid "The Pronamic Cloudflare plugin manages cache purging and adds WP-CLI commands."
+msgstr "De Pronamic Cloudflare-plugin beheert het legen van de cache en voegt WP-CLI-commando's toe."
+
+#. Author of the plugin
+#: pronamic-cloudflare.php
+msgid "Pronamic"
+msgstr "Pronamic"
+
+#. Author URI of the plugin
+#: pronamic-cloudflare.php
+msgid "https://www.pronamic.eu/"
+msgstr "https://www.pronamic.nl/"
+
+#. translators: %s: Emoji.
+#: php/Plugin.php:132
+#, php-format
+msgid "Cloudflare %s"
+msgstr "Cloudflare %s"
+
+#. translators: %s: Number pending actions.
+#: php/Plugin.php:149
+#, php-format
+msgid "Purge cache actions (%s)"
+msgstr "Acties voor cache legen (%s)"
+
+#: php/SettingsController.php:116
+msgid "General"
+msgstr "Algemeen"
+
+#: php/SettingsController.php:123
+msgid "Zone ID"
+msgstr "Zone-ID"
+
+#: php/SettingsController.php:137
+msgid "API Token (Recommended)"
+msgstr "API-token (aanbevolen)"
+
+#: php/SettingsController.php:140
+msgid "Cloudflare recommends using API Tokens for improved security and better access control. API Tokens use Bearer authentication."
+msgstr "Cloudflare raadt aan om API-tokens te gebruiken voor betere beveiliging en beter toegangsbeheer. API-tokens gebruiken Bearer-authenticatie."
+
+#: php/SettingsController.php:148
+msgid "API Token"
+msgstr "API-token"
+
+#: php/SettingsController.php:162
+msgid "Global API Key (Legacy)"
+msgstr "Globale API-sleutel (verouderd)"
+
+#: php/SettingsController.php:165
+msgid "The Global API Key authentication method is still supported but not recommended. If an API Token is configured, it will be used instead."
+msgstr "De authenticatiemethode met de globale API-sleutel wordt nog ondersteund, maar wordt niet aanbevolen. Als er een API-token is ingesteld, wordt deze in plaats daarvan gebruikt."
+
+#: php/SettingsController.php:173
+msgid "API email"
+msgstr "API-e-mailadres"
+
+#: php/SettingsController.php:187
+msgid "API key"
+msgstr "API-sleutel"
+
+#. translators: 1: Constant name, 2: wp-config.php..
+#: php/SettingsController.php:233
+#, php-format
+msgid "This value is defined in the named constant %1$s, probably in the WordPress configuration file %2$s."
+msgstr "Deze waarde is gedefinieerd in de constante %1$s, waarschijnlijk in het WordPress-configuratiebestand %2$s."
