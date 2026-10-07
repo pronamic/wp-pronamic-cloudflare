@@ -51,7 +51,7 @@ msgstr ""
 #. translators: %s: Number pending actions.
 #: php/Plugin.php:149
 #, php-format
-msgid "Purge cache actions (%s)"
+msgid "Cache actions (%s)"
 msgstr ""
 
 #: php/SettingsController.php:118

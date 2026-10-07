@@ -48,7 +48,7 @@ msgstr "Cloudflare %s"
 #. translators: %s: Number pending actions.
 #: php/Plugin.php:149
 #, php-format
-msgid "Purge cache actions (%s)"
+msgid "Cache actions (%s)"
 msgstr "Acties voor cache legen (%s)"
 
 #: php/SettingsController.php:118
