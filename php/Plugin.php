@@ -575,13 +575,13 @@ final class Plugin {
 	 * @return void
 	 */
 	public function transition_post_status( $new_status, $old_status, WP_Post $post ): void {
-		if ( 'publish' === $new_status ) {
+		if ( \is_post_status_viewable( $new_status ) ) {
 			$this->invalidate_cache_by_post( $post->ID );
 
 			return;
 		}
 
-		if ( 'publish' === $old_status ) {
+		if ( \is_post_status_viewable( $old_status ) ) {
 			$this->purge_cache_by_post( $post->ID );
 		}
 	}
@@ -630,7 +630,7 @@ final class Plugin {
 	 * @return void
 	 */
 	private function purge_cache_by_deleted_post( $post_id, $post ): void {
-		if ( ! ( $post instanceof WP_Post ) || 'publish' !== $post->post_status ) {
+		if ( ! ( $post instanceof WP_Post ) || ! \is_post_status_viewable( $post->post_status ) ) {
 			return;
 		}
 
@@ -762,7 +762,7 @@ final class Plugin {
 	private function set_object_terms( $object_id, $terms, $tt_ids, $taxonomy, $append, $old_tt_ids ): void {
 		$post = \get_post( $object_id );
 
-		if ( $post instanceof WP_Post && 'publish' !== $post->post_status ) {
+		if ( $post instanceof WP_Post && ! \is_post_status_viewable( $post->post_status ) ) {
 			return;
 		}
 
