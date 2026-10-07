@@ -77,6 +77,8 @@ final class Plugin {
 		\add_action( 'pronamic_cloudflare_invalidate_cache_tags', $this->request_invalidate_cache_tags( ... ) );
 		\add_action( 'pronamic_cloudflare_purge_everything', $this->request_purge_everything( ... ) );
 
+		\add_action( 'shutdown', $this->shutdown( ... ) );
+
 		// Post actions.
 		\add_action( 'transition_post_status', $this->transition_post_status( ... ), 10, 3 );
 		\add_action( 'before_delete_post', $this->purge_cache_by_deleted_post( ... ), 10, 2 );
@@ -85,7 +87,7 @@ final class Plugin {
 		\add_action( 'comment_post', $this->invalidate_cache_by_comment( ... ), 10, 1 );
 		\add_action( 'edit_comment', $this->invalidate_cache_by_comment( ... ), 10, 1 );
 		\add_action( 'transition_comment_status', $this->transition_comment_status( ... ), 10, 3 );
-		\add_action( 'delete_comment', $this->purge_cache_by_comment( ... ), 10, 1 );
+		\add_action( 'delete_comment', $this->purge_cache_by_deleted_comment( ... ), 10, 2 );
 
 		// Term actions.
 		\add_action( 'created_term', $this->invalidate_cache_by_term( ... ), 10, 3 );
@@ -648,6 +650,24 @@ final class Plugin {
 	}
 
 	/**
+	 * Purge cache by deleted comment.
+	 *
+	 * Only approved comments are publicly visible, so deleting an
+	 * unapproved, spam or trashed comment does not require a purge.
+	 *
+	 * @param int         $comment_id Comment ID.
+	 * @param \WP_Comment $comment    Comment object.
+	 * @return void
+	 */
+	private function purge_cache_by_deleted_comment( $comment_id, $comment ): void {
+		if ( ! ( $comment instanceof \WP_Comment ) || 1 !== (int) $comment->comment_approved ) {
+			return;
+		}
+
+		$this->purge_cache_by_comment( $comment_id );
+	}
+
+	/**
 	 * Process cache tags related to a comment.
 	 *
 	 * @param int  $comment_id Comment ID.
@@ -837,8 +857,6 @@ final class Plugin {
 	 */
 	private function purge_everything(): void {
 		$this->purge_everything = true;
-
-		$this->register_shutdown();
 	}
 
 	/**
@@ -997,30 +1015,6 @@ final class Plugin {
 		}
 
 		$this->invalidate_tags = \array_values( \array_unique( \array_merge( $this->invalidate_tags, $tags ) ) );
-
-		$this->register_shutdown();
-	}
-
-	/**
-	 * Register the shutdown callback once.
-	 *
-	 * @var bool
-	 */
-	private bool $shutdown_registered = false;
-
-	/**
-	 * Register shutdown callback if not yet registered.
-	 *
-	 * @return void
-	 */
-	private function register_shutdown(): void {
-		if ( $this->shutdown_registered ) {
-			return;
-		}
-
-		$this->shutdown_registered = true;
-
-		\add_action( 'shutdown', $this->shutdown( ... ) );
 	}
 
 	/**
@@ -1044,12 +1038,10 @@ final class Plugin {
 		$updated_tags = \array_values( $updated_tags );
 
 		$this->purge_tags = $updated_tags;
-
-		$this->register_shutdown();
 	}
 
 	/**
-	 * Schedule purge cache action on shutdown.
+	 * Schedule cache actions on shutdown.
 	 *
 	 * @return void
 	 */
@@ -1079,31 +1071,30 @@ final class Plugin {
 			return;
 		}
 
-		if ( 0 !== \count( $this->invalidate_tags ) ) {
-			foreach ( \array_chunk( $this->invalidate_tags, 100 ) as $chunk ) {
-				\as_enqueue_async_action(
-					'pronamic_cloudflare_invalidate_cache_tags',
-					[ $chunk ],
-					'pronamic-cloudflare',
-					true
-				);
-			}
-		}
+		$this->enqueue_tags_actions( 'pronamic_cloudflare_invalidate_cache_tags', $this->invalidate_tags );
+		$this->enqueue_tags_actions( 'pronamic_cloudflare_purge_cache_tags', $this->purge_tags );
+	}
 
+	/**
+	 * Enqueue async actions for tags.
+	 *
+	 * @param string   $hook Action hook.
+	 * @param string[] $tags Tags.
+	 * @return void
+	 */
+	private function enqueue_tags_actions( $hook, $tags ): void {
 		/**
 		 * Put the term tags last, so the most important tags (post, home,
-		 * front page, feed, etc.) end up in the first purge action.
+		 * front page, feed, etc.) end up in the first action.
 		 */
-		$tags = $this->purge_tags;
-
 		\usort(
 			$tags,
 			fn( $a, $b ) => \str_starts_with( $a, 'term-' ) <=> \str_starts_with( $b, 'term-' )
 		);
 
 		/**
-		 * Cloudflare allows a maximum of 100 tags per purge request, so we
-		 * schedule a separate purge action for each chunk of 100 tags.
+		 * Cloudflare allows a maximum of 100 tags per purge or invalidate
+		 * request, so we schedule a separate action for each chunk of 100 tags.
 		 *
 		 * @link https://developers.cloudflare.com/cache/how-to/purge-cache/purge-by-tags/
 		 * @link https://github.com/pronamic/wp-pronamic-cloudflare/issues/18
@@ -1114,7 +1105,7 @@ final class Plugin {
 			];
 
 			\as_enqueue_async_action(
-				'pronamic_cloudflare_purge_cache_tags',
+				$hook,
 				$args,
 				'pronamic-cloudflare',
 				true
