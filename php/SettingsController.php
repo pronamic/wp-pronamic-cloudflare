@@ -26,6 +26,8 @@ final class SettingsController {
 
 		\add_action( 'admin_menu', [ $this, 'admin_menu' ] );
 
+		\add_filter( 'plugin_action_links_' . \plugin_basename( \dirname( __DIR__ ) . '/pronamic-cloudflare.php' ), $this->plugin_action_links( ... ) );
+
 		\add_filter(
 			'pre_option_pronamic_cloudflare_api_email',
 			function ( $value ) {
@@ -259,5 +261,27 @@ final class SettingsController {
 				include __DIR__ . '/../admin/page-settings.php';
 			}
 		);
+	}
+
+	/**
+	 * Plugin action links.
+	 *
+	 * @link https://developer.wordpress.org/reference/hooks/plugin_action_links_plugin_file/
+	 * @param string[] $actions Plugin action links.
+	 * @return string[]
+	 */
+	private function plugin_action_links( $actions ) {
+		$url = \add_query_arg( 'page', 'pronamic_cloudflare', \admin_url( 'options-general.php' ) );
+
+		\array_unshift(
+			$actions,
+			\sprintf(
+				'<a href="%s">%s</a>',
+				\esc_url( $url ),
+				\esc_html__( 'Settings', 'pronamic-cloudflare' )
+			)
+		);
+
+		return $actions;
 	}
 }
