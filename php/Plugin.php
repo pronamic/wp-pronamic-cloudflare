@@ -996,9 +996,29 @@ final class Plugin {
 
 		$this->invalidate_tags = \array_values( \array_unique( \array_merge( $this->invalidate_tags, $tags ) ) );
 
-		if ( ! \has_action( 'shutdown', $this->shutdown( ... ) ) ) {
-			\add_action( 'shutdown', $this->shutdown( ... ) );
+		$this->register_shutdown();
+	}
+
+	/**
+	 * Register the shutdown callback once.
+	 *
+	 * @var bool
+	 */
+	private bool $shutdown_registered = false;
+
+	/**
+	 * Register shutdown callback if not yet registered.
+	 *
+	 * @return void
+	 */
+	private function register_shutdown(): void {
+		if ( $this->shutdown_registered ) {
+			return;
 		}
+
+		$this->shutdown_registered = true;
+
+		\add_action( 'shutdown', $this->shutdown( ... ) );
 	}
 
 	/**
@@ -1023,9 +1043,7 @@ final class Plugin {
 
 		$this->purge_tags = $updated_tags;
 
-		if ( ! \has_action( 'shutdown', $this->shutdown( ... ) ) ) {
-			\add_action( 'shutdown', $this->shutdown( ... ) );
-		}
+		$this->register_shutdown();
 	}
 
 	/**
