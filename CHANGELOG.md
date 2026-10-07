@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 This projects adheres to [Semantic Versioning](http://semver.org/) and [Keep a CHANGELOG](http://keepachangelog.com/).
 
 
+## [Unreleased]
+
+### Changed
+
+- Updated `woocommerce/action-scheduler` to version 4.2, WordPress 6.8 is now required.
+
+### Fixed
+
+- Purge cache tags in chunks of maximum 100 tags per Cloudflare request. ([#18](https://github.com/pronamic/wp-pronamic-cloudflare/issues/18))
+
 ## [1.3.0-rc.1] - 2026-03-09
 
 ### Added

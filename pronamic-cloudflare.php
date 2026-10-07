@@ -13,7 +13,7 @@
  * Description: The Pronamic Cloudflare plugin manages cache purging and adds WP-CLI commands.
  *
  * Version: 1.3.0-rc.1
- * Requires at least: 6.1
+ * Requires at least: 6.8
  *
  * Author: Pronamic
  * Author URI: https://www.pronamic.eu/

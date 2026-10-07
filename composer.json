@@ -14,7 +14,7 @@
 		}
 	},
 	"require": {
-		"woocommerce/action-scheduler": "^3.7",
+		"woocommerce/action-scheduler": "^4.2",
 		"pronamic/wp-html": "^2.2",
 		"automattic/jetpack-autoloader": "^5.0"
 	},

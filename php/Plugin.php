@@ -422,11 +422,20 @@ final class Plugin {
 	 * @return void
 	 */
 	private function request_purge_cache_tags( array $tags ): void {
-		$args = [
-			'tags' => $tags,
-		];
+		/**
+		 * Cloudflare allows a maximum of 100 tags per purge request. Actions
+		 * scheduled by older versions of this plugin can contain more tags.
+		 *
+		 * @link https://developers.cloudflare.com/cache/how-to/purge-cache/purge-by-tags/
+		 * @link https://github.com/pronamic/wp-pronamic-cloudflare/issues/18
+		 */
+		foreach ( \array_chunk( $tags, 100 ) as $chunk ) {
+			$args = [
+				'tags' => $chunk,
+			];
 
-		$this->send_request( $args );
+			$this->send_request( $args );
+		}
 	}
 
 	/**
@@ -866,15 +875,35 @@ final class Plugin {
 			return;
 		}
 
-		$args = [
-			$this->purge_tags,
-		];
+		/**
+		 * Put the term tags last, so the most important tags (post, home,
+		 * front page, feed, etc.) end up in the first purge action.
+		 */
+		$tags = $this->purge_tags;
 
-		\as_enqueue_async_action(
-			'pronamic_cloudflare_purge_cache_tags',
-			$args,
-			'pronamic-cloudflare',
-			true
+		\usort(
+			$tags,
+			fn( $a, $b ) => \str_starts_with( $a, 'term-' ) <=> \str_starts_with( $b, 'term-' )
 		);
+
+		/**
+		 * Cloudflare allows a maximum of 100 tags per purge request, so we
+		 * schedule a separate purge action for each chunk of 100 tags.
+		 *
+		 * @link https://developers.cloudflare.com/cache/how-to/purge-cache/purge-by-tags/
+		 * @link https://github.com/pronamic/wp-pronamic-cloudflare/issues/18
+		 */
+		foreach ( \array_chunk( $tags, 100 ) as $chunk ) {
+			$args = [
+				$chunk,
+			];
+
+			\as_enqueue_async_action(
+				'pronamic_cloudflare_purge_cache_tags',
+				$args,
+				'pronamic-cloudflare',
+				true
+			);
+		}
 	}
 }
