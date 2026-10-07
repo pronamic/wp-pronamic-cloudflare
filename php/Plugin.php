@@ -84,6 +84,7 @@ final class Plugin {
 		// Comment actions.
 		\add_action( 'comment_post', $this->invalidate_cache_by_comment( ... ), 10, 1 );
 		\add_action( 'edit_comment', $this->invalidate_cache_by_comment( ... ), 10, 1 );
+		\add_action( 'transition_comment_status', $this->transition_comment_status( ... ), 10, 3 );
 		\add_action( 'delete_comment', $this->purge_cache_by_comment( ... ), 10, 1 );
 
 		// Term actions.
@@ -593,6 +594,26 @@ final class Plugin {
 	 */
 	private function invalidate_cache_by_comment( $comment_id ): void {
 		$this->cache_by_comment( $comment_id, true );
+	}
+
+	/**
+	 * Handle a comment status transition.
+	 *
+	 * @param string      $new_status New status.
+	 * @param string      $old_status Old status.
+	 * @param \WP_Comment $comment    Comment object.
+	 * @return void
+	 */
+	private function transition_comment_status( $new_status, $old_status, \WP_Comment $comment ): void {
+		if ( 'approved' === $new_status ) {
+			$this->invalidate_cache_by_comment( $comment->comment_ID );
+
+			return;
+		}
+
+		if ( 'approved' === $old_status ) {
+			$this->purge_cache_by_comment( $comment->comment_ID );
+		}
 	}
 
 	/**
