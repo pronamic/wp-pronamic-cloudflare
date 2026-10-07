@@ -178,7 +178,9 @@ final class Plugin {
 	 *
 	 * @return void
 	 */
-	private function send_header_cache_tags() {
+	private function send_cache_headers(): void {
+		$this->send_cache_policy_headers();
+
 		$tags = $this->get_current_cache_tags();
 
 		if ( 0 === \count( $tags ) ) {
@@ -186,6 +188,74 @@ final class Plugin {
 		}
 
 		\header( 'Cache-Tag: ' . implode( ',', $tags ), false );
+	}
+
+	/**
+	 * Send cache policy headers for eligible public responses.
+	 *
+	 * @return void
+	 */
+	private function send_cache_policy_headers(): void {
+		$settings = SettingsController::get_cache_settings();
+
+		if ( 1 !== SettingsController::get_cache_headers_enabled() || ! $this->is_cache_header_eligible() || $this->has_explicit_cache_policy_header() ) {
+			return;
+		}
+
+		$profile = \is_front_page() ? 'homepage' : 'public';
+		$values  = $settings[ $profile ];
+
+		\header( 'Cache-Control: public, max-age=' . $values['browser_ttl'] . ', must-revalidate', true );
+		\header( 'Cloudflare-CDN-Cache-Control: public, max-age=' . $values['edge_ttl'] . ', stale-while-revalidate=' . $values['stale_while_revalidating'] . ', stale-if-error=' . $values['stale_if_error'], true );
+	}
+
+	/**
+	 * Check whether the current response may receive cache headers.
+	 *
+	 * @return bool
+	 */
+	private function is_cache_header_eligible(): bool {
+		$response_code = \http_response_code();
+
+		if ( \headers_sent() || ( false !== $response_code && 200 !== $response_code ) ) {
+			return false;
+		}
+
+		if ( \is_admin() || \is_user_logged_in() || \is_preview() || \is_search() || \is_404() || \is_trackback() ) {
+			return false;
+		}
+
+		$request_method = isset( $_SERVER['REQUEST_METHOD'] ) ? \strtoupper( \sanitize_text_field( \wp_unslash( $_SERVER['REQUEST_METHOD'] ) ) ) : '';
+
+		return 'GET' === $request_method;
+	}
+
+	/**
+	 * Check whether another component already set an explicit cache policy.
+	 *
+	 * @return bool
+	 */
+	private function has_explicit_cache_policy_header(): bool {
+		$policy_headers = [
+			'cache-control',
+			'cdn-cache-control',
+			'cloudflare-cdn-cache-control',
+			'expires',
+			'pragma',
+			'surrogate-control',
+			'location',
+		];
+
+		foreach ( \headers_list() as $header ) {
+			$parts = \explode( ':', $header, 2 );
+			$name  = \strtolower( \trim( $parts[0] ) );
+
+			if ( \in_array( $name, $policy_headers, true ) ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**
@@ -305,7 +375,7 @@ final class Plugin {
 	 * Setup cache tag header and output buffering.
 	 */
 	private function setup_cache_tag(): void {
-		\add_action( 'shutdown', $this->send_header_cache_tags( ... ), 0 );
+		\add_action( 'shutdown', $this->send_cache_headers( ... ), 0 );
 
 		/*
 		 * We use output buffering and hook into template filters to
