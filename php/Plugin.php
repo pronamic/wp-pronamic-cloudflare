@@ -834,9 +834,7 @@ final class Plugin {
 	private function purge_everything(): void {
 		$this->purge_everything = true;
 
-		if ( ! \has_action( 'shutdown', $this->shutdown( ... ) ) ) {
-			\add_action( 'shutdown', $this->shutdown( ... ) );
-		}
+		$this->register_shutdown();
 	}
 
 	/**
