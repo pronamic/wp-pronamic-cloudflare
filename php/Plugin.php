@@ -477,7 +477,7 @@ final class Plugin {
 	}
 
 	/**
-	 * Purge cache by post.
+	 * Invalidate cache by post.
 	 *
 	 * @param int $post_id WordPress post ID.
 	 * @return void
