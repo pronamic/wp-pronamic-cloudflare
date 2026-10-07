@@ -221,7 +221,7 @@ final class Plugin {
 			return false;
 		}
 
-		if ( \is_admin() || \is_user_logged_in() || \is_preview() || \is_search() || \is_404() || \is_trackback() ) {
+		if ( \is_admin() || \is_user_logged_in() || \is_preview() || \is_search() || \is_404() || \is_trackback() || SettingsController::has_cache_bypass_cookie() ) {
 			return false;
 		}
 

@@ -538,7 +538,7 @@ final class SettingsController {
 		}
 
 		foreach ( self::get_cache_bypass_cookies() as $cookie_name ) {
-			$is_prefix = \str_ends_with( $cookie_name, '_' ) || \str_ends_with( $cookie_name, '-' );
+			$is_prefix = self::is_cache_bypass_cookie_prefix( $cookie_name );
 			$cookie    = self::escape_expression_value( $cookie_name . ( $is_prefix ? '' : '=' ) );
 
 			$conditions[] = 'http.cookie contains "' . $cookie . '"';
@@ -574,6 +574,49 @@ final class SettingsController {
 		}
 
 		return \array_values( \array_unique( \array_merge( $cookies, self::get_additional_cookies() ) ) );
+	}
+
+	/**
+	 * Check whether the request contains a cookie that bypasses caching.
+	 *
+	 * @return bool
+	 */
+	public static function has_cache_bypass_cookie(): bool {
+		// phpcs:ignore WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___COOKIE -- Personalization cookies must prevent public origin cache headers.
+		foreach ( \array_keys( $_COOKIE ) as $cookie_name ) {
+			foreach ( self::get_cache_bypass_cookies() as $bypass_cookie_name ) {
+				if ( self::is_cache_bypass_cookie_name_match( $cookie_name, $bypass_cookie_name ) ) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Check whether a request cookie name matches a bypass cookie name.
+	 *
+	 * @param string $cookie_name        Request cookie name.
+	 * @param string $bypass_cookie_name Bypass cookie name or prefix.
+	 * @return bool
+	 */
+	private static function is_cache_bypass_cookie_name_match( string $cookie_name, string $bypass_cookie_name ): bool {
+		if ( self::is_cache_bypass_cookie_prefix( $bypass_cookie_name ) ) {
+			return \str_starts_with( $cookie_name, $bypass_cookie_name );
+		}
+
+		return $cookie_name === $bypass_cookie_name;
+	}
+
+	/**
+	 * Check whether a bypass cookie name is a prefix.
+	 *
+	 * @param string $cookie_name Bypass cookie name.
+	 * @return bool
+	 */
+	private static function is_cache_bypass_cookie_prefix( string $cookie_name ): bool {
+		return \str_ends_with( $cookie_name, '_' ) || \str_ends_with( $cookie_name, '-' );
 	}
 
 	/**
