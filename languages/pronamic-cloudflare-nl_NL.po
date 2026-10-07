@@ -49,7 +49,7 @@ msgstr "Cloudflare %s"
 #: php/Plugin.php:149
 #, php-format
 msgid "Cache actions (%s)"
-msgstr "Acties voor cache legen (%s)"
+msgstr "Cache acties (%s)"
 
 #: php/SettingsController.php:118
 msgid "General"
