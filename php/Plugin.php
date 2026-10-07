@@ -661,6 +661,10 @@ final class Plugin {
 			return;
 		}
 
+		if ( $invalidate && 1 !== (int) $comment->comment_approved ) {
+			return;
+		}
+
 		$tags = $this->get_comment_related_tags( $comment );
 
 		if ( $invalidate ) {
