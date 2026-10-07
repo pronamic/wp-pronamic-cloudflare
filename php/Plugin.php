@@ -366,13 +366,13 @@ final class Plugin {
 	}
 
 	/**
-	 * Purge cache.
+	 * Send cache request.
 	 *
 	 * @link https://developers.cloudflare.com/api/resources/cache/methods/purge/
-	 * @param array $args Arguments for purge cache request.
+	 * @param array $args Arguments for the cache request.
 	 * @param bool  $invalidate Whether to invalidate instead of purge.
 	 * @return void
-	 * @throws \Exception Throws exception if purge cache action fails.
+	 * @throws \Exception Throws exception if the cache action fails.
 	 */
 	private function send_request( $args, bool $invalidate = false ) {
 		$zone_id = (string) \get_option( 'pronamic_cloudflare_zone_id' );
