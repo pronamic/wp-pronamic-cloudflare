@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-07T09:31:23+00:00\n"
+"POT-Creation-Date: 2026-10-07T09:42:48+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: pronamic-cloudflare\n"
@@ -17,8 +17,8 @@ msgstr ""
 #. Plugin Name of the plugin
 #: pronamic-cloudflare.php
 #: php/Plugin.php:137
-#: php/SettingsController.php:254
-#: php/SettingsController.php:255
+#: php/SettingsController.php:256
+#: php/SettingsController.php:257
 msgid "Pronamic Cloudflare"
 msgstr ""
 
@@ -54,44 +54,48 @@ msgstr ""
 msgid "Purge cache actions (%s)"
 msgstr ""
 
-#: php/SettingsController.php:116
+#: php/SettingsController.php:118
 msgid "General"
 msgstr ""
 
-#: php/SettingsController.php:123
+#: php/SettingsController.php:125
 msgid "Zone ID"
 msgstr ""
 
-#: php/SettingsController.php:137
+#: php/SettingsController.php:139
 msgid "API Token (Recommended)"
 msgstr ""
 
-#: php/SettingsController.php:140
+#: php/SettingsController.php:142
 msgid "Cloudflare recommends using API Tokens for improved security and better access control. API Tokens use Bearer authentication."
 msgstr ""
 
-#: php/SettingsController.php:148
+#: php/SettingsController.php:150
 msgid "API Token"
 msgstr ""
 
-#: php/SettingsController.php:162
+#: php/SettingsController.php:164
 msgid "Global API Key (Legacy)"
 msgstr ""
 
-#: php/SettingsController.php:165
+#: php/SettingsController.php:167
 msgid "The Global API Key authentication method is still supported but not recommended. If an API Token is configured, it will be used instead."
 msgstr ""
 
-#: php/SettingsController.php:173
+#: php/SettingsController.php:175
 msgid "API email"
 msgstr ""
 
-#: php/SettingsController.php:187
+#: php/SettingsController.php:189
 msgid "API key"
 msgstr ""
 
 #. translators: 1: Constant name, 2: wp-config.php..
-#: php/SettingsController.php:233
+#: php/SettingsController.php:235
 #, php-format
 msgid "This value is defined in the named constant %1$s, probably in the WordPress configuration file %2$s."
+msgstr ""
+
+#: php/SettingsController.php:281
+msgid "Settings"
 msgstr ""
