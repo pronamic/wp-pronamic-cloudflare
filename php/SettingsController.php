@@ -152,8 +152,9 @@ final class SettingsController {
 			'pronamic_cloudflare',
 			'pronamic_cloudflare_cache_headers_enabled',
 			[
-				'type'              => 'integer',
-				'sanitize_callback' => self::sanitize_cache_headers_enabled( ... ),
+				'type'              => 'boolean',
+				'default'           => false,
+				'sanitize_callback' => \rest_sanitize_boolean( ... ),
 			]
 		);
 	}
@@ -334,22 +335,12 @@ final class SettingsController {
 	}
 
 	/**
-	 * Sanitize cache headers enabled setting.
-	 *
-	 * @param mixed $enabled Enabled value.
-	 * @return int
-	 */
-	public static function sanitize_cache_headers_enabled( $enabled ): int {
-		return 1 === \absint( $enabled ) ? 1 : 0;
-	}
-
-	/**
 	 * Check whether cache headers are enabled.
 	 *
-	 * @return int
+	 * @return bool
 	 */
-	public static function get_cache_headers_enabled(): int {
-		return self::sanitize_cache_headers_enabled( \get_option( 'pronamic_cloudflare_cache_headers_enabled', 0 ) );
+	public static function get_cache_headers_enabled(): bool {
+		return \rest_sanitize_boolean( \get_option( 'pronamic_cloudflare_cache_headers_enabled', false ) );
 	}
 
 	/**
@@ -362,7 +353,7 @@ final class SettingsController {
 
 		<input type="hidden" name="pronamic_cloudflare_cache_headers_enabled" value="0" />
 		<label for="pronamic-cloudflare-cache-enabled">
-			<input type="checkbox" name="pronamic_cloudflare_cache_headers_enabled" id="pronamic-cloudflare-cache-enabled" value="1" <?php \checked( 1, self::get_cache_headers_enabled() ); ?> />
+			<input type="checkbox" name="pronamic_cloudflare_cache_headers_enabled" id="pronamic-cloudflare-cache-enabled" value="1" <?php \checked( self::get_cache_headers_enabled() ); ?> />
 			<?php \esc_html_e( 'Enable cache headers for eligible public responses', 'pronamic-cloudflare' ); ?>
 		</label>
 
