@@ -5,6 +5,7 @@ The Pronamic Cloudflare plugin adds a number of features, such as WP-CLI command
 ## Table of contents
 
 - [Configuration](#configuration)
+- [Cache headers](#cache-headers)
 - [Cache invalidation](#cache-invalidation)
 - [WP-CLI](#wp-cli)
 - [Links](#links)
@@ -42,6 +43,25 @@ define( 'PRONAMIC_CLOUDFLARE_ZONE_ID', 'your-cloudflare-zone-id' );
 ### Security Note
 
 It's recommended to keep your API key and zone ID confidential by restricting access to the `wp-config.php` file.
+
+## Cache headers
+
+Cache headers are opt-in and disabled by default under **Settings > Pronamic Cloudflare**. The plugin provides four global settings, each stored as its own option, that apply to all eligible public responses.
+
+The initial values are:
+
+| Setting | Option | Default |
+| --- | --- | ---: |
+| Browser TTL | `pronamic_cloudflare_cache_browser_ttl` | 5 minutes |
+| Cloudflare edge TTL | `pronamic_cloudflare_cache_edge_ttl` | 7 days |
+| Stale while revalidate | `pronamic_cloudflare_cache_stale_while_revalidate` | 24 hours |
+| Stale if error | `pronamic_cloudflare_cache_stale_if_error` | 24 hours |
+
+Browser caches cannot be purged, so keep the browser TTL low. The edge cache is purged when content changes; if public pages contain nonces (for example in forms), keep the edge TTL below 12 hours.
+
+When enabled, the plugin adds `Cache-Control` for browsers and `Cloudflare-CDN-Cache-Control` for Cloudflare. Existing cache policy headers are left unchanged. Headers are limited to anonymous public `GET` responses with status 200. Search results, 404s, admin, previews, redirects, embeds, trackbacks, and authenticated requests are excluded; feeds remain eligible.
+
+The plugin does not create or manage Cloudflare Cache Rules. Cloudflare does not cache HTML by default, so it is up to you to configure Cache Rules in the Cloudflare dashboard that make the desired requests eligible for cache and respect the origin cache headers.
 
 ## Cache invalidation
 

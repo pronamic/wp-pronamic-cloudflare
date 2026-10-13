@@ -107,6 +107,56 @@ final class SettingsController {
 				'type' => 'string',
 			]
 		);
+
+		\register_setting(
+			'pronamic_cloudflare',
+			'pronamic_cloudflare_cache_browser_ttl',
+			[
+				'type'              => 'integer',
+				'default'           => 300,
+				'sanitize_callback' => self::sanitize_cache_ttl( ... ),
+			]
+		);
+
+		\register_setting(
+			'pronamic_cloudflare',
+			'pronamic_cloudflare_cache_edge_ttl',
+			[
+				'type'              => 'integer',
+				'default'           => 604800,
+				'sanitize_callback' => self::sanitize_cache_ttl( ... ),
+			]
+		);
+
+		\register_setting(
+			'pronamic_cloudflare',
+			'pronamic_cloudflare_cache_stale_while_revalidate',
+			[
+				'type'              => 'integer',
+				'default'           => 86400,
+				'sanitize_callback' => self::sanitize_cache_ttl( ... ),
+			]
+		);
+
+		\register_setting(
+			'pronamic_cloudflare',
+			'pronamic_cloudflare_cache_stale_if_error',
+			[
+				'type'              => 'integer',
+				'default'           => 86400,
+				'sanitize_callback' => self::sanitize_cache_ttl( ... ),
+			]
+		);
+
+		\register_setting(
+			'pronamic_cloudflare',
+			'pronamic_cloudflare_cache_headers_enabled',
+			[
+				'type'              => 'boolean',
+				'default'           => false,
+				'sanitize_callback' => \rest_sanitize_boolean( ... ),
+			]
+		);
 	}
 
 	/**
@@ -197,6 +247,119 @@ final class SettingsController {
 				'constant_name' => 'CLOUDFLARE_API_KEY',
 			]
 		);
+
+		\add_settings_section(
+			'pronamic_cloudflare_cache_headers',
+			\__( 'Cache headers', 'pronamic-cloudflare' ),
+			function () {
+				echo '<p>';
+				\esc_html_e( 'Configure browser and Cloudflare edge cache lifetimes for public responses.', 'pronamic-cloudflare' );
+				echo '</p>';
+			},
+			'pronamic_cloudflare'
+		);
+
+		\add_settings_field(
+			'pronamic_cloudflare_cache_headers_enabled',
+			\__( 'Enable cache headers', 'pronamic-cloudflare' ),
+			$this->cache_headers_enabled_field( ... ),
+			'pronamic_cloudflare',
+			'pronamic_cloudflare_cache_headers'
+		);
+
+		\add_settings_field(
+			'pronamic_cloudflare_cache_browser_ttl',
+			\__( 'Browser TTL', 'pronamic-cloudflare' ),
+			function ( $args ) {
+				$this->input_seconds( $args );
+			},
+			'pronamic_cloudflare',
+			'pronamic_cloudflare_cache_headers',
+			[
+				'label_for'   => 'pronamic_cloudflare_cache_browser_ttl',
+				'description' => \__( 'Browser caches cannot be purged, so visitors may see an outdated page for this long after a change.', 'pronamic-cloudflare' ),
+			]
+		);
+
+		\add_settings_field(
+			'pronamic_cloudflare_cache_edge_ttl',
+			\__( 'Cloudflare edge TTL', 'pronamic-cloudflare' ),
+			function ( $args ) {
+				$this->input_seconds( $args );
+			},
+			'pronamic_cloudflare',
+			'pronamic_cloudflare_cache_headers',
+			[
+				'label_for'   => 'pronamic_cloudflare_cache_edge_ttl',
+				'description' => \__( 'The edge cache is purged when content changes. Keep this below 12 hours if public pages contain nonces, for example in forms.', 'pronamic-cloudflare' ),
+			]
+		);
+
+		\add_settings_field(
+			'pronamic_cloudflare_cache_stale_while_revalidate',
+			\__( 'Stale while revalidate', 'pronamic-cloudflare' ),
+			function ( $args ) {
+				$this->input_seconds( $args );
+			},
+			'pronamic_cloudflare',
+			'pronamic_cloudflare_cache_headers',
+			[
+				'label_for'   => 'pronamic_cloudflare_cache_stale_while_revalidate',
+				'description' => \__( 'How long Cloudflare may keep serving an expired page while it fetches a fresh copy in the background.', 'pronamic-cloudflare' ),
+			]
+		);
+
+		\add_settings_field(
+			'pronamic_cloudflare_cache_stale_if_error',
+			\__( 'Stale if error', 'pronamic-cloudflare' ),
+			function ( $args ) {
+				$this->input_seconds( $args );
+			},
+			'pronamic_cloudflare',
+			'pronamic_cloudflare_cache_headers',
+			[
+				'label_for'   => 'pronamic_cloudflare_cache_stale_if_error',
+				'description' => \__( 'How long Cloudflare may keep serving an expired page when the origin server returns an error or is unreachable.', 'pronamic-cloudflare' ),
+			]
+		);
+	}
+
+	/**
+	 * Sanitize cache TTL in seconds.
+	 *
+	 * @param mixed $value Value.
+	 * @return int
+	 */
+	public static function sanitize_cache_ttl( $value ): int {
+		return \min( 31536000, \absint( $value ) );
+	}
+
+	/**
+	 * Check whether cache headers are enabled.
+	 *
+	 * @return bool
+	 */
+	public static function get_cache_headers_enabled(): bool {
+		return \rest_sanitize_boolean( \get_option( 'pronamic_cloudflare_cache_headers_enabled', false ) );
+	}
+
+	/**
+	 * Cache headers enabled field.
+	 *
+	 * @return void
+	 */
+	private function cache_headers_enabled_field(): void {
+		?>
+
+		<input type="hidden" name="pronamic_cloudflare_cache_headers_enabled" value="0" />
+		<label for="pronamic-cloudflare-cache-enabled">
+			<input type="checkbox" name="pronamic_cloudflare_cache_headers_enabled" id="pronamic-cloudflare-cache-enabled" value="1" <?php \checked( self::get_cache_headers_enabled() ); ?> />
+			<?php \esc_html_e( 'Enable cache headers for eligible public responses', 'pronamic-cloudflare' ); ?>
+		</label>
+
+		<p class="description"><?php \esc_html_e( 'Existing cache policy headers are respected. Authenticated requests, search results and 404 responses will not be cached.', 'pronamic-cloudflare' ); ?></p>
+
+		<?php
 	}
 
 	/**
@@ -242,6 +405,37 @@ final class SettingsController {
 			);
 
 			echo '</p>';
+		}
+	}
+
+	/**
+	 * Input seconds.
+	 *
+	 * @param array $args Arguments.
+	 * @return void
+	 */
+	private function input_seconds( $args ) {
+		$id = $args['label_for'];
+
+		$element = new Element(
+			'input',
+			[
+				'type'  => 'number',
+				'name'  => $id,
+				'id'    => $id,
+				'value' => \get_option( $id ),
+				'min'   => '0',
+				'max'   => '31536000',
+				'step'  => '1',
+			]
+		);
+
+		$element->output();
+
+		echo ' ', \esc_html__( 'seconds', 'pronamic-cloudflare' );
+
+		if ( \array_key_exists( 'description', $args ) ) {
+			echo '<p class="description">', \esc_html( $args['description'] ), '</p>';
 		}
 	}
 
