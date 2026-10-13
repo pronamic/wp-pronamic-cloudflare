@@ -7,13 +7,35 @@ This projects adheres to [Semantic Versioning](http://semver.org/) and [Keep a C
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-10-07
+
+### Added
+
+- Added a "Settings" link to the plugin actions on the Plugins screen. ([cd04da2](https://github.com/pronamic/wp-pronamic-cloudflare/commit/cd04da2fcb145851a156668ccfb7c34521db7213))
+- Added Dutch (`nl_NL`) translations. ([08cd4cd](https://github.com/pronamic/wp-pronamic-cloudflare/commit/08cd4cd63c70f4cc90953abe95537e3cac130c42), [caee27f](https://github.com/pronamic/wp-pronamic-cloudflare/commit/caee27f6b2cc235a356837591ff3d783b25cedef))
+
 ### Changed
 
-- Updated `woocommerce/action-scheduler` to version 4.2, WordPress 6.8 is now required.
+- WordPress 6.8 or higher is now required (because of the Action Scheduler 4 update).
+- The cache is now only purged for published posts; saving drafts, autosaves and revisions no longer triggers a purge. ([dbacb79](https://github.com/pronamic/wp-pronamic-cloudflare/commit/dbacb79192f2b21dd167f31a8f80557d4c622c1b))
+- Simplified the build process and added a `composer make-pot` script to refresh the translation files. ([c4f64ec](https://github.com/pronamic/wp-pronamic-cloudflare/commit/c4f64ecfa550a2b0bce1880deece997c55648281), [08cd4cd](https://github.com/pronamic/wp-pronamic-cloudflare/commit/08cd4cd63c70f4cc90953abe95537e3cac130c42))
 
 ### Fixed
 
-- Purge cache tags in chunks of maximum 100 tags per Cloudflare request. ([#18](https://github.com/pronamic/wp-pronamic-cloudflare/issues/18))
+- Cache tags are now purged in chunks of maximum 100 tags per Cloudflare request, the most important tags (post, home, front page, feeds) are purged first. ([#18](https://github.com/pronamic/wp-pronamic-cloudflare/issues/18), [aa56750](https://github.com/pronamic/wp-pronamic-cloudflare/commit/aa56750c7a2dc05a3e3591d811455ffee0c3faf7))
+- The cache is now also purged when a published post is permanently deleted. ([52d11b7](https://github.com/pronamic/wp-pronamic-cloudflare/commit/52d11b7f049e656a4f603d652a4525d78e1ef79c))
+
+### Composer
+
+- Changed `woocommerce/action-scheduler` from `3.9.3` to `4.2.0`.
+	- 4.0.0: Unique actions now take the action arguments into account, failed actions are automatically purged after 3 months, cleanup runs as a dedicated daily task and WordPress 6.8 is required.
+	  Release notes: https://github.com/woocommerce/action-scheduler/releases/tag/4.0.0
+	- 4.1.0: Fixes a lock that could get permanently stuck, reduces SQL queries, shows action IDs in the admin list and hardens deserialization of stored schedule data.
+	  Release notes: https://github.com/woocommerce/action-scheduler/releases/tag/4.1.0
+	- 4.2.0: Unique action inserts are now enforced atomically, several admin notice fixes and support for bootstrapping from a plugin's `uninstall.php`.
+	  Release notes: https://github.com/woocommerce/action-scheduler/releases/tag/4.2.0
+
+Full set of changes: [`v1.3.0-rc.1...v1.3.0`][1.3.0]
 
 ## [1.3.0-rc.1] - 2026-03-09
 
@@ -56,6 +78,7 @@ Full set of changes: [`v1.2.0...v1.3.0-rc.1`][1.3.0-rc.1]
 Full set of changes: [`1.1.2...1.2.0`][1.2.0]
 
 
+[1.3.0]: https://github.com/pronamic/wp-pronamic-cloudflare/compare/v1.3.0-rc.1...v1.3.0
 [1.3.0-rc.1]: https://github.com/pronamic/wp-pronamic-cloudflare/compare/v1.2.0...v1.3.0-rc.1
 [1.2.0]: https://github.com/pronamic/wp-pronamic-cloudflare/compare/v1.1.2...v1.2.0
 

@@ -6,6 +6,7 @@ The Pronamic Cloudflare plugin adds a number of features, such as WP-CLI command
 
 - [Configuration](#configuration)
 - [Cache headers](#cache-headers)
+- [Cache invalidation](#cache-invalidation)
 - [WP-CLI](#wp-cli)
 - [Links](#links)
 
@@ -61,6 +62,10 @@ Browser caches cannot be purged, so keep the browser TTL low. The edge cache is 
 When enabled, the plugin adds `Cache-Control` for browsers and `Cloudflare-CDN-Cache-Control` for Cloudflare. Existing cache policy headers are left unchanged. Headers are limited to anonymous public `GET` responses with status 200. Search results, 404s, admin, previews, redirects, embeds, trackbacks, and authenticated requests are excluded; feeds remain eligible.
 
 The plugin does not create or manage Cloudflare Cache Rules. Cloudflare does not cache HTML by default, so it is up to you to configure Cache Rules in the Cloudflare dashboard that make the desired requests eligible for cache and respect the origin cache headers.
+
+## Cache invalidation
+
+The plugin invalidates cache tags when content changes but remains public, allowing Cloudflare to revalidate its cached response. If the origin supports `ETag` or `Last-Modified`, Cloudflare can reuse the cached response after a `304 Not Modified` response. When stale-serving directives are configured at Cloudflare, invalidation also leaves the cached response available for `stale-while-revalidate` or `stale-if-error`. Deleted, trashed, or unpublished content is hard-purged so it is no longer served from Cloudflare's cache.
 
 ## WP-CLI
 

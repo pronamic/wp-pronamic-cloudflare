@@ -9,14 +9,14 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-07T09:42:48+00:00\n"
+"POT-Creation-Date: 2026-10-07T18:04:56+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: pronamic-cloudflare\n"
 
 #. Plugin Name of the plugin
 #: pronamic-cloudflare.php
-#: php/Plugin.php:137
+#: php/Plugin.php:148
 #: php/SettingsController.php:256
 #: php/SettingsController.php:257
 msgid "Pronamic Cloudflare"
@@ -43,15 +43,15 @@ msgid "https://www.pronamic.eu/"
 msgstr ""
 
 #. translators: %s: Emoji.
-#: php/Plugin.php:132
+#: php/Plugin.php:143
 #, php-format
 msgid "Cloudflare %s"
 msgstr ""
 
 #. translators: %s: Number pending actions.
-#: php/Plugin.php:149
+#: php/Plugin.php:160
 #, php-format
-msgid "Purge cache actions (%s)"
+msgid "Cache actions (%s)"
 msgstr ""
 
 #: php/SettingsController.php:118

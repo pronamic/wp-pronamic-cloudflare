@@ -14,7 +14,7 @@ msgstr ""
 "X-Domain: pronamic-cloudflare\n"
 
 #. Plugin Name of the plugin
-#: pronamic-cloudflare.php php/Plugin.php:137 php/SettingsController.php:256
+#: pronamic-cloudflare.php php/Plugin.php:148 php/SettingsController.php:256
 #: php/SettingsController.php:257
 msgid "Pronamic Cloudflare"
 msgstr "Pronamic Cloudflare"
@@ -40,16 +40,16 @@ msgid "https://www.pronamic.eu/"
 msgstr "https://www.pronamic.nl/"
 
 #. translators: %s: Emoji.
-#: php/Plugin.php:132
+#: php/Plugin.php:143
 #, php-format
 msgid "Cloudflare %s"
 msgstr "Cloudflare %s"
 
 #. translators: %s: Number pending actions.
-#: php/Plugin.php:149
+#: php/Plugin.php:160
 #, php-format
-msgid "Purge cache actions (%s)"
-msgstr "Acties voor cache legen (%s)"
+msgid "Cache actions (%s)"
+msgstr "Cacheacties (%s)"
 
 #: php/SettingsController.php:118
 msgid "General"
