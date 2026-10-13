@@ -110,24 +110,41 @@ final class SettingsController {
 
 		\register_setting(
 			'pronamic_cloudflare',
-			'pronamic_cloudflare_cache_settings',
+			'pronamic_cloudflare_cache_browser_ttl',
 			[
-				'type'              => 'array',
-				'default'           => [
-					'homepage' => [
-						'browser_ttl'              => 30,
-						'edge_ttl'                 => 3600,
-						'stale_while_revalidating' => 300,
-						'stale_if_error'           => 86400,
-					],
-					'public'   => [
-						'browser_ttl'              => 120,
-						'edge_ttl'                 => 604800,
-						'stale_while_revalidating' => 300,
-						'stale_if_error'           => 86400,
-					],
-				],
-				'sanitize_callback' => self::sanitize_cache_settings( ... ),
+				'type'              => 'integer',
+				'default'           => 300,
+				'sanitize_callback' => self::sanitize_cache_ttl( ... ),
+			]
+		);
+
+		\register_setting(
+			'pronamic_cloudflare',
+			'pronamic_cloudflare_cache_edge_ttl',
+			[
+				'type'              => 'integer',
+				'default'           => 604800,
+				'sanitize_callback' => self::sanitize_cache_ttl( ... ),
+			]
+		);
+
+		\register_setting(
+			'pronamic_cloudflare',
+			'pronamic_cloudflare_cache_stale_while_revalidate',
+			[
+				'type'              => 'integer',
+				'default'           => 86400,
+				'sanitize_callback' => self::sanitize_cache_ttl( ... ),
+			]
+		);
+
+		\register_setting(
+			'pronamic_cloudflare',
+			'pronamic_cloudflare_cache_stale_if_error',
+			[
+				'type'              => 'integer',
+				'default'           => 86400,
+				'sanitize_callback' => self::sanitize_cache_ttl( ... ),
 			]
 		);
 
@@ -250,53 +267,70 @@ final class SettingsController {
 		);
 
 		\add_settings_field(
-			'pronamic_cloudflare_cache_settings',
-			\__( 'Cache policy', 'pronamic-cloudflare' ),
-			$this->cache_settings_field( ... ),
+			'pronamic_cloudflare_cache_browser_ttl',
+			\__( 'Browser TTL', 'pronamic-cloudflare' ),
+			function ( $args ) {
+				$this->input_seconds( $args );
+			},
 			'pronamic_cloudflare',
-			'pronamic_cloudflare_cache_headers'
+			'pronamic_cloudflare_cache_headers',
+			[
+				'label_for'   => 'pronamic_cloudflare_cache_browser_ttl',
+				'description' => \__( 'Browser caches cannot be purged, so visitors may see an outdated page for this long after a change.', 'pronamic-cloudflare' ),
+			]
+		);
+
+		\add_settings_field(
+			'pronamic_cloudflare_cache_edge_ttl',
+			\__( 'Cloudflare edge TTL', 'pronamic-cloudflare' ),
+			function ( $args ) {
+				$this->input_seconds( $args );
+			},
+			'pronamic_cloudflare',
+			'pronamic_cloudflare_cache_headers',
+			[
+				'label_for'   => 'pronamic_cloudflare_cache_edge_ttl',
+				'description' => \__( 'The edge cache is purged when content changes. Keep this below 12 hours if public pages contain nonces, for example in forms.', 'pronamic-cloudflare' ),
+			]
+		);
+
+		\add_settings_field(
+			'pronamic_cloudflare_cache_stale_while_revalidate',
+			\__( 'Stale while revalidate', 'pronamic-cloudflare' ),
+			function ( $args ) {
+				$this->input_seconds( $args );
+			},
+			'pronamic_cloudflare',
+			'pronamic_cloudflare_cache_headers',
+			[
+				'label_for'   => 'pronamic_cloudflare_cache_stale_while_revalidate',
+				'description' => \__( 'How long Cloudflare may keep serving an expired page while it fetches a fresh copy in the background.', 'pronamic-cloudflare' ),
+			]
+		);
+
+		\add_settings_field(
+			'pronamic_cloudflare_cache_stale_if_error',
+			\__( 'Stale if error', 'pronamic-cloudflare' ),
+			function ( $args ) {
+				$this->input_seconds( $args );
+			},
+			'pronamic_cloudflare',
+			'pronamic_cloudflare_cache_headers',
+			[
+				'label_for'   => 'pronamic_cloudflare_cache_stale_if_error',
+				'description' => \__( 'How long Cloudflare may keep serving an expired page when the origin server returns an error or is unreachable.', 'pronamic-cloudflare' ),
+			]
 		);
 	}
 
 	/**
-	 * Sanitize cache settings.
+	 * Sanitize cache TTL in seconds.
 	 *
-	 * @param mixed $settings Settings.
-	 * @return array
+	 * @param mixed $value Value.
+	 * @return int
 	 */
-	public static function sanitize_cache_settings( $settings ): array {
-		$defaults = [
-			'homepage' => [
-				'browser_ttl'              => 30,
-				'edge_ttl'                 => 3600,
-				'stale_while_revalidating' => 300,
-				'stale_if_error'           => 86400,
-			],
-			'public'   => [
-				'browser_ttl'              => 120,
-				'edge_ttl'                 => 604800,
-				'stale_while_revalidating' => 300,
-				'stale_if_error'           => 86400,
-			],
-		];
-
-		if ( ! \is_array( $settings ) ) {
-			$settings = [];
-		}
-
-		$sanitized = $defaults;
-
-		foreach ( [ 'homepage', 'public' ] as $profile ) {
-			$values = isset( $settings[ $profile ] ) && \is_array( $settings[ $profile ] ) ? $settings[ $profile ] : [];
-
-			foreach ( [ 'browser_ttl', 'edge_ttl', 'stale_while_revalidating', 'stale_if_error' ] as $key ) {
-				$value = isset( $values[ $key ] ) && \is_scalar( $values[ $key ] ) ? \absint( $values[ $key ] ) : $defaults[ $profile ][ $key ];
-
-				$sanitized[ $profile ][ $key ] = \min( 31536000, $value );
-			}
-		}
-
-		return $sanitized;
+	public static function sanitize_cache_ttl( $value ): int {
+		return \min( 31536000, \absint( $value ) );
 	}
 
 	/**
@@ -315,72 +349,7 @@ final class SettingsController {
 	 * @return int
 	 */
 	public static function get_cache_headers_enabled(): int {
-		$enabled = \get_option( 'pronamic_cloudflare_cache_headers_enabled', null );
-
-		if ( null === $enabled ) {
-			$settings = \get_option( 'pronamic_cloudflare_cache_settings', [] );
-			$enabled  = \is_array( $settings ) ? ( $settings['enabled'] ?? 0 ) : 0;
-		}
-
-		return self::sanitize_cache_headers_enabled( $enabled );
-	}
-
-	/**
-	 * Get cache settings.
-	 *
-	 * @return array
-	 */
-	public static function get_cache_settings(): array {
-		return self::sanitize_cache_settings( \get_option( 'pronamic_cloudflare_cache_settings', false ) );
-	}
-
-	/**
-	 * Cache settings field.
-	 *
-	 * @return void
-	 */
-	private function cache_settings_field(): void {
-		$settings = self::get_cache_settings();
-
-		$profiles = [
-			'homepage' => \__( 'Homepage', 'pronamic-cloudflare' ),
-			'public'   => \__( 'Other public pages', 'pronamic-cloudflare' ),
-		];
-
-		$fields = [
-			'browser_ttl'              => \__( 'Browser TTL', 'pronamic-cloudflare' ),
-			'edge_ttl'                 => \__( 'Cloudflare edge TTL', 'pronamic-cloudflare' ),
-			'stale_while_revalidating' => \__( 'Stale while revalidate', 'pronamic-cloudflare' ),
-			'stale_if_error'           => \__( 'Stale if error', 'pronamic-cloudflare' ),
-		];
-
-		echo '<table class="widefat striped" style="max-width: 960px;">';
-		echo '<thead><tr>';
-		echo '<th scope="col" style="padding: 8px 10px;">' . \esc_html__( 'Profile', 'pronamic-cloudflare' ) . '</th>';
-
-		foreach ( $fields as $field_label ) {
-			echo '<th scope="col" style="padding: 8px 10px;">' . \esc_html( $field_label ) . '</th>';
-		}
-
-		echo '</tr></thead><tbody>';
-
-		foreach ( $profiles as $profile => $label ) {
-			echo '<tr>';
-			echo '<th scope="row" style="padding: 8px 10px; vertical-align: middle;">' . \esc_html( $label ) . '</th>';
-
-			foreach ( $fields as $key => $field_label ) {
-				$id   = \sprintf( 'pronamic-cloudflare-%s-%s', $profile, $key );
-				$name = \sprintf( 'pronamic_cloudflare_cache_settings[%s][%s]', $profile, $key );
-
-				echo '<td style="padding: 8px 10px;"><label class="screen-reader-text" for="' . \esc_attr( $id ) . '">' . \esc_html( \sprintf( '%1$s: %2$s', $label, $field_label ) ) . '</label>';
-				echo '<input type="number" min="0" max="31536000" step="1" name="' . \esc_attr( $name ) . '" id="' . \esc_attr( $id ) . '" value="' . \esc_attr( (string) $settings[ $profile ][ $key ] ) . '" /> s';
-				echo '</td>';
-			}
-
-			echo '</tr>';
-		}
-
-		echo '</tbody></table>';
+		return self::sanitize_cache_headers_enabled( \get_option( 'pronamic_cloudflare_cache_headers_enabled', 0 ) );
 	}
 
 	/**
@@ -445,6 +414,37 @@ final class SettingsController {
 			);
 
 			echo '</p>';
+		}
+	}
+
+	/**
+	 * Input seconds.
+	 *
+	 * @param array $args Arguments.
+	 * @return void
+	 */
+	private function input_seconds( $args ) {
+		$id = $args['label_for'];
+
+		$element = new Element(
+			'input',
+			[
+				'type'  => 'number',
+				'name'  => $id,
+				'id'    => $id,
+				'value' => \get_option( $id ),
+				'min'   => '0',
+				'max'   => '31536000',
+				'step'  => '1',
+			]
+		);
+
+		$element->output();
+
+		echo ' ', \esc_html__( 'seconds', 'pronamic-cloudflare' );
+
+		if ( \array_key_exists( 'description', $args ) ) {
+			echo '<p class="description">', \esc_html( $args['description'] ), '</p>';
 		}
 	}
 

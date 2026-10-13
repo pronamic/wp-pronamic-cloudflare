@@ -196,17 +196,17 @@ final class Plugin {
 	 * @return void
 	 */
 	private function send_cache_policy_headers(): void {
-		$settings = SettingsController::get_cache_settings();
-
 		if ( 1 !== SettingsController::get_cache_headers_enabled() || ! $this->is_cache_header_eligible() || $this->has_explicit_cache_policy_header() ) {
 			return;
 		}
 
-		$profile = \is_front_page() ? 'homepage' : 'public';
-		$values  = $settings[ $profile ];
+		$browser_ttl            = \absint( \get_option( 'pronamic_cloudflare_cache_browser_ttl' ) );
+		$edge_ttl               = \absint( \get_option( 'pronamic_cloudflare_cache_edge_ttl' ) );
+		$stale_while_revalidate = \absint( \get_option( 'pronamic_cloudflare_cache_stale_while_revalidate' ) );
+		$stale_if_error         = \absint( \get_option( 'pronamic_cloudflare_cache_stale_if_error' ) );
 
-		\header( 'Cache-Control: public, max-age=' . $values['browser_ttl'] . ', must-revalidate', true );
-		\header( 'Cloudflare-CDN-Cache-Control: public, max-age=' . $values['edge_ttl'] . ', stale-while-revalidate=' . $values['stale_while_revalidating'] . ', stale-if-error=' . $values['stale_if_error'], true );
+		\header( 'Cache-Control: public, max-age=' . $browser_ttl . ', must-revalidate', true );
+		\header( 'Cloudflare-CDN-Cache-Control: public, max-age=' . $edge_ttl . ', stale-while-revalidate=' . $stale_while_revalidate . ', stale-if-error=' . $stale_if_error, true );
 	}
 
 	/**
