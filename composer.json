@@ -4,7 +4,8 @@
 	"config": {
 		"allow-plugins": {
 			"dealerdirect/phpcodesniffer-composer-installer": true,
-			"automattic/jetpack-autoloader": true
+			"automattic/jetpack-autoloader": true,
+			"composer/installers": true
 		},
 		"wp-slug": "pronamic-cloudflare"
 	},
@@ -22,7 +23,8 @@
 		"pronamic/wp-coding-standards": "^2.3",
 		"pronamic/pronamic-cli": "^1.1",
 		"wp-cli/wp-cli": "*",
-		"wp-cli/dist-archive-command": "*"
+		"wp-cli/dist-archive-command": "*",
+		"wp-plugin/cloudflare": "^4.14"
 	},
 	"scripts": {
 		"build": [
@@ -41,5 +43,10 @@
 		],
 		"phpcbf": "XDEBUG_MODE=off vendor/bin/phpcbf",
 		"phpcs": "XDEBUG_MODE=off vendor/bin/phpcs -s -v"
-	}
+	},
+	"repositories": [{
+		"name": "wp-packages",
+		"type": "composer",
+		"url": "https://repo.wp-packages.org"
+	}]
 }

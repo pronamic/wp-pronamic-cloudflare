@@ -5,6 +5,7 @@
 
 # Composer
 /vendor/
+/wp-content/
 
 # Node.js
 /node_modules/
