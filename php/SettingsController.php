@@ -267,6 +267,12 @@ final class SettingsController {
 			'pronamic_cloudflare_cache_headers'
 		);
 
+		$cache_headers_field_class = 'pronamic-cloudflare-cache-headers-field';
+
+		if ( ! self::get_cache_headers_enabled() ) {
+			$cache_headers_field_class .= ' hidden';
+		}
+
 		\add_settings_field(
 			'pronamic_cloudflare_cache_browser_ttl',
 			\__( 'Browser TTL', 'pronamic-cloudflare' ),
@@ -277,6 +283,7 @@ final class SettingsController {
 			'pronamic_cloudflare_cache_headers',
 			[
 				'label_for'   => 'pronamic_cloudflare_cache_browser_ttl',
+				'class'       => $cache_headers_field_class,
 				'description' => \__( 'Browser caches cannot be purged, so visitors may see an outdated page for this long after a change.', 'pronamic-cloudflare' ),
 			]
 		);
@@ -291,6 +298,7 @@ final class SettingsController {
 			'pronamic_cloudflare_cache_headers',
 			[
 				'label_for'   => 'pronamic_cloudflare_cache_edge_ttl',
+				'class'       => $cache_headers_field_class,
 				'description' => \__( 'The edge cache is purged when content changes. Keep this below 12 hours if public pages contain nonces, for example in forms.', 'pronamic-cloudflare' ),
 			]
 		);
@@ -305,6 +313,7 @@ final class SettingsController {
 			'pronamic_cloudflare_cache_headers',
 			[
 				'label_for'   => 'pronamic_cloudflare_cache_stale_while_revalidate',
+				'class'       => $cache_headers_field_class,
 				'description' => \__( 'How long Cloudflare may keep serving an expired page while it fetches a fresh copy in the background.', 'pronamic-cloudflare' ),
 			]
 		);
@@ -319,6 +328,7 @@ final class SettingsController {
 			'pronamic_cloudflare_cache_headers',
 			[
 				'label_for'   => 'pronamic_cloudflare_cache_stale_if_error',
+				'class'       => $cache_headers_field_class,
 				'description' => \__( 'How long Cloudflare may keep serving an expired page when the origin server returns an error or is unreachable.', 'pronamic-cloudflare' ),
 			]
 		);
@@ -358,6 +368,14 @@ final class SettingsController {
 			<?php \esc_html_e( 'Enable cache headers for eligible public responses', 'pronamic-cloudflare' ); ?></label>
 			<p class="description"><?php \esc_html_e( 'Existing cache policy headers are respected. Authenticated requests, search results and 404 responses will not be cached.', 'pronamic-cloudflare' ); ?></p>
 		</fieldset>
+
+		<script>
+			document.getElementById( 'pronamic-cloudflare-cache-enabled' ).addEventListener( 'change', function () {
+				document.querySelectorAll( '.pronamic-cloudflare-cache-headers-field' ).forEach( ( row ) => {
+					row.classList.toggle( 'hidden', ! this.checked );
+				} );
+			} );
+		</script>
 
 		<?php
 	}
