@@ -108,6 +108,8 @@ final class Plugin {
 
 		\add_action( 'template_redirect', $this->setup_cache_tag( ... ), 0 );
 
+		\add_action( 'init', $this->send_edge_cache_header( ... ) );
+
 		foreach ( $this->controllers as $controller ) {
 			$controller->setup();
 		}
@@ -182,6 +184,34 @@ final class Plugin {
 		);
 
 		return $number;
+	}
+
+	/**
+	 * Send the edge cache header for Cloudflare Automatic Platform Optimization (APO).
+	 *
+	 * Cloudflare APO uses this header to detect that a WordPress plugin is
+	 * active and to decide whether a response may be cached at the edge. The
+	 * header is the same as in the official Cloudflare plugin.
+	 *
+	 * @link https://github.com/pronamic/wp-pronamic-cloudflare/issues/29
+	 * @link https://github.com/cloudflare/Cloudflare-WordPress/blob/9b2b6549353ba49b886e73514bac22ca076410e0/src/WordPress/Hooks.php#L447-L462
+	 * @link https://developers.cloudflare.com/automatic-platform-optimization/
+	 * @return void
+	 */
+	private function send_edge_cache_header(): void {
+		// It could be too late to send headers, return early without triggering a warning.
+		if ( \headers_sent() ) {
+			return;
+		}
+
+		if ( \is_user_logged_in() ) {
+			\header( 'cf-edge-cache: no-cache' );
+
+			return;
+		}
+
+		// phpcs:ignore WordPress.WP.CapitalPDangit.MisspelledInText -- Header value expected by Cloudflare.
+		\header( 'cf-edge-cache: cache,platform=wordpress' );
 	}
 
 	/**

@@ -7,6 +7,10 @@ This projects adheres to [Semantic Versioning](http://semver.org/) and [Keep a C
 
 ## [Unreleased]
 
+### Added
+
+- Added the `cf-edge-cache` header for Cloudflare Automatic Platform Optimization (APO). ([#29](https://github.com/pronamic/wp-pronamic-cloudflare/issues/29))
+
 ## [1.3.0] - 2026-10-07
 
 ### Added
