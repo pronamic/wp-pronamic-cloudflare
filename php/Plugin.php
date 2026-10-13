@@ -191,8 +191,7 @@ final class Plugin {
 	 *
 	 * Cloudflare APO uses this header to detect that a WordPress plugin is
 	 * active and to decide whether a response may be cached at the edge. The
-	 * header and the `cloudflare_use_cache` filter are the same as in the
-	 * official Cloudflare plugin, so existing integrations keep working.
+	 * header is the same as in the official Cloudflare plugin.
 	 *
 	 * @link https://github.com/pronamic/wp-pronamic-cloudflare/issues/29
 	 * @link https://github.com/cloudflare/Cloudflare-WordPress/blob/9b2b6549353ba49b886e73514bac22ca076410e0/src/WordPress/Hooks.php#L447-L462
@@ -205,17 +204,14 @@ final class Plugin {
 			return;
 		}
 
-		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Filter of the official Cloudflare plugin.
-		$cache = \apply_filters( 'cloudflare_use_cache', ! \is_user_logged_in() );
-
-		if ( $cache ) {
-			// phpcs:ignore WordPress.WP.CapitalPDangit.MisspelledInText -- Header value expected by Cloudflare.
-			\header( 'cf-edge-cache: cache,platform=wordpress' );
+		if ( \is_user_logged_in() ) {
+			\header( 'cf-edge-cache: no-cache' );
 
 			return;
 		}
 
-		\header( 'cf-edge-cache: no-cache' );
+		// phpcs:ignore WordPress.WP.CapitalPDangit.MisspelledInText -- Header value expected by Cloudflare.
+		\header( 'cf-edge-cache: cache,platform=wordpress' );
 	}
 
 	/**

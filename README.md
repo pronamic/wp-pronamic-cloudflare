@@ -73,16 +73,7 @@ The plugin sends the `cf-edge-cache` response header that [Cloudflare Automatic 
 | Anonymous visitor | `cf-edge-cache: cache,platform=wordpress` |
 | Logged-in user | `cf-edge-cache: no-cache` |
 
-The header has no effect when APO is not enabled for the zone. Use the `cloudflare_use_cache` filter, which is shared with the official Cloudflare plugin, to bypass the edge cache for specific requests:
-
-```php
-add_filter(
-	'cloudflare_use_cache',
-	function ( $cache ) {
-		return is_page( 'my-account' ) ? false : $cache;
-	}
-);
-```
+The header has no effect when APO is not enabled for the zone.
 
 ## Cache invalidation
 
