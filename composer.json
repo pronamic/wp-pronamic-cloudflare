@@ -7,6 +7,7 @@
 			"automattic/jetpack-autoloader": true,
 			"composer/installers": true
 		},
+		"sort-packages": true,
 		"wp-slug": "pronamic-cloudflare"
 	},
 	"autoload": {
@@ -15,15 +16,16 @@
 		}
 	},
 	"require": {
-		"woocommerce/action-scheduler": "^4.2",
+		"automattic/jetpack-autoloader": "^6.0",
 		"pronamic/wp-html": "^2.2",
-		"automattic/jetpack-autoloader": "^5.0"
+		"woocommerce/action-scheduler": "^4.2"
 	},
 	"require-dev": {
-		"pronamic/wp-coding-standards": "^2.3",
 		"pronamic/pronamic-cli": "^1.1",
-		"wp-cli/wp-cli": "*",
+		"pronamic/wp-coding-standards": "^2.3",
+		"roots/wordpress-no-content": "^7.1",
 		"wp-cli/dist-archive-command": "*",
+		"wp-cli/wp-cli": "*",
 		"wp-plugin/cloudflare": "^4.14"
 	},
 	"scripts": {

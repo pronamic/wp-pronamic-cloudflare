@@ -19,5 +19,6 @@ phpcs.xml.dist
 /build/
 
 /node_modules/
+/wp-content/
 
 gha-creds-*.json

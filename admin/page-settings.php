@@ -16,4 +16,8 @@
 
 		<?php submit_button(); ?>
 	</form>
+
+	<h2><?php esc_html_e( 'Automatic Platform Optimization (APO)', 'pronamic-cloudflare' ); ?></h2>
+
+	<?php require __DIR__ . '/section-apo.php'; ?>
 </div>

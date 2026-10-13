@@ -75,6 +75,16 @@ The plugin sends the `cf-edge-cache` response header that [Cloudflare Automatic 
 
 The header has no effect when APO is not enabled for the zone.
 
+APO is enabled per zone in the Cloudflare dashboard (**Speed > Optimization > Content**) and applies its own caching rules, which differ from the regular Cloudflare cache. These are also explained under **Settings > Pronamic Cloudflare**:
+
+- Only `GET` and `HEAD` requests for HTML are cached, and only when the origin responds with status `200` and content type `text/html`.
+- URLs with query parameters are not cached, except for a [fixed list of known marketing parameters](https://developers.cloudflare.com/automatic-platform-optimization/reference/query-parameters/) such as `utm_source`, `fbclid` and `gclid`.
+- Requests with cookies that start with certain prefixes, such as `wp-` and `woocommerce_`, bypass the cache.
+- According to Cloudflare, APO [ignores the origin `Cache-Control` header for edge caching](https://developers.cloudflare.com/automatic-platform-optimization/troubleshooting/faq/) and keeps pages in the edge cache for up to 30 days, so the edge lifetimes from the cache headers settings do not determine how long APO caches a page.
+- A Page Rule with `Cache Level: Bypass` that matches the request [also disables APO](https://developers.cloudflare.com/automatic-platform-optimization/reference/page-rule-integration/) for that request.
+
+To [verify that a page is served by APO](https://developers.cloudflare.com/automatic-platform-optimization/get-started/verify-apo-works/), inspect the `cf-cache-status`, `cf-apo-via` and `cf-edge-cache` response headers.
+
 ## Cache invalidation
 
 The plugin invalidates cache tags when content changes but remains public, allowing Cloudflare to revalidate its cached response. If the origin supports `ETag` or `Last-Modified`, Cloudflare can reuse the cached response after a `304 Not Modified` response. When stale-serving directives are configured at Cloudflare, invalidation also leaves the cached response available for `stale-while-revalidate` or `stale-if-error`. Deleted, trashed, or unpublished content is hard-purged so it is no longer served from Cloudflare's cache.
