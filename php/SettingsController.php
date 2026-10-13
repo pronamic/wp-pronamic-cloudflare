@@ -392,11 +392,12 @@ final class SettingsController {
 		$constant_name = $args['constant_name'];
 
 		$attributes = [
-			'type'  => 'text',
-			'name'  => $id,
-			'id'    => $id,
-			'value' => \get_option( $id ),
-			'class' => 'regular-text',
+			'type'         => 'text',
+			'name'         => $id,
+			'id'           => $id,
+			'value'        => \get_option( $id ),
+			'class'        => 'regular-text',
+			'autocomplete' => 'off',
 		];
 
 		if ( \defined( $constant_name ) ) {
