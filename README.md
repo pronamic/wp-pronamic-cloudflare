@@ -6,6 +6,7 @@ The Pronamic Cloudflare plugin adds a number of features, such as WP-CLI command
 
 - [Configuration](#configuration)
 - [Cache headers](#cache-headers)
+- [Automatic Platform Optimization (APO)](#automatic-platform-optimization-apo)
 - [Cache invalidation](#cache-invalidation)
 - [WP-CLI](#wp-cli)
 - [Links](#links)
@@ -62,6 +63,26 @@ Browser caches cannot be purged, so keep the browser TTL low. The edge cache is 
 When enabled, the plugin adds `Cache-Control` for browsers and `Cloudflare-CDN-Cache-Control` for Cloudflare. Existing cache policy headers are left unchanged. Headers are limited to anonymous public `GET` responses with status 200. Search results, 404s, admin, previews, redirects, embeds, trackbacks, and authenticated requests are excluded; feeds remain eligible.
 
 The plugin does not create or manage Cloudflare Cache Rules. Cloudflare does not cache HTML by default, so it is up to you to configure Cache Rules in the Cloudflare dashboard that make the desired requests eligible for cache and respect the origin cache headers.
+
+## Automatic Platform Optimization (APO)
+
+The plugin sends the `cf-edge-cache` response header that [Cloudflare Automatic Platform Optimization](https://developers.cloudflare.com/automatic-platform-optimization/) uses to detect a WordPress integration and to decide whether a response may be cached at the edge, just like the official Cloudflare plugin:
+
+| Request | Header |
+| --- | --- |
+| Anonymous visitor | `cf-edge-cache: cache,platform=wordpress` |
+| Logged-in user | `cf-edge-cache: no-cache` |
+
+The header has no effect when APO is not enabled for the zone. Use the `cloudflare_use_cache` filter, which is shared with the official Cloudflare plugin, to bypass the edge cache for specific requests:
+
+```php
+add_filter(
+	'cloudflare_use_cache',
+	function ( $cache ) {
+		return is_page( 'my-account' ) ? false : $cache;
+	}
+);
+```
 
 ## Cache invalidation
 
