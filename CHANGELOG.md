@@ -7,10 +7,32 @@ This projects adheres to [Semantic Versioning](http://semver.org/) and [Keep a C
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-10-13
+
 ### Added
 
+- Added opt-in cache headers: when enabled under **Settings > Pronamic Cloudflare**, the plugin sends `Cache-Control` (browser) and `Cloudflare-CDN-Cache-Control` (Cloudflare edge) headers on anonymous public `GET` responses with status 200. The browser TTL, edge TTL, stale-while-revalidate and stale-if-error lifetimes are configurable; existing cache policy headers are left unchanged. ([#22](https://github.com/pronamic/wp-pronamic-cloudflare/issues/22), [#28](https://github.com/pronamic/wp-pronamic-cloudflare/pull/28))
 - Added the `cf-edge-cache` header for Cloudflare Automatic Platform Optimization (APO). ([#29](https://github.com/pronamic/wp-pronamic-cloudflare/issues/29))
 - Added an "Automatic Platform Optimization (APO)" section to the settings page that explains how APO caching works, with links to the Cloudflare documentation. ([#29](https://github.com/pronamic/wp-pronamic-cloudflare/issues/29))
+- Added documentation about cache headers, APO and cache invalidation to the README.
+
+### Changed
+
+- Content that changes but remains public (updated posts, new or edited approved comments, created or edited terms, term assignments and user profile updates) now invalidates its cache tags instead of purging them, so Cloudflare can revalidate the cached response and keep serving it stale while doing so. Deleted, trashed or unpublished content is still hard-purged. ([#23](https://github.com/pronamic/wp-pronamic-cloudflare/issues/23), [#24](https://github.com/pronamic/wp-pronamic-cloudflare/pull/24))
+- Posts are now handled based on whether their status is publicly viewable instead of only the `publish` status, so custom public post statuses are supported too.
+- Comment status changes are now taken into account: approving a comment invalidates the cache, unapproving an approved comment (or marking it as spam/trash) purges it, and deleting a comment only purges the cache when the comment was approved.
+- The "Purge cache actions" link on the settings page is renamed to "Cache actions" and now also lists the invalidate actions.
+- Updated the Dutch (`nl_NL`) translations.
+
+### Composer
+
+- Changed `automattic/jetpack-autoloader` from `v5.0.9` to `v6.0.1`.
+	- 6.0.0: The minimum supported PHP version is now 7.4.
+	  Release notes: https://github.com/Automattic/jetpack-autoloader/releases/tag/v6.0.0
+	- 6.0.1: The current plugin's manifests are now read before cached ones, so a plugin directory retired by a host deploy can no longer win a version tie.
+	  Release notes: https://github.com/Automattic/jetpack-autoloader/releases/tag/v6.0.1
+
+Full set of changes: [`v1.3.0...v1.4.0`][1.4.0]
 
 ## [1.3.0] - 2026-10-07
 
@@ -83,6 +105,7 @@ Full set of changes: [`v1.2.0...v1.3.0-rc.1`][1.3.0-rc.1]
 Full set of changes: [`1.1.2...1.2.0`][1.2.0]
 
 
+[1.4.0]: https://github.com/pronamic/wp-pronamic-cloudflare/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/pronamic/wp-pronamic-cloudflare/compare/v1.3.0-rc.1...v1.3.0
 [1.3.0-rc.1]: https://github.com/pronamic/wp-pronamic-cloudflare/compare/v1.2.0...v1.3.0-rc.1
 [1.2.0]: https://github.com/pronamic/wp-pronamic-cloudflare/compare/v1.1.2...v1.2.0
