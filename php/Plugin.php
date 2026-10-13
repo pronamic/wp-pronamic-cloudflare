@@ -196,11 +196,19 @@ final class Plugin {
 	 * @return void
 	 */
 	private function send_cache_policy_headers(): void {
-		if ( 1 !== SettingsController::get_cache_headers_enabled() || ! $this->is_cache_header_eligible() || $this->has_explicit_cache_policy_header() ) {
+		if ( ! SettingsController::get_cache_headers_enabled() ) {
 			return;
 		}
 
-		$browser_ttl            = \absint( \get_option( 'pronamic_cloudflare_cache_browser_ttl' ) );
+		if ( ! $this->is_cache_header_eligible() ) {
+			return;
+		}
+
+		if ( $this->has_explicit_cache_policy_header() ) {
+			return;
+		}
+
+		$browser_ttl           = \absint( \get_option( 'pronamic_cloudflare_cache_browser_ttl' ) );
 		$edge_ttl               = \absint( \get_option( 'pronamic_cloudflare_cache_edge_ttl' ) );
 		$stale_while_revalidate = \absint( \get_option( 'pronamic_cloudflare_cache_stale_while_revalidate' ) );
 		$stale_if_error         = \absint( \get_option( 'pronamic_cloudflare_cache_stale_if_error' ) );
