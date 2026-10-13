@@ -46,7 +46,7 @@ $links = [
 	echo wp_kses(
 		sprintf(
 			/* translators: %s: cf-edge-cache header name. */
-			__( 'This plugin always sends the %s response header. Cloudflare uses this header to detect the WordPress integration ("WordPress plugin successfully detected" in the Cloudflare dashboard) and to decide whether a response may be cached by APO. The header has no effect when APO is not enabled for the zone.', 'pronamic-cloudflare' ),
+			__( 'This plugin always sends the %s response header. Cloudflare uses this header to detect the WordPress integration ("WordPress plugin successfully detected" in the Cloudflare dashboard) and to decide whether the HTTP response may be cached by APO. The header has no effect when APO is not enabled for the zone.', 'pronamic-cloudflare' ),
 			'<code>cf-edge-cache</code>'
 		),
 		$allowed_html

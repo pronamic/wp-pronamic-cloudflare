@@ -57,7 +57,7 @@ msgstr "Controleren of APO werkt"
 
 #: admin/section-apo.php:20
 msgid "Query parameters and cached responses"
-msgstr "Queryparameters en gecachete reacties"
+msgstr "Queryparameters en gecachete HTTP-responses"
 
 #: admin/section-apo.php:21
 msgid "Page Rule integration with APO"
@@ -84,8 +84,8 @@ msgstr "Automatic Platform Optimization (APO) is een optionele Cloudflare-functi
 #. translators: %s: cf-edge-cache header name.
 #: admin/section-apo.php:49
 #, php-format
-msgid "This plugin always sends the %s response header. Cloudflare uses this header to detect the WordPress integration (\"WordPress plugin successfully detected\" in the Cloudflare dashboard) and to decide whether a response may be cached by APO. The header has no effect when APO is not enabled for the zone."
-msgstr "Deze plugin verstuurt altijd de responsheader %s. Cloudflare gebruikt deze header om de WordPress-integratie te herkennen (\"WordPress plugin successfully detected\" in het Cloudflare-dashboard) en om te bepalen of een reactie door APO mag worden gecachet. De header heeft geen effect als APO niet is ingeschakeld voor de zone."
+msgid "This plugin always sends the %s response header. Cloudflare uses this header to detect the WordPress integration (\"WordPress plugin successfully detected\" in the Cloudflare dashboard) and to decide whether the HTTP response may be cached by APO. The header has no effect when APO is not enabled for the zone."
+msgstr "Deze plugin verstuurt altijd de response-header %s. Cloudflare gebruikt deze header om de WordPress-integratie te herkennen (\"WordPress plugin successfully detected\" in het Cloudflare-dashboard) en om te bepalen of de HTTP-response door APO mag worden gecachet. De header heeft geen effect als APO niet is ingeschakeld voor de zone."
 
 #: admin/section-apo.php:61
 msgid "Request"
@@ -123,13 +123,13 @@ msgstr "URL's met queryparameters worden niet gecachet en worden altijd bij de o
 #: admin/section-apo.php:123
 #, php-format
 msgid "Requests with cookies that start with certain prefixes, such as %1$s and %2$s, bypass the cache. Logged-in users and visitors with a shopping cart therefore always receive a fresh response from the origin."
-msgstr "Verzoeken met cookies die met bepaalde voorvoegsels beginnen, zoals %1$s en %2$s, omzeilen de cache. Ingelogde gebruikers en bezoekers met een winkelwagen krijgen daardoor altijd een verse reactie van de oorsprongsserver."
+msgstr "Verzoeken met cookies die met bepaalde voorvoegsels beginnen, zoals %1$s en %2$s, omzeilen de cache. Ingelogde gebruikers en bezoekers met een winkelwagen krijgen daardoor altijd een verse HTTP-response van de oorsprongsserver."
 
 #. translators: %s: Cache-Control.
 #: admin/section-apo.php:138
 #, php-format
 msgid "According to Cloudflare, APO ignores the origin %s header for edge caching and keeps pages in the edge cache for up to 30 days. The edge lifetimes from the \"Cache headers\" settings above therefore do not determine how long APO caches a page; the headers are still passed on to the browser."
-msgstr "Volgens Cloudflare negeert APO de %s-header van de oorsprongsserver voor edge-caching en bewaart het pagina's maximaal 30 dagen in de edge-cache. De edge-levensduren uit de instellingen onder \"Cacheheaders\" hierboven bepalen daardoor niet hoe lang APO een pagina cachet; de headers worden nog wel doorgegeven aan de browser."
+msgstr "Volgens Cloudflare negeert APO de %s-header van de oorsprongsserver voor edge-caching en bewaart het pagina's maximaal 30 dagen in de edge-cache. De edge-levensduren uit de instellingen onder \"Cache-headers\" hierboven bepalen daardoor niet hoe lang APO een pagina cachet; de headers worden nog wel doorgegeven aan de browser."
 
 #. translators: %s: Cache Level: Bypass.
 #: admin/section-apo.php:152
@@ -141,7 +141,7 @@ msgstr "Een Page Rule met %s die overeenkomt met het verzoek schakelt APO ook ui
 #: admin/section-apo.php:168
 #, php-format
 msgid "To check whether a page is served by APO, inspect the response headers %1$s, %2$s and %3$s. The %2$s header also indicates why a request bypassed APO."
-msgstr "Bekijk de responsheaders %1$s, %2$s en %3$s om te controleren of een pagina door APO wordt geserveerd. De %2$s-header geeft ook aan waarom een verzoek APO heeft omzeild."
+msgstr "Bekijk de response-headers %1$s, %2$s en %3$s om te controleren of een pagina door APO wordt geserveerd. De %2$s-header geeft ook aan waarom een verzoek APO heeft omzeild."
 
 #: admin/section-apo.php:180
 msgid "Cloudflare documentation:"
@@ -197,15 +197,15 @@ msgstr "API-sleutel"
 
 #: php/SettingsController.php:253
 msgid "Cache headers"
-msgstr "Cacheheaders"
+msgstr "Cache-headers"
 
 #: php/SettingsController.php:256
 msgid "Configure browser and Cloudflare edge cache lifetimes for public responses."
-msgstr "Stel de levensduur van de browsercache en de Cloudflare-edge-cache in voor publieke reacties."
+msgstr "Stel de levensduur van de browsercache en de Cloudflare-edge-cache in voor publieke HTTP-responses."
 
 #: php/SettingsController.php:264
 msgid "Enable cache headers"
-msgstr "Cacheheaders inschakelen"
+msgstr "Cache-headers inschakelen"
 
 #: php/SettingsController.php:272
 msgid "Browser TTL"
@@ -241,11 +241,11 @@ msgstr "Hoe lang Cloudflare een verlopen pagina mag blijven serveren wanneer de 
 
 #: php/SettingsController.php:357
 msgid "Enable cache headers for eligible public responses"
-msgstr "Cacheheaders inschakelen voor publieke reacties die daarvoor in aanmerking komen"
+msgstr "Cache-headers inschakelen voor publieke HTTP-responses die daarvoor in aanmerking komen"
 
 #: php/SettingsController.php:360
 msgid "Existing cache policy headers are respected. Authenticated requests, search results and 404 responses will not be cached."
-msgstr "Bestaande cachebeleidheaders worden gerespecteerd. Geauthenticeerde verzoeken, zoekresultaten en 404-reacties worden niet gecachet."
+msgstr "Bestaande headers met cachebeleid worden gerespecteerd. Geauthenticeerde verzoeken, zoekresultaten en 404-responses worden niet gecachet."
 
 #. translators: 1: Constant name, 2: wp-config.php..
 #: php/SettingsController.php:398
