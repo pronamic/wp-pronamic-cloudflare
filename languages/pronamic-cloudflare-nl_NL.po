@@ -1,98 +1,262 @@
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: Pronamic Cloudflare 1.3.0-rc.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/pronamic-cloudflare\n"
 "POT-Creation-Date: 2026-10-07T09:31:23+00:00\n"
-"PO-Revision-Date: 2026-10-07 11:43+0200\n"
+"PO-Revision-Date: 2026-10-13T14:33:18+00:00\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: nl_NL\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.9\n"
 "X-Domain: pronamic-cloudflare\n"
+"X-Generator: Poedit 3.9\n"
 
 #. Plugin Name of the plugin
-#: pronamic-cloudflare.php php/Plugin.php:148 php/SettingsController.php:256
-#: php/SettingsController.php:257
+#: pronamic-cloudflare.php:11 php/Plugin.php:150 php/SettingsController.php:450 php/SettingsController.php:451
 msgid "Pronamic Cloudflare"
 msgstr "Pronamic Cloudflare"
 
 #. Plugin URI of the plugin
-#: pronamic-cloudflare.php
+#: pronamic-cloudflare.php:12
 msgid "https://www.pronamic.eu/plugins/pronamic-cloudflare/"
 msgstr "https://www.pronamic.eu/plugins/pronamic-cloudflare/"
 
 #. Description of the plugin
-#: pronamic-cloudflare.php
+#: pronamic-cloudflare.php:13
 msgid "The Pronamic Cloudflare plugin manages cache purging and adds WP-CLI commands."
 msgstr "De Pronamic Cloudflare-plugin beheert het legen van de cache en voegt WP-CLI-commando's toe."
 
 #. Author of the plugin
-#: pronamic-cloudflare.php
+#: pronamic-cloudflare.php:18
 msgid "Pronamic"
 msgstr "Pronamic"
 
 #. Author URI of the plugin
-#: pronamic-cloudflare.php
+#: pronamic-cloudflare.php:19
 msgid "https://www.pronamic.eu/"
 msgstr "https://www.pronamic.nl/"
 
+#: admin/page-settings.php:20
+msgid "Automatic Platform Optimization (APO)"
+msgstr "Automatic Platform Optimization (APO)"
+
+#: admin/section-apo.php:17
+msgid "Automatic Platform Optimization overview"
+msgstr "Overzicht van Automatic Platform Optimization"
+
+#: admin/section-apo.php:18
+msgid "About APO: when a request is cached or bypassed"
+msgstr "Over APO: wanneer een verzoek wordt gecachet of de cache omzeilt"
+
+#: admin/section-apo.php:19
+msgid "Verify APO works"
+msgstr "Controleren of APO werkt"
+
+#: admin/section-apo.php:20
+msgid "Query parameters and cached responses"
+msgstr "Queryparameters en gecachete reacties"
+
+#: admin/section-apo.php:21
+msgid "Page Rule integration with APO"
+msgstr "Integratie van Page Rules met APO"
+
+#: admin/section-apo.php:22
+msgid "Cache by device type"
+msgstr "Cachen per apparaattype"
+
+#: admin/section-apo.php:23
+msgid "Troubleshooting"
+msgstr "Probleemoplossing"
+
+#: admin/section-apo.php:24
+msgid "FAQs"
+msgstr "Veelgestelde vragen"
+
+#. translators: %s: Cloudflare dashboard URL.
+#: admin/section-apo.php:34
+#, php-format
+msgid "Automatic Platform Optimization (APO) is an optional Cloudflare feature that caches the HTML of WordPress pages on the Cloudflare edge network using Cloudflare Workers. APO is enabled per zone in the Cloudflare dashboard under <a href=\"%s\">Speed → Optimization → Content</a>, it cannot be enabled or configured from this plugin."
+msgstr "Automatic Platform Optimization (APO) is een optionele Cloudflare-functie die de HTML van WordPress-pagina's met behulp van Cloudflare Workers cachet op het edge-netwerk van Cloudflare. APO wordt per zone ingeschakeld in het Cloudflare-dashboard onder <a href=\"%s\">Speed → Optimization → Content</a>; het kan niet vanuit deze plugin worden ingeschakeld of ingesteld."
+
+#. translators: %s: cf-edge-cache header name.
+#: admin/section-apo.php:49
+#, php-format
+msgid "This plugin always sends the %s response header. Cloudflare uses this header to detect the WordPress integration (\"WordPress plugin successfully detected\" in the Cloudflare dashboard) and to decide whether a response may be cached by APO. The header has no effect when APO is not enabled for the zone."
+msgstr "Deze plugin verstuurt altijd de responsheader %s. Cloudflare gebruikt deze header om de WordPress-integratie te herkennen (\"WordPress plugin successfully detected\" in het Cloudflare-dashboard) en om te bepalen of een reactie door APO mag worden gecachet. De header heeft geen effect als APO niet is ingeschakeld voor de zone."
+
+#: admin/section-apo.php:61
+msgid "Request"
+msgstr "Verzoek"
+
+#: admin/section-apo.php:62
+msgid "Header"
+msgstr "Header"
+
+#: admin/section-apo.php:68
+msgid "Anonymous visitor"
+msgstr "Anonieme bezoeker"
+
+#: admin/section-apo.php:73
+msgid "Logged-in user"
+msgstr "Ingelogde gebruiker"
+
+#: admin/section-apo.php:80
+msgid "APO applies its own caching rules, which differ from the regular Cloudflare cache:"
+msgstr "APO hanteert eigen cacheregels, die afwijken van de reguliere Cloudflare-cache:"
+
+#. translators: 1: GET, 2: HEAD, 3: 200, 4: text/html.
+#: admin/section-apo.php:90
+#, php-format
+msgid "Only %1$s and %2$s requests for HTML are cached, and only when the origin responds with status %3$s and content type %4$s."
+msgstr "Alleen %1$s- en %2$s-verzoeken voor HTML worden gecachet, en alleen als de oorsprongsserver reageert met status %3$s en inhoudstype %4$s."
+
+#. translators: 1: utm_source, 2: fbclid, 3: gclid.
+#: admin/section-apo.php:107
+#, php-format
+msgid "URLs with query parameters are not cached and are always fetched from the origin. The only exception is a fixed list of known marketing parameters, such as %1$s, %2$s and %3$s."
+msgstr "URL's met queryparameters worden niet gecachet en worden altijd bij de oorsprongsserver opgehaald. De enige uitzondering is een vaste lijst met bekende marketingparameters, zoals %1$s, %2$s en %3$s."
+
+#. translators: 1: wp-, 2: woocommerce_.
+#: admin/section-apo.php:123
+#, php-format
+msgid "Requests with cookies that start with certain prefixes, such as %1$s and %2$s, bypass the cache. Logged-in users and visitors with a shopping cart therefore always receive a fresh response from the origin."
+msgstr "Verzoeken met cookies die met bepaalde voorvoegsels beginnen, zoals %1$s en %2$s, omzeilen de cache. Ingelogde gebruikers en bezoekers met een winkelwagen krijgen daardoor altijd een verse reactie van de oorsprongsserver."
+
+#. translators: %s: Cache-Control.
+#: admin/section-apo.php:138
+#, php-format
+msgid "According to Cloudflare, APO ignores the origin %s header for edge caching and keeps pages in the edge cache for up to 30 days. The edge lifetimes from the \"Cache headers\" settings above therefore do not determine how long APO caches a page; the headers are still passed on to the browser."
+msgstr "Volgens Cloudflare negeert APO de %s-header van de oorsprongsserver voor edge-caching en bewaart het pagina's maximaal 30 dagen in de edge-cache. De edge-levensduren uit de instellingen onder \"Cacheheaders\" hierboven bepalen daardoor niet hoe lang APO een pagina cachet; de headers worden nog wel doorgegeven aan de browser."
+
+#. translators: %s: Cache Level: Bypass.
+#: admin/section-apo.php:152
+#, php-format
+msgid "A Page Rule with %s that matches the request also disables APO for that request."
+msgstr "Een Page Rule met %s die overeenkomt met het verzoek schakelt APO ook uit voor dat verzoek."
+
+#. translators: 1: cf-cache-status, 2: cf-apo-via, 3: cf-edge-cache.
+#: admin/section-apo.php:168
+#, php-format
+msgid "To check whether a page is served by APO, inspect the response headers %1$s, %2$s and %3$s. The %2$s header also indicates why a request bypassed APO."
+msgstr "Bekijk de responsheaders %1$s, %2$s en %3$s om te controleren of een pagina door APO wordt geserveerd. De %2$s-header geeft ook aan waarom een verzoek APO heeft omzeild."
+
+#: admin/section-apo.php:180
+msgid "Cloudflare documentation:"
+msgstr "Cloudflare-documentatie:"
+
 #. translators: %s: Emoji.
-#: php/Plugin.php:143
+#: php/Plugin.php:145
 #, php-format
 msgid "Cloudflare %s"
 msgstr "Cloudflare %s"
 
 #. translators: %s: Number pending actions.
-#: php/Plugin.php:160
+#: php/Plugin.php:162
 #, php-format
 msgid "Cache actions (%s)"
 msgstr "Cacheacties (%s)"
 
-#: php/SettingsController.php:118
+#: php/SettingsController.php:168
 msgid "General"
 msgstr "Algemeen"
 
-#: php/SettingsController.php:125
+#: php/SettingsController.php:175
 msgid "Zone ID"
 msgstr "Zone-ID"
 
-#: php/SettingsController.php:139
+#: php/SettingsController.php:189
 msgid "API Token (Recommended)"
 msgstr "API-token (aanbevolen)"
 
-#: php/SettingsController.php:142
+#: php/SettingsController.php:192
 msgid "Cloudflare recommends using API Tokens for improved security and better access control. API Tokens use Bearer authentication."
 msgstr "Cloudflare raadt aan om API-tokens te gebruiken voor betere beveiliging en beter toegangsbeheer. API-tokens gebruiken Bearer-authenticatie."
 
-#: php/SettingsController.php:150
+#: php/SettingsController.php:200
 msgid "API Token"
 msgstr "API-token"
 
-#: php/SettingsController.php:164
+#: php/SettingsController.php:214
 msgid "Global API Key (Legacy)"
 msgstr "Globale API-sleutel (verouderd)"
 
-#: php/SettingsController.php:167
+#: php/SettingsController.php:217
 msgid "The Global API Key authentication method is still supported but not recommended. If an API Token is configured, it will be used instead."
 msgstr "De authenticatiemethode met de globale API-sleutel wordt nog ondersteund, maar wordt niet aanbevolen. Als er een API-token is ingesteld, wordt deze in plaats daarvan gebruikt."
 
-#: php/SettingsController.php:175
+#: php/SettingsController.php:225
 msgid "API email"
 msgstr "API-e-mailadres"
 
-#: php/SettingsController.php:189
+#: php/SettingsController.php:239
 msgid "API key"
 msgstr "API-sleutel"
 
+#: php/SettingsController.php:253
+msgid "Cache headers"
+msgstr "Cacheheaders"
+
+#: php/SettingsController.php:256
+msgid "Configure browser and Cloudflare edge cache lifetimes for public responses."
+msgstr "Stel de levensduur van de browsercache en de Cloudflare-edge-cache in voor publieke reacties."
+
+#: php/SettingsController.php:264
+msgid "Enable cache headers"
+msgstr "Cacheheaders inschakelen"
+
+#: php/SettingsController.php:272
+msgid "Browser TTL"
+msgstr "Browser-TTL"
+
+#: php/SettingsController.php:280
+msgid "Browser caches cannot be purged, so visitors may see an outdated page for this long after a change."
+msgstr "Browsercaches kunnen niet worden geleegd, waardoor bezoekers na een wijziging nog zo lang een verouderde pagina kunnen zien."
+
+#: php/SettingsController.php:286
+msgid "Cloudflare edge TTL"
+msgstr "Cloudflare-edge-TTL"
+
+#: php/SettingsController.php:294
+msgid "The edge cache is purged when content changes. Keep this below 12 hours if public pages contain nonces, for example in forms."
+msgstr "De edge-cache wordt geleegd wanneer inhoud wijzigt. Houd dit onder de 12 uur als publieke pagina's nonces bevatten, bijvoorbeeld in formulieren."
+
+#: php/SettingsController.php:300
+msgid "Stale while revalidate"
+msgstr "Stale while revalidate"
+
+#: php/SettingsController.php:308
+msgid "How long Cloudflare may keep serving an expired page while it fetches a fresh copy in the background."
+msgstr "Hoe lang Cloudflare een verlopen pagina mag blijven serveren terwijl het op de achtergrond een verse kopie ophaalt."
+
+#: php/SettingsController.php:314
+msgid "Stale if error"
+msgstr "Stale if error"
+
+#: php/SettingsController.php:322
+msgid "How long Cloudflare may keep serving an expired page when the origin server returns an error or is unreachable."
+msgstr "Hoe lang Cloudflare een verlopen pagina mag blijven serveren wanneer de oorsprongsserver een fout teruggeeft of onbereikbaar is."
+
+#: php/SettingsController.php:357
+msgid "Enable cache headers for eligible public responses"
+msgstr "Cacheheaders inschakelen voor publieke reacties die daarvoor in aanmerking komen"
+
+#: php/SettingsController.php:360
+msgid "Existing cache policy headers are respected. Authenticated requests, search results and 404 responses will not be cached."
+msgstr "Bestaande cachebeleidheaders worden gerespecteerd. Geauthenticeerde verzoeken, zoekresultaten en 404-reacties worden niet gecachet."
+
 #. translators: 1: Constant name, 2: wp-config.php..
-#: php/SettingsController.php:235
+#: php/SettingsController.php:398
 #, php-format
 msgid "This value is defined in the named constant %1$s, probably in the WordPress configuration file %2$s."
 msgstr "Deze waarde is gedefinieerd in de constante %1$s, waarschijnlijk in het WordPress-configuratiebestand %2$s."
 
-#: php/SettingsController.php:281
+#: php/SettingsController.php:435
+msgid "seconds"
+msgstr "seconden"
+
+#: php/SettingsController.php:475
 msgid "Settings"
 msgstr "Instellingen"
