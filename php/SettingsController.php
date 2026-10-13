@@ -351,13 +351,13 @@ final class SettingsController {
 	private function cache_headers_enabled_field(): void {
 		?>
 
-		<input type="hidden" name="pronamic_cloudflare_cache_headers_enabled" value="0" />
-		<label for="pronamic-cloudflare-cache-enabled">
-			<input type="checkbox" name="pronamic_cloudflare_cache_headers_enabled" id="pronamic-cloudflare-cache-enabled" value="1" <?php \checked( self::get_cache_headers_enabled() ); ?> />
-			<?php \esc_html_e( 'Enable cache headers for eligible public responses', 'pronamic-cloudflare' ); ?>
-		</label>
-
-		<p class="description"><?php \esc_html_e( 'Existing cache policy headers are respected. Authenticated requests, search results and 404 responses will not be cached.', 'pronamic-cloudflare' ); ?></p>
+		<fieldset>
+			<legend class="screen-reader-text"><span><?php \esc_html_e( 'Enable cache headers', 'pronamic-cloudflare' ); ?></span></legend>
+			<input type="hidden" name="pronamic_cloudflare_cache_headers_enabled" value="0" />
+			<label for="pronamic-cloudflare-cache-enabled"><input type="checkbox" name="pronamic_cloudflare_cache_headers_enabled" id="pronamic-cloudflare-cache-enabled" value="1" <?php \checked( self::get_cache_headers_enabled() ); ?> />
+			<?php \esc_html_e( 'Enable cache headers for eligible public responses', 'pronamic-cloudflare' ); ?></label>
+			<p class="description"><?php \esc_html_e( 'Existing cache policy headers are respected. Authenticated requests, search results and 404 responses will not be cached.', 'pronamic-cloudflare' ); ?></p>
+		</fieldset>
 
 		<?php
 	}
