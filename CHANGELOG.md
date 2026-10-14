@@ -7,6 +7,21 @@ This projects adheres to [Semantic Versioning](http://semver.org/) and [Keep a C
 
 ## [Unreleased]
 
+## [1.5.0-rc.1] - 2026-10-14
+
+### Added
+
+- Cache headers are now also sent for search result pages. Search pages are tagged with the `search` cache tag, which is purged or invalidated when posts change. ([#32](https://github.com/pronamic/wp-pronamic-cloudflare/issues/32), [#33](https://github.com/pronamic/wp-pronamic-cloudflare/pull/33), [#34](https://github.com/pronamic/wp-pronamic-cloudflare/issues/34), [#35](https://github.com/pronamic/wp-pronamic-cloudflare/pull/35))
+- Cache headers are now also sent for 404 responses. 404 pages are tagged with the `404` cache tag, which is purged or invalidated when posts or terms change, so a page that is created later no longer stays cached as "not found". ([#36](https://github.com/pronamic/wp-pronamic-cloudflare/issues/36), [#37](https://github.com/pronamic/wp-pronamic-cloudflare/pull/37), [#38](https://github.com/pronamic/wp-pronamic-cloudflare/issues/38), [#39](https://github.com/pronamic/wp-pronamic-cloudflare/pull/39))
+
+### Changed
+
+- The Global API Key (legacy) settings are no longer shown when an API Token is configured, since the API Token always takes precedence. Saving the settings form no longer clears stored legacy credentials in that case. ([#40](https://github.com/pronamic/wp-pronamic-cloudflare/issues/40), [#41](https://github.com/pronamic/wp-pronamic-cloudflare/pull/41))
+- Browsers no longer autofill or suggest values for the settings text fields (`autocomplete="off"`).
+- Removed the redundant trackback check from the cache header eligibility checks; trackbacks are already excluded by the request method and response code checks. ([#42](https://github.com/pronamic/wp-pronamic-cloudflare/issues/42), [#43](https://github.com/pronamic/wp-pronamic-cloudflare/pull/43))
+
+Full set of changes: [`v1.4.0...v1.5.0-rc.1`][1.5.0-rc.1]
+
 ## [1.4.0] - 2026-10-13
 
 ### Added
@@ -105,6 +120,7 @@ Full set of changes: [`v1.2.0...v1.3.0-rc.1`][1.3.0-rc.1]
 Full set of changes: [`1.1.2...1.2.0`][1.2.0]
 
 
+[1.5.0-rc.1]: https://github.com/pronamic/wp-pronamic-cloudflare/compare/v1.4.0...v1.5.0-rc.1
 [1.4.0]: https://github.com/pronamic/wp-pronamic-cloudflare/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/pronamic/wp-pronamic-cloudflare/compare/v1.3.0-rc.1...v1.3.0
 [1.3.0-rc.1]: https://github.com/pronamic/wp-pronamic-cloudflare/compare/v1.2.0...v1.3.0-rc.1
