@@ -643,6 +643,11 @@ final class Plugin {
 		$tags[] = 'feed';
 
 		/**
+		 * Search.
+		 */
+		$tags[] = 'search';
+
+		/**
 		 * Front page.
 		 */
 		$tags[] = 'front-page';
