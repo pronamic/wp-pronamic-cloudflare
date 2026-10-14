@@ -266,11 +266,11 @@ final class Plugin {
 	private function is_cache_header_eligible(): bool {
 		$response_code = \http_response_code();
 
-		if ( \headers_sent() || ( false !== $response_code && 200 !== $response_code ) ) {
+		if ( \headers_sent() || ( false !== $response_code && ! \in_array( $response_code, [ 200, 404 ], true ) ) ) {
 			return false;
 		}
 
-		if ( \is_admin() || \is_user_logged_in() || \is_preview() || \is_404() || \is_trackback() ) {
+		if ( \is_admin() || \is_user_logged_in() || \is_preview() || \is_trackback() ) {
 			return false;
 		}
 
