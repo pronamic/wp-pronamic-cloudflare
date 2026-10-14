@@ -73,24 +73,35 @@ final class SettingsController {
 	}
 
 	/**
+	 * Check whether an API token is configured.
+	 *
+	 * @return bool
+	 */
+	private function has_api_token(): bool {
+		return '' !== (string) \get_option( 'pronamic_cloudflare_api_token' );
+	}
+
+	/**
 	 * Initialize.
 	 */
 	public function init() {
-		\register_setting(
-			'pronamic_cloudflare',
-			'pronamic_cloudflare_api_email',
-			[
-				'type' => 'string',
-			]
-		);
+		if ( ! $this->has_api_token() ) {
+			\register_setting(
+				'pronamic_cloudflare',
+				'pronamic_cloudflare_api_email',
+				[
+					'type' => 'string',
+				]
+			);
 
-		\register_setting(
-			'pronamic_cloudflare',
-			'pronamic_cloudflare_api_key',
-			[
-				'type' => 'string',
-			]
-		);
+			\register_setting(
+				'pronamic_cloudflare',
+				'pronamic_cloudflare_api_key',
+				[
+					'type' => 'string',
+				]
+			);
+		}
 
 		\register_setting(
 			'pronamic_cloudflare',
@@ -186,7 +197,7 @@ final class SettingsController {
 
 		\add_settings_section(
 			'pronamic_cloudflare_api_token',
-			\__( 'API Token (Recommended)', 'pronamic-cloudflare' ),
+			$this->has_api_token() ? \__( 'API Token', 'pronamic-cloudflare' ) : \__( 'API Token (Recommended)', 'pronamic-cloudflare' ),
 			function () {
 				echo '<p>';
 				\esc_html_e( 'Cloudflare recommends using API Tokens for improved security and better access control. API Tokens use Bearer authentication.', 'pronamic-cloudflare' );
@@ -209,44 +220,46 @@ final class SettingsController {
 			]
 		);
 
-		\add_settings_section(
-			'pronamic_cloudflare_global_api_key',
-			\__( 'Global API Key (Legacy)', 'pronamic-cloudflare' ),
-			function () {
-				echo '<p>';
-				\esc_html_e( 'The Global API Key authentication method is still supported but not recommended. If an API Token is configured, it will be used instead.', 'pronamic-cloudflare' );
-				echo '</p>';
-			},
-			'pronamic_cloudflare'
-		);
+		if ( ! $this->has_api_token() ) {
+			\add_settings_section(
+				'pronamic_cloudflare_global_api_key',
+				\__( 'Global API Key (Legacy)', 'pronamic-cloudflare' ),
+				function () {
+					echo '<p>';
+					\esc_html_e( 'The Global API Key authentication method is still supported but not recommended. If an API Token is configured, it will be used instead.', 'pronamic-cloudflare' );
+					echo '</p>';
+				},
+				'pronamic_cloudflare'
+			);
 
-		\add_settings_field(
-			'pronamic_cloudflare_api_email',
-			\__( 'API email', 'pronamic-cloudflare' ),
-			function ( $args ) {
-				$this->input_text( $args );
-			},
-			'pronamic_cloudflare',
-			'pronamic_cloudflare_global_api_key',
-			[
-				'label_for'     => 'pronamic_cloudflare_api_email',
-				'constant_name' => 'CLOUDFLARE_EMAIL',
-			]
-		);
+			\add_settings_field(
+				'pronamic_cloudflare_api_email',
+				\__( 'API email', 'pronamic-cloudflare' ),
+				function ( $args ) {
+					$this->input_text( $args );
+				},
+				'pronamic_cloudflare',
+				'pronamic_cloudflare_global_api_key',
+				[
+					'label_for'     => 'pronamic_cloudflare_api_email',
+					'constant_name' => 'CLOUDFLARE_EMAIL',
+				]
+			);
 
-		\add_settings_field(
-			'pronamic_cloudflare_api_key',
-			\__( 'API key', 'pronamic-cloudflare' ),
-			function ( $args ) {
-				$this->input_text( $args );
-			},
-			'pronamic_cloudflare',
-			'pronamic_cloudflare_global_api_key',
-			[
-				'label_for'     => 'pronamic_cloudflare_api_key',
-				'constant_name' => 'CLOUDFLARE_API_KEY',
-			]
-		);
+			\add_settings_field(
+				'pronamic_cloudflare_api_key',
+				\__( 'API key', 'pronamic-cloudflare' ),
+				function ( $args ) {
+					$this->input_text( $args );
+				},
+				'pronamic_cloudflare',
+				'pronamic_cloudflare_global_api_key',
+				[
+					'label_for'     => 'pronamic_cloudflare_api_key',
+					'constant_name' => 'CLOUDFLARE_API_KEY',
+				]
+			);
+		}
 
 		\add_settings_section(
 			'pronamic_cloudflare_cache_headers',
