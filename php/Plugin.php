@@ -286,10 +286,6 @@ final class Plugin {
 			return false;
 		}
 
-		if ( \is_trackback() ) {
-			return false;
-		}
-
 		$request_method = isset( $_SERVER['REQUEST_METHOD'] ) ? \strtoupper( \sanitize_text_field( \wp_unslash( $_SERVER['REQUEST_METHOD'] ) ) ) : '';
 
 		return 'GET' === $request_method;
