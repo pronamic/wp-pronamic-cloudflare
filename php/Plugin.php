@@ -648,6 +648,11 @@ final class Plugin {
 		$tags[] = 'search';
 
 		/**
+		 * 404.
+		 */
+		$tags[] = '404';
+
+		/**
 		 * Front page.
 		 */
 		$tags[] = 'front-page';
@@ -856,6 +861,11 @@ final class Plugin {
 		}
 
 		$tags = $this->get_term_related_tags( $term );
+
+		/**
+		 * 404.
+		 */
+		$tags[] = '404';
 
 		if ( $invalidate ) {
 			$this->invalidate_by_tags( $tags );
