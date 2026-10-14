@@ -18,6 +18,8 @@ phpcs.xml.dist
 
 /build/
 
+/documentation/
+
 /node_modules/
 /wp-content/
 

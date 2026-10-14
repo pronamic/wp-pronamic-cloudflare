@@ -8,6 +8,7 @@ The Pronamic Cloudflare plugin adds a number of features, such as WP-CLI command
 - [Cache headers](#cache-headers)
 - [Automatic Platform Optimization (APO)](#automatic-platform-optimization-apo)
 - [Cache invalidation](#cache-invalidation)
+- [404 responses](#404-responses)
 - [WP-CLI](#wp-cli)
 - [Links](#links)
 
@@ -88,6 +89,23 @@ To [verify that a page is served by APO](https://developers.cloudflare.com/autom
 ## Cache invalidation
 
 The plugin invalidates cache tags when content changes but remains public, allowing Cloudflare to revalidate its cached response. If the origin supports `ETag` or `Last-Modified`, Cloudflare can reuse the cached response after a `304 Not Modified` response. When stale-serving directives are configured at Cloudflare, invalidation also leaves the cached response available for `stale-while-revalidate` or `stale-if-error`. Deleted, trashed, or unpublished content is hard-purged so it is no longer served from Cloudflare's cache.
+
+## 404 responses
+
+Cloudflare does not cache 404 responses by default: APO only caches `200` responses, and WordPress sends `no-cache, no-store, private` cache directives on every 404. Each request for a non-existent URL therefore reaches the origin server, where WordPress loads the full stack before it responds. Attackers abuse this in (D)DoS attacks by requesting random, non-existent URLs over and over.
+
+A Cloudflare Cache Response Rule that matches `http.response.code eq 404` can remove these directives for Cloudflare only and add `s-maxage`, so Cloudflare serves repeated 404 requests from its edge cache. The plugin tags 404 responses with the `404` cache tag and invalidates that tag when posts or terms change, so a page published later on a cached 404 URL is not hidden.
+
+See [Cache 404 responses at Cloudflare](documentation/cache-404-responses.md) for the rule, how to verify it, and its limitations.
+
+> [!TIP]
+> To inspect the headers the origin server sends, bypass Cloudflare with the `curl` option `--resolve`. It connects to the IP address of the origin server while keeping the host name, TLS (SNI) and `Host` header:
+>
+> ```bash
+> curl -I --resolve www.example.com:443:192.0.2.10 https://www.example.com/random-url-123/
+> ```
+>
+> Replace `192.0.2.10` with the IP address of your origin server.
 
 ## WP-CLI
 
