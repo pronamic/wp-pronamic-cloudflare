@@ -39,6 +39,31 @@ final class CacheHeadersController {
 	}
 
 	/**
+	 * Setup cache tag header and output buffering.
+	 */
+	private function setup_cache_tag(): void {
+		\add_action( 'shutdown', $this->send_cache_headers( ... ), 0 );
+
+		/*
+		 * We use output buffering and hook into template filters to
+		 * include cache tags of posts being used on the page.
+		 */
+		\ob_start();
+
+		\add_filter( 'the_title', $this->add_related_post_id( ... ), 10, 2 );
+		\add_filter( 'the_content', $this->add_related_post_id( ... ), 10, 2 );
+		\add_filter( 'get_the_excerpt', $this->add_related_post_id( ... ), 10, 2 );
+		\add_filter( 'the_permalink', $this->add_related_post_id( ... ), 10, 2 );
+
+		/*
+		 * WordPress flushes all output buffer levels automatically on shutdown.
+		 *
+		 * @link https://github.com/WordPress/WordPress/blob/6.8.2/wp-includes/default-filters.php#L430
+		 * @link https://github.com/WordPress/WordPress/blob/6.8.2/wp-includes/functions.php#L5461-L5473
+		 */
+	}
+
+	/**
 	 * Send the edge cache header for Cloudflare Automatic Platform Optimization (APO).
 	 *
 	 * Cloudflare APO uses this header to detect that a WordPress plugin is
@@ -304,30 +329,5 @@ final class CacheHeadersController {
 		$this->related_post_ids[] = $post->ID;
 
 		return $content;
-	}
-
-	/**
-	 * Setup cache tag header and output buffering.
-	 */
-	private function setup_cache_tag(): void {
-		\add_action( 'shutdown', $this->send_cache_headers( ... ), 0 );
-
-		/*
-		 * We use output buffering and hook into template filters to
-		 * include cache tags of posts being used on the page.
-		 */
-		\ob_start();
-
-		\add_filter( 'the_title', $this->add_related_post_id( ... ), 10, 2 );
-		\add_filter( 'the_content', $this->add_related_post_id( ... ), 10, 2 );
-		\add_filter( 'get_the_excerpt', $this->add_related_post_id( ... ), 10, 2 );
-		\add_filter( 'the_permalink', $this->add_related_post_id( ... ), 10, 2 );
-
-		/*
-		 * WordPress flushes all output buffer levels automatically on shutdown.
-		 *
-		 * @link https://github.com/WordPress/WordPress/blob/6.8.2/wp-includes/default-filters.php#L430
-		 * @link https://github.com/WordPress/WordPress/blob/6.8.2/wp-includes/functions.php#L5461-L5473
-		 */
 	}
 }
