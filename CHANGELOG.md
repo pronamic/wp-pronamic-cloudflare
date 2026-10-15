@@ -14,7 +14,7 @@ This projects adheres to [Semantic Versioning](http://semver.org/) and [Keep a C
 
 ### Fixed
 
-- Post type archives are now tagged with the queried post type(s) instead of the post type of the current post in the loop. Empty archives no longer get an `archive-` tag without post type, and archives for multiple post types get an `archive-{post_type}` tag for each post type. ([#51](https://github.com/pronamic/wp-pronamic-cloudflare/issues/51))
+- Post type archives are now tagged with the queried post type(s) instead of the post type of the current post in the loop. Empty archives no longer get an `archive-` tag without post type, and archives for multiple post types get an `archive-{post_type}` tag for each post type. ([#51](https://github.com/pronamic/wp-pronamic-cloudflare/issues/51), [#52](https://github.com/pronamic/wp-pronamic-cloudflare/pull/52))
 
 ## [1.5.0-rc.1] - 2026-10-14
 
