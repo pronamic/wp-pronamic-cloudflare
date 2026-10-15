@@ -123,7 +123,7 @@ final class CliController {
 
 		WP_CLI::add_command(
 			'pronamic cloudflare purge',
-			function ( $args, $assoc_args ): void {
+			function ( $args ): void {
 				$headers = Plugin::get_auth_headers();
 
 				if ( null === $headers ) {
@@ -141,6 +141,7 @@ final class CliController {
 					$response = wp_remote_post(
 						$url,
 						[
+							// phpcs:ignore WordPressVIPMinimum.Performance.RemoteRequestTimeout.timeout_timeout -- WP-CLI command, not a front-end request.
 							'timeout' => 30,
 							'headers' => [
 								'Content-Type' => 'application/json',
