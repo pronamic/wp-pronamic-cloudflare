@@ -29,7 +29,7 @@ msgstr ""
 
 #. Description of the plugin
 #: pronamic-cloudflare.php:13
-msgid "The Pronamic Cloudflare plugin manages cache purging and adds WP-CLI commands."
+msgid "Precise Cloudflare caching with cache tags on every page, background invalidation of exactly the pages that show changed content and WP-CLI commands."
 msgstr ""
 
 #. Author of the plugin
