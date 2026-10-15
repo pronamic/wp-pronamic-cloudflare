@@ -53,6 +53,7 @@ Do you want your pages cached at Cloudflare and refreshed accurately and efficie
 - [404 responses](#404-responses)
 - [Loopback requests](#loopback-requests)
 - [WP-CLI](#wp-cli)
+- [Translations](#translations)
 - [Links](#links)
 
 ## Configuration
@@ -210,6 +211,42 @@ $ wp pronamic cloudflare purge $( wp pronamic cloudflare zones --format=ids )
 ```bash
 $ wp pronamic cloudflare invalidate $( wp pronamic cloudflare zones --format=ids )
 ```
+
+## Translations
+
+### Dutch glossary
+
+Cloudflare and HTTP terms that are common in Dutch technical language stay in English. Compounds with an English part are written as one word, like "webserver", unless a hyphen is needed for readability or because of an abbreviation.
+
+| English | Dutch | Note |
+| --- | --- | --- |
+| origin | origin | Not "oorsprong"; Cloudflare uses "origin" as a technical term. |
+| origin server | originserver | |
+| origin IP address | origin-IP-adres | |
+| request | verzoek | |
+| response | HTTP-response | |
+| response header | response-header | |
+| header | header | For example "cache-headers" and "de %s-header". |
+| cache (noun) | cache | |
+| to cache | cachen, gecachet | |
+| caching | caching | |
+| cache tag | cachetag | |
+| cache action | cacheactie | |
+| edge cache | edge-cache | |
+| edge TTL | edge-TTL | |
+| browser cache | browsercache | |
+| to purge | legen | |
+| invalidation | invalidatie | |
+| to bypass | omzeilen | |
+| query parameter | queryparameter | |
+| loopback request | loopback-verzoek | |
+| to preheat a cache | een cache opwarmen | |
+| zone, zone ID | zone, zone-ID | |
+| API token | API-token | |
+| Global API key | globale API-sleutel | |
+| `stale-while-revalidate`, `stale-if-error` | Stale while revalidate, Stale if error | Directive names stay in English. |
+
+Product and feature names stay in English, such as Automatic Platform Optimization (APO), Page Rules, Cache Rules and Cloudflare Workers. Paths in the Cloudflare dashboard, such as **Speed → Optimization → Content**, are not translated either, because the dashboard is in English.
 
 ## Links
 

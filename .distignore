@@ -11,6 +11,8 @@
 
 .wp-env.json
 
+/AGENTS.md
+
 phpcs.xml.dist
 
 .phpcs.dir.phpcompatibility.xml

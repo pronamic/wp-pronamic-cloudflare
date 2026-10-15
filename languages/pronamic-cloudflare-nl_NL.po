@@ -113,25 +113,25 @@ msgstr "APO hanteert eigen cacheregels, die afwijken van de reguliere Cloudflare
 #: admin/section-apo.php:90
 #, php-format
 msgid "Only %1$s and %2$s requests for HTML are cached, and only when the origin responds with status %3$s and content type %4$s."
-msgstr "Alleen %1$s- en %2$s-verzoeken voor HTML worden gecachet, en alleen als de oorsprongsserver reageert met status %3$s en inhoudstype %4$s."
+msgstr "Alleen %1$s- en %2$s-verzoeken voor HTML worden gecachet, en alleen als de originserver reageert met status %3$s en inhoudstype %4$s."
 
 #. translators: 1: utm_source, 2: fbclid, 3: gclid.
 #: admin/section-apo.php:107
 #, php-format
 msgid "URLs with query parameters are not cached and are always fetched from the origin. The only exception is a fixed list of known marketing parameters, such as %1$s, %2$s and %3$s."
-msgstr "URL's met queryparameters worden niet gecachet en worden altijd bij de oorsprongsserver opgehaald. De enige uitzondering is een vaste lijst met bekende marketingparameters, zoals %1$s, %2$s en %3$s."
+msgstr "URL's met queryparameters worden niet gecachet en worden altijd bij de originserver opgehaald. De enige uitzondering is een vaste lijst met bekende marketingparameters, zoals %1$s, %2$s en %3$s."
 
 #. translators: 1: wp-, 2: woocommerce_.
 #: admin/section-apo.php:123
 #, php-format
 msgid "Requests with cookies that start with certain prefixes, such as %1$s and %2$s, bypass the cache. Logged-in users and visitors with a shopping cart therefore always receive a fresh response from the origin."
-msgstr "Verzoeken met cookies die met bepaalde voorvoegsels beginnen, zoals %1$s en %2$s, omzeilen de cache. Ingelogde gebruikers en bezoekers met een winkelwagen krijgen daardoor altijd een verse HTTP-response van de oorsprongsserver."
+msgstr "Verzoeken met cookies die met bepaalde voorvoegsels beginnen, zoals %1$s en %2$s, omzeilen de cache. Ingelogde gebruikers en bezoekers met een winkelwagen krijgen daardoor altijd een verse HTTP-response van de originserver."
 
 #. translators: %s: Cache-Control.
 #: admin/section-apo.php:138
 #, php-format
 msgid "According to Cloudflare, APO ignores the origin %s header for edge caching and keeps pages in the edge cache for up to 30 days. The edge lifetimes from the \"Cache headers\" settings above therefore do not determine how long APO caches a page; the headers are still passed on to the browser."
-msgstr "Volgens Cloudflare negeert APO de %s-header van de oorsprongsserver voor edge-caching en bewaart het pagina's maximaal 30 dagen in de edge-cache. De edge-levensduren uit de instellingen onder \"Cache-headers\" hierboven bepalen daardoor niet hoe lang APO een pagina cachet; de headers worden nog wel doorgegeven aan de browser."
+msgstr "Volgens Cloudflare negeert APO de %s-header van de originserver voor edge-caching en bewaart het pagina's maximaal 30 dagen in de edge-cache. De edge-levensduren uit de instellingen onder \"Cache-headers\" hierboven bepalen daardoor niet hoe lang APO een pagina cachet; de headers worden nog wel doorgegeven aan de browser."
 
 #. translators: %s: Cache Level: Bypass.
 #: admin/section-apo.php:152
@@ -241,7 +241,7 @@ msgstr "Stale if error"
 
 #: psr-4/SettingsController.php:351
 msgid "How long Cloudflare may keep serving an expired page when the origin server returns an error or is unreachable."
-msgstr "Hoe lang Cloudflare een verlopen pagina mag blijven serveren wanneer de oorsprongsserver een fout teruggeeft of onbereikbaar is."
+msgstr "Hoe lang Cloudflare een verlopen pagina mag blijven serveren wanneer de originserver een fout teruggeeft of onbereikbaar is."
 
 #: psr-4/SettingsController.php:357
 msgid "Loopback requests"
@@ -249,11 +249,11 @@ msgstr "Loopback-verzoeken"
 
 #: psr-4/SettingsController.php:360
 msgid "WordPress sends HTTP requests to its own hostname, for example to run WP-Cron, background processes or to preheat a cache. Through Cloudflare these requests can be answered from the Cloudflare cache or blocked by security rules. With an origin IP address these requests are sent directly to the origin server."
-msgstr "WordPress verstuurt HTTP-verzoeken naar de eigen hostnaam, bijvoorbeeld om WP-Cron of achtergrondprocessen uit te voeren of om een cache op te warmen. Via Cloudflare kunnen deze verzoeken vanuit de Cloudflare-cache worden beantwoord of door beveiligingsregels worden geblokkeerd. Met een oorsprongs-IP-adres worden deze verzoeken rechtstreeks naar de oorsprongsserver verstuurd."
+msgstr "WordPress verstuurt HTTP-verzoeken naar de eigen hostnaam, bijvoorbeeld om WP-Cron of achtergrondprocessen uit te voeren of om een cache op te warmen. Via Cloudflare kunnen deze verzoeken vanuit de Cloudflare-cache worden beantwoord of door beveiligingsregels worden geblokkeerd. Met een origin-IP-adres worden deze verzoeken rechtstreeks naar de originserver verstuurd."
 
 #: psr-4/SettingsController.php:370
 msgid "Origin IP address"
-msgstr "Oorsprongs-IP-adres"
+msgstr "Origin-IP-adres"
 
 #. translators: %s: Server IP address.
 #: psr-4/SettingsController.php:383
@@ -263,7 +263,7 @@ msgstr "IP-adres van de server: %s. Achter een reverse proxy of load balancer ka
 
 #: psr-4/SettingsController.php:398
 msgid "The IP address of the origin server in the DNS records of the Cloudflare zone. Leave empty to send loopback requests through Cloudflare."
-msgstr "Het IP-adres van de oorsprongsserver in de DNS-records van de Cloudflare-zone. Laat leeg om loopback-verzoeken via Cloudflare te versturen."
+msgstr "Het IP-adres van de originserver in de DNS-records van de Cloudflare-zone. Laat leeg om loopback-verzoeken via Cloudflare te versturen."
 
 #: psr-4/SettingsController.php:434
 msgid "Enable cache headers for eligible public responses"
