@@ -12,7 +12,7 @@
  * Plugin URI: https://www.pronamic.eu/plugins/pronamic-cloudflare/
  * Description: Precise Cloudflare caching with cache tags on every page, background invalidation of exactly the pages that show changed content and WP-CLI commands.
  *
- * Version: 1.5.0
+ * Version: 1.6.0
  * Requires at least: 6.8
  * Requires PHP: 8.1
  *

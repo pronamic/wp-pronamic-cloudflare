@@ -7,9 +7,30 @@ This projects adheres to [Semantic Versioning](http://semver.org/) and [Keep a C
 
 ## [Unreleased]
 
+## [1.6.0] - 2026-10-15
+
 ### Added
 
 - Added an "Origin IP address" setting and `PRONAMIC_CLOUDFLARE_ORIGIN_IP` constant to send loopback requests, such as WP-Cron spawns, background processes and cache preheating (SiteGround Optimizer), directly to the origin server instead of through Cloudflare. ([#71](https://github.com/pronamic/wp-pronamic-cloudflare/issues/71), [#72](https://github.com/pronamic/wp-pronamic-cloudflare/pull/72))
+- Added a comparison with the official Cloudflare plugin to the README, explaining when each plugin is the better fit. ([70bb393](https://github.com/pronamic/wp-pronamic-cloudflare/commit/70bb393645d60521aae6df5ca73c6345151e4f84))
+
+### Changed
+
+- Updated the plugin description to highlight cache tags on every page, background invalidation of exactly the pages that show changed content and the WP-CLI commands. ([48d9a76](https://github.com/pronamic/wp-pronamic-cloudflare/commit/48d9a76a16353f00af3a5d8d25eef5e0cb1ed4d4))
+- Split the `Plugin` class into focused controllers for the admin, cache headers, invalidation, loopback requests, settings and the Cloudflare API client. `Plugin::get_auth_headers()` has moved to `CloudflareClient::get_auth_headers()`. ([#73](https://github.com/pronamic/wp-pronamic-cloudflare/issues/73), [#74](https://github.com/pronamic/wp-pronamic-cloudflare/pull/74))
+
+### Fixed
+
+- Fixed a fatal `TypeError` when generating cache tags for a comment on a deleted post or for a related post that no longer exists. ([cf33ec5](https://github.com/pronamic/wp-pronamic-cloudflare/commit/cf33ec5b15dbaea79d27da174f4514a84b6770f0))
+- Singular pages are now tagged with the queried post instead of the global `$post`, which could point to another post after a secondary loop in the theme. ([cf33ec5](https://github.com/pronamic/wp-pronamic-cloudflare/commit/cf33ec5b15dbaea79d27da174f4514a84b6770f0))
+- Fixed "headers already sent" warnings when a theme or plugin flushes the output before the cache headers are sent. ([5351172](https://github.com/pronamic/wp-pronamic-cloudflare/commit/5351172dd8f2d0403256174dd58b2981ac1d3496))
+
+### Composer
+
+- Added `wp-plugin/sg-cachepress` `7.8.4` (SiteGround Speed Optimizer) as a development dependency, to test cache preheating loopback requests. Version 7.8.4 brings JS combination, File Cache URL preheat, lazy loading and security improvements.
+	Release notes: https://wordpress.org/plugins/sg-cachepress/#developers
+
+Full set of changes: [`v1.5.0...v1.6.0`][1.6.0]
 
 ## [1.5.0] - 2026-10-15
 
@@ -150,6 +171,7 @@ Full set of changes: [`v1.2.0...v1.3.0-rc.1`][1.3.0-rc.1]
 Full set of changes: [`1.1.2...1.2.0`][1.2.0]
 
 
+[1.6.0]: https://github.com/pronamic/wp-pronamic-cloudflare/compare/v1.5.0...v1.6.0
 [1.5.0]: https://github.com/pronamic/wp-pronamic-cloudflare/compare/v1.5.0-rc.1...v1.5.0
 [1.5.0-rc.1]: https://github.com/pronamic/wp-pronamic-cloudflare/compare/v1.4.0...v1.5.0-rc.1
 [1.4.0]: https://github.com/pronamic/wp-pronamic-cloudflare/compare/v1.3.0...v1.4.0

@@ -8,14 +8,14 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "POT-Creation-Date: 2026-10-07T09:31:23+00:00\n"
-"PO-Revision-Date: 2026-10-15T11:18:42+00:00\n"
+"PO-Revision-Date: 2026-10-15T12:09:07+00:00\n"
 "Language: nl_NL\n"
 "X-Domain: pronamic-cloudflare\n"
 "X-Generator: Poedit 3.10\n"
 
 #. Plugin Name of the plugin
 #: pronamic-cloudflare.php:11
-#: psr-4/Plugin.php:151
+#: psr-4/AdminController.php:62
 #: psr-4/SettingsController.php:539
 #: psr-4/SettingsController.php:540
 msgid "Pronamic Cloudflare"
@@ -150,13 +150,13 @@ msgid "Cloudflare documentation:"
 msgstr "Cloudflare-documentatie:"
 
 #. translators: %s: Emoji.
-#: psr-4/Plugin.php:146
+#: psr-4/AdminController.php:57
 #, php-format
 msgid "Cloudflare %s"
 msgstr "Cloudflare %s"
 
 #. translators: %s: Number pending actions.
-#: psr-4/Plugin.php:163
+#: psr-4/AdminController.php:74
 #, php-format
 msgid "Cache actions (%s)"
 msgstr "Cacheacties (%s)"
