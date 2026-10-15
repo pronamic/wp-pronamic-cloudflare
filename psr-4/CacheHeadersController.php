@@ -314,8 +314,6 @@ final class CacheHeadersController {
 	 * @return string
 	 */
 	private function add_related_post_id( $content, $post = null ) {
-		$post ??= \get_the_ID();
-
 		$post = \get_post( $post );
 
 		if ( ! ( $post instanceof \WP_Post ) ) {
