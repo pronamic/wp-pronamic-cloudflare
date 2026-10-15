@@ -14,6 +14,7 @@ This projects adheres to [Semantic Versioning](http://semver.org/) and [Keep a C
 
 ### Fixed
 
+- Cache headers are no longer sent to visitors with comment author cookies. WordPress pre-fills the comment form with their name, email address and URL, so these responses must not end up in a shared cache. ([#65](https://github.com/pronamic/wp-pronamic-cloudflare/issues/65))
 - Cache headers are no longer sent for pages that define the `DONOTCACHEPAGE` constant, such as the WooCommerce cart, checkout and my account pages. ([#63](https://github.com/pronamic/wp-pronamic-cloudflare/issues/63))
 - Post type archives are now tagged with the queried post type(s) instead of the post type of the current post in the loop. Empty archives no longer get an `archive-` tag without post type, and archives for multiple post types get an `archive-{post_type}` tag for each post type. ([#51](https://github.com/pronamic/wp-pronamic-cloudflare/issues/51), [#52](https://github.com/pronamic/wp-pronamic-cloudflare/pull/52))
 - Term changes on non-post objects, such as users or links, no longer look up an unrelated post with the same ID. Cache tags are only invalidated for posts of a post type the taxonomy is registered for. ([#53](https://github.com/pronamic/wp-pronamic-cloudflare/issues/53), [#54](https://github.com/pronamic/wp-pronamic-cloudflare/pull/54))

@@ -287,6 +287,18 @@ final class Plugin {
 		}
 
 		/*
+		 * WordPress pre-fills the comment form with the name, email address
+		 * and URL from the comment author cookies, so these responses contain
+		 * personal data and must not end up in a shared cache.
+		 *
+		 * @link https://github.com/pronamic/wp-pronamic-cloudflare/issues/65
+		 * @link https://developer.wordpress.org/reference/functions/wp_get_current_commenter/
+		 */
+		if ( [] !== \array_filter( \wp_get_current_commenter() ) ) {
+			return false;
+		}
+
+		/*
 		 * Plugins such as WooCommerce define `DONOTCACHEPAGE` to signal that
 		 * the current page must not be cached by page caches.
 		 *
