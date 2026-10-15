@@ -36,56 +36,43 @@ final class CliController {
 					WP_CLI::error( 'The Cloudflare API credentials are not configured. Define either `CLOUDFLARE_API_TOKEN` or both `CLOUDFLARE_EMAIL` and `CLOUDFLARE_API_KEY`.' );
 				}
 
-				$query_args = \array_intersect_key(
-					$assoc_args,
+				$url = add_query_arg(
+					\array_intersect_key(
+						$assoc_args,
+						[
+							'name'     => true,
+							'status'   => true,
+							'page'     => true,
+							'per_page' => true,
+						]
+					),
+					'https://api.cloudflare.com/client/v4/zones'
+				);
+
+				$response = wp_remote_get(
+					$url,
 					[
-						'name'   => true,
-						'status' => true,
+						'headers' => [
+							'Content-Type' => 'application/json',
+							...$headers,
+						],
 					]
 				);
 
-				$items = [];
+				$data = $this->get_response_data( $response, 'Cloudflare zones could not be retrieved' );
 
-				$page = 1;
+				if ( ! \is_array( $data->result ?? null ) ) {
+					WP_CLI::error( 'Cloudflare zones could not be retrieved: the response does not contain a result.' );
+				}
 
-				do {
-					$url = add_query_arg(
-						[
-							...$query_args,
-							'page'     => $page,
-							'per_page' => 50,
-						],
-						'https://api.cloudflare.com/client/v4/zones'
-					);
-
-					$response = wp_remote_get(
-						$url,
-						[
-							'headers' => [
-								'Content-Type' => 'application/json',
-								...$headers,
-							],
-						]
-					);
-
-					$data = $this->get_response_data( $response, 'Cloudflare zones could not be retrieved' );
-
-					if ( ! \is_array( $data->result ?? null ) ) {
-						WP_CLI::error( 'Cloudflare zones could not be retrieved: the response does not contain a result.' );
-					}
-
-					foreach ( $data->result as $item ) {
-						$items[] = [
-							'id'     => $item->id,
-							'name'   => $item->name,
-							'status' => $item->status,
-						];
-					}
-
-					$total_pages = (int) ( $data->result_info->total_pages ?? 1 );
-
-					++$page;
-				} while ( $page <= $total_pages );
+				$items = \array_map(
+					fn( $item ) => [
+						'id'     => $item->id,
+						'name'   => $item->name,
+						'status' => $item->status,
+					],
+					$data->result
+				);
 
 				if ( 'ids' === $assoc_args['format'] ) {
 					$items = \wp_list_pluck( $items, 'id' );
@@ -124,6 +111,18 @@ final class CliController {
 							'deleted',
 							'deactivated',
 						],
+					],
+					[
+						'type'        => 'assoc',
+						'name'        => 'page',
+						'description' => 'Page number of paginated results.',
+						'optional'    => true,
+					],
+					[
+						'type'        => 'assoc',
+						'name'        => 'per_page',
+						'description' => 'Number of zones per page (5-50, Cloudflare default: 20).',
+						'optional'    => true,
 					],
 					[
 						'name'        => 'format',
