@@ -98,6 +98,15 @@ final class CacheHeadersController {
 	 * @return void
 	 */
 	private function send_cache_headers(): void {
+		/*
+		 * Output can already be flushed, for example by a theme or plugin
+		 * that ends the output buffer early, return early without
+		 * triggering a warning.
+		 */
+		if ( \headers_sent() ) {
+			return;
+		}
+
 		$this->send_cache_policy_headers();
 
 		$tags = $this->get_current_cache_tags();
@@ -142,10 +151,6 @@ final class CacheHeadersController {
 	 * @return bool
 	 */
 	private function is_cache_header_eligible(): bool {
-		if ( \headers_sent() ) {
-			return false;
-		}
-
 		$response_code = \http_response_code();
 
 		if ( false !== $response_code && ! \in_array( $response_code, [ 200, 404 ], true ) ) {
