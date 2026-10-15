@@ -86,9 +86,14 @@ final class LoopbackController {
 			$url = $effective_url;
 		}
 
-		$scheme = \strtolower( (string) \wp_parse_url( $url, \PHP_URL_SCHEME ) );
-		$host   = \strtolower( (string) \wp_parse_url( $url, \PHP_URL_HOST ) );
-		$port   = \wp_parse_url( $url, \PHP_URL_PORT );
+		$parts = \wp_parse_url( $url );
+
+		if ( ! \is_array( $parts ) || ! isset( $parts['scheme'], $parts['host'] ) ) {
+			return;
+		}
+
+		$scheme = \strtolower( $parts['scheme'] );
+		$host   = \strtolower( $parts['host'] );
 
 		if ( ! \in_array( $scheme, [ 'http', 'https' ], true ) ) {
 			return;
@@ -103,9 +108,7 @@ final class LoopbackController {
 			return;
 		}
 
-		if ( null === $port ) {
-			$port = ( 'https' === $scheme ) ? 443 : 80;
-		}
+		$port = $parts['port'] ?? ( ( 'https' === $scheme ) ? 443 : 80 );
 
 		$address = \str_contains( $origin_ip, ':' ) ? '[' . $origin_ip . ']' : $origin_ip;
 
