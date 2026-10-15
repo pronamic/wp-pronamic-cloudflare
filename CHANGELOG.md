@@ -7,6 +7,10 @@ This projects adheres to [Semantic Versioning](http://semver.org/) and [Keep a C
 
 ## [Unreleased]
 
+### Changed
+
+- Updated the cache headers description on the settings page and the README to match the 1.5.0 behaviour for search results and 404 responses. The README now documents `CLOUDFLARE_API_TOKEN` and describes the plugin as standalone. ([#45](https://github.com/pronamic/wp-pronamic-cloudflare/issues/45))
+
 ## [1.5.0-rc.1] - 2026-10-14
 
 ### Added

@@ -379,7 +379,7 @@ final class SettingsController {
 			<input type="hidden" name="pronamic_cloudflare_cache_headers_enabled" value="0" />
 			<label for="pronamic-cloudflare-cache-enabled"><input type="checkbox" name="pronamic_cloudflare_cache_headers_enabled" id="pronamic-cloudflare-cache-enabled" value="1" <?php \checked( self::get_cache_headers_enabled() ); ?> />
 			<?php \esc_html_e( 'Enable cache headers for eligible public responses', 'pronamic-cloudflare' ); ?></label>
-			<p class="description"><?php \esc_html_e( 'Existing cache policy headers are respected. Authenticated requests, search results and 404 responses will not be cached.', 'pronamic-cloudflare' ); ?></p>
+			<p class="description"><?php \esc_html_e( 'Existing cache policy headers are respected. Authenticated requests, previews and non-GET requests never receive cache headers.', 'pronamic-cloudflare' ); ?></p>
 		</fieldset>
 
 		<script>
