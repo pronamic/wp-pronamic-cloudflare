@@ -14,7 +14,7 @@ This projects adheres to [Semantic Versioning](http://semver.org/) and [Keep a C
 
 ### Fixed
 
-- Term changes on non-post objects, such as users or links, no longer look up an unrelated post with the same ID. Cache tags are only invalidated for posts of a post type the taxonomy is registered for. ([#53](https://github.com/pronamic/wp-pronamic-cloudflare/issues/53))
+- Term changes on non-post objects, such as users or links, no longer look up an unrelated post with the same ID. Cache tags are only invalidated for posts of a post type the taxonomy is registered for. ([#53](https://github.com/pronamic/wp-pronamic-cloudflare/issues/53), [#54](https://github.com/pronamic/wp-pronamic-cloudflare/pull/54))
 
 ## [1.5.0-rc.1] - 2026-10-14
 
