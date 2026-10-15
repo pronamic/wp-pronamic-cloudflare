@@ -508,6 +508,7 @@ final class Plugin {
 	 * Send cache request.
 	 *
 	 * @link https://developers.cloudflare.com/api/resources/cache/methods/purge/
+	 * @link https://developers.cloudflare.com/cache/guides/invalidate-cache/#invalidate-using-the-api
 	 * @param array $args Arguments for the cache request.
 	 * @param bool  $invalidate Whether to invalidate instead of purge.
 	 * @return void
@@ -592,6 +593,7 @@ final class Plugin {
 	/**
 	 * Request invalidation of cache tags.
 	 *
+	 * @link https://developers.cloudflare.com/cache/guides/invalidate-cache/#invalidate-using-the-api
 	 * @param string[] $tags Tags to invalidate.
 	 * @return void
 	 */
