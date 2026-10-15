@@ -7,8 +7,17 @@ This projects adheres to [Semantic Versioning](http://semver.org/) and [Keep a C
 
 ## [Unreleased]
 
+## [1.5.0] - 2026-10-15
+
+### Added
+
+- Added the `wp pronamic cloudflare invalidate <identifier>...` WP-CLI command to invalidate the cache of one or more zones, the counterpart of the existing `purge` command. ([#69](https://github.com/pronamic/wp-pronamic-cloudflare/issues/69), [#70](https://github.com/pronamic/wp-pronamic-cloudflare/pull/70))
+- Added documentation on how to briefly cache 404 responses with a Cloudflare cache rule, and documented the `invalidate_cache` API endpoint used for cache invalidation. ([#59](https://github.com/pronamic/wp-pronamic-cloudflare/issues/59), [#60](https://github.com/pronamic/wp-pronamic-cloudflare/pull/60))
+
 ### Changed
 
+- PHP 8.1 or higher is now required. The code base has been modernized with Rector. ([#48](https://github.com/pronamic/wp-pronamic-cloudflare/pull/48))
+- The plugin header now uses the `GPL-2.0-or-later` license identifier.
 - Updated the cache headers description on the settings page and the README to match the 1.5.0 behaviour for search results and 404 responses. The README now documents `CLOUDFLARE_API_TOKEN` and describes the plugin as standalone. ([#45](https://github.com/pronamic/wp-pronamic-cloudflare/issues/45), [#46](https://github.com/pronamic/wp-pronamic-cloudflare/pull/46))
 - Cache headers are now also sent for `HEAD` requests, so `curl -I` shows the same `Cache-Control` and `Cloudflare-CDN-Cache-Control` headers as a `GET` request. ([#49](https://github.com/pronamic/wp-pronamic-cloudflare/issues/49), [#50](https://github.com/pronamic/wp-pronamic-cloudflare/pull/50))
 
@@ -19,6 +28,10 @@ This projects adheres to [Semantic Versioning](http://semver.org/) and [Keep a C
 - Post type archives are now tagged with the queried post type(s) instead of the post type of the current post in the loop. Empty archives no longer get an `archive-` tag without post type, and archives for multiple post types get an `archive-{post_type}` tag for each post type. ([#51](https://github.com/pronamic/wp-pronamic-cloudflare/issues/51), [#52](https://github.com/pronamic/wp-pronamic-cloudflare/pull/52))
 - Term changes on non-post objects, such as users or links, no longer look up an unrelated post with the same ID. Cache tags are only invalidated for posts of a post type the taxonomy is registered for. ([#53](https://github.com/pronamic/wp-pronamic-cloudflare/issues/53), [#54](https://github.com/pronamic/wp-pronamic-cloudflare/pull/54))
 - Cache actions are no longer scheduled when no API credentials or zone ID are configured. These actions always failed and filled the Action Scheduler tables. ([#55](https://github.com/pronamic/wp-pronamic-cloudflare/issues/55), [#56](https://github.com/pronamic/wp-pronamic-cloudflare/pull/56))
+- Cache tags are now invalidated in chunks of maximum 100 tags per Cloudflare request, just like purging. ([#57](https://github.com/pronamic/wp-pronamic-cloudflare/issues/57), [#58](https://github.com/pronamic/wp-pronamic-cloudflare/pull/58))
+- The `wp pronamic cloudflare zones` command now supports the `--page` and `--per_page` arguments, and the WP-CLI commands now exit with a clear error when the Cloudflare API request fails or returns an invalid or unsuccessful response. ([#67](https://github.com/pronamic/wp-pronamic-cloudflare/issues/67), [#68](https://github.com/pronamic/wp-pronamic-cloudflare/pull/68))
+
+Full set of changes: [`v1.5.0-rc.1...v1.5.0`][1.5.0]
 
 ## [1.5.0-rc.1] - 2026-10-14
 
@@ -133,6 +146,7 @@ Full set of changes: [`v1.2.0...v1.3.0-rc.1`][1.3.0-rc.1]
 Full set of changes: [`1.1.2...1.2.0`][1.2.0]
 
 
+[1.5.0]: https://github.com/pronamic/wp-pronamic-cloudflare/compare/v1.5.0-rc.1...v1.5.0
 [1.5.0-rc.1]: https://github.com/pronamic/wp-pronamic-cloudflare/compare/v1.4.0...v1.5.0-rc.1
 [1.4.0]: https://github.com/pronamic/wp-pronamic-cloudflare/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/pronamic/wp-pronamic-cloudflare/compare/v1.3.0-rc.1...v1.3.0
