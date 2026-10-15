@@ -23,6 +23,7 @@
 		}
 	],
 	"require": {
+		"php": "^8.1",
 		"automattic/jetpack-autoloader": "^6.0",
 		"pronamic/wp-html": "^2.2",
 		"woocommerce/action-scheduler": "^4.2"
@@ -30,6 +31,7 @@
 	"require-dev": {
 		"pronamic/pronamic-cli": "^1.1",
 		"pronamic/wp-coding-standards": "^2.3",
+		"rector/rector": "^2.6",
 		"roots/wordpress-no-content": "^7.1",
 		"wp-cli/dist-archive-command": "*",
 		"wp-cli/wp-cli": "*",
