@@ -69,9 +69,18 @@ The initial values are:
 
 Browser caches cannot be purged, so keep the browser TTL low. The edge cache is purged when content changes; if public pages contain nonces (for example in forms), keep the edge TTL below 12 hours.
 
-When enabled, the plugin adds `Cache-Control` for browsers and `Cloudflare-CDN-Cache-Control` for Cloudflare. Existing cache policy headers are left unchanged. Headers are limited to anonymous `GET` and `HEAD` responses with status 200 or 404, including search results, feeds and embeds. Admin requests, previews, redirects, other status codes, authenticated requests and pages that define the `DONOTCACHEPAGE` constant (for example the WooCommerce cart, checkout and my account pages) are excluded. WordPress itself sends `no-cache` headers on 404 responses; these are left unchanged, see [404 responses](#404-responses).
+When enabled, the plugin adds `Cache-Control` for browsers and `Cloudflare-CDN-Cache-Control` for Cloudflare. Existing cache policy headers are left unchanged. Headers are limited to anonymous `GET` and `HEAD` responses with status 200 or 404, including search results, feeds and embeds. Admin requests, previews, redirects, other status codes, authenticated requests, requests from visitors with comment author cookies and pages that define the `DONOTCACHEPAGE` constant (for example the WooCommerce cart, checkout and my account pages) are excluded. WordPress itself sends `no-cache` headers on 404 responses; these are left unchanged, see [404 responses](#404-responses).
 
 The plugin does not create or manage Cloudflare Cache Rules. Cloudflare does not cache HTML by default, so it is up to you to configure Cache Rules in the Cloudflare dashboard that make the desired requests eligible for cache and respect the origin cache headers.
+
+> [!IMPORTANT]
+> WordPress pre-fills the comment form with the name, email address and URL of visitors who posted a comment, based on their `comment_author_*` cookies. The plugin does not send cache headers for these visitors, but a Cache Rule that falls back to Cloudflare's default caching behaviour when the origin sends no cache headers may still cache these responses. Exclude these requests from your Cache Rules, for example with:
+>
+> ```
+> not http.cookie contains "comment_author_"
+> ```
+>
+> This also makes sure that commenters do not receive a cached page with an empty comment form. APO already bypasses the cache for requests with `comment_` cookies.
 
 ## Automatic Platform Optimization (APO)
 
