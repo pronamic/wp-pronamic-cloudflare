@@ -241,7 +241,20 @@ final class Plugin {
 			return;
 		}
 
-		if ( ! $this->is_cache_header_eligible() ) {
+		// It could be too late to send headers, return early without triggering a warning.
+		if ( \headers_sent() ) {
+			return;
+		}
+
+		/**
+		 * Filters whether the current response is eligible for cache headers.
+		 *
+		 * @link https://github.com/pronamic/wp-pronamic-cloudflare/issues/63
+		 * @param bool $eligible Whether the current response is eligible for cache headers.
+		 */
+		$eligible = (bool) \apply_filters( 'pronamic_cloudflare_cache_headers_eligible', $this->is_cache_header_eligible() );
+
+		if ( ! $eligible ) {
 			return;
 		}
 
@@ -264,10 +277,6 @@ final class Plugin {
 	 * @return bool
 	 */
 	private function is_cache_header_eligible(): bool {
-		if ( \headers_sent() ) {
-			return false;
-		}
-
 		$response_code = \http_response_code();
 
 		if ( false !== $response_code && ! \in_array( $response_code, [ 200, 404 ], true ) ) {
@@ -283,6 +292,16 @@ final class Plugin {
 		}
 
 		if ( \is_preview() ) {
+			return false;
+		}
+
+		/*
+		 * Plugins such as WooCommerce define `DONOTCACHEPAGE` to signal that
+		 * the current page must not be cached by page caches.
+		 *
+		 * @link https://github.com/pronamic/wp-pronamic-cloudflare/issues/63
+		 */
+		if ( \defined( 'DONOTCACHEPAGE' ) && \constant( 'DONOTCACHEPAGE' ) ) {
 			return false;
 		}
 
