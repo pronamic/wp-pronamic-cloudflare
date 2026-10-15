@@ -10,7 +10,7 @@ This projects adheres to [Semantic Versioning](http://semver.org/) and [Keep a C
 ### Changed
 
 - Updated the cache headers description on the settings page and the README to match the 1.5.0 behaviour for search results and 404 responses. The README now documents `CLOUDFLARE_API_TOKEN` and describes the plugin as standalone. ([#45](https://github.com/pronamic/wp-pronamic-cloudflare/issues/45), [#46](https://github.com/pronamic/wp-pronamic-cloudflare/pull/46))
-- Cache headers are now also sent for `HEAD` requests, so `curl -I` shows the same `Cache-Control` and `Cloudflare-CDN-Cache-Control` headers as a `GET` request. ([#49](https://github.com/pronamic/wp-pronamic-cloudflare/issues/49))
+- Cache headers are now also sent for `HEAD` requests, so `curl -I` shows the same `Cache-Control` and `Cloudflare-CDN-Cache-Control` headers as a `GET` request. ([#49](https://github.com/pronamic/wp-pronamic-cloudflare/issues/49), [#50](https://github.com/pronamic/wp-pronamic-cloudflare/pull/50))
 
 ## [1.5.0-rc.1] - 2026-10-14
 
