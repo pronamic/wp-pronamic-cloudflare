@@ -488,6 +488,23 @@ final class Plugin {
 	}
 
 	/**
+	 * Check if the Cloudflare API credentials and zone ID are configured.
+	 *
+	 * @return bool
+	 */
+	private function is_configured(): bool {
+		if ( null === self::get_auth_headers() ) {
+			return false;
+		}
+
+		if ( '' === (string) \get_option( 'pronamic_cloudflare_zone_id' ) ) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
 	 * Send cache request.
 	 *
 	 * @link https://developers.cloudflare.com/api/resources/cache/methods/purge/
@@ -1194,6 +1211,16 @@ final class Plugin {
 	 * @return void
 	 */
 	private function shutdown(): void {
+		/**
+		 * Without credentials or zone ID the scheduled actions would always
+		 * fail and fill the Action Scheduler tables, so don't schedule them.
+		 *
+		 * @link https://github.com/pronamic/wp-pronamic-cloudflare/issues/55
+		 */
+		if ( ! $this->is_configured() ) {
+			return;
+		}
+
 		// Purge everything.
 		if ( true === $this->purge_everything ) {
 			// Remove all scheduled tag actions as purge everything supersedes them.

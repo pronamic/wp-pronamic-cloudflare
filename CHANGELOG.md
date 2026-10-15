@@ -16,6 +16,7 @@ This projects adheres to [Semantic Versioning](http://semver.org/) and [Keep a C
 
 - Post type archives are now tagged with the queried post type(s) instead of the post type of the current post in the loop. Empty archives no longer get an `archive-` tag without post type, and archives for multiple post types get an `archive-{post_type}` tag for each post type. ([#51](https://github.com/pronamic/wp-pronamic-cloudflare/issues/51), [#52](https://github.com/pronamic/wp-pronamic-cloudflare/pull/52))
 - Term changes on non-post objects, such as users or links, no longer look up an unrelated post with the same ID. Cache tags are only invalidated for posts of a post type the taxonomy is registered for. ([#53](https://github.com/pronamic/wp-pronamic-cloudflare/issues/53), [#54](https://github.com/pronamic/wp-pronamic-cloudflare/pull/54))
+- Cache actions are no longer scheduled when no API credentials or zone ID are configured. These actions always failed and filled the Action Scheduler tables. ([#55](https://github.com/pronamic/wp-pronamic-cloudflare/issues/55), [#56](https://github.com/pronamic/wp-pronamic-cloudflare/pull/56))
 
 ## [1.5.0-rc.1] - 2026-10-14
 
