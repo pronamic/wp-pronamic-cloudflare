@@ -1,6 +1,6 @@
 # Pronamic Cloudflare
 
-The Pronamic Cloudflare plugin adds a number of features, such as WP-CLI commands, to the Cloudflare plugin.
+The Pronamic Cloudflare plugin integrates WordPress with Cloudflare. It adds cache headers and cache tags to public responses, invalidates or purges those tags when content changes, supports Automatic Platform Optimization (APO) and offers WP-CLI commands. It works on its own and does not require the official Cloudflare plugin.
 
 ## Table of contents
 
@@ -14,24 +14,32 @@ The Pronamic Cloudflare plugin adds a number of features, such as WP-CLI command
 
 ## Configuration
 
-This plugin offers advanced configuration options via `wp-config.php` constants for integrating with Cloudflare. These settings allow you to securely manage your Cloudflare credentials and zone ID directly from the WordPress configuration file.
+The Cloudflare credentials and zone ID can be configured under **Settings > Pronamic Cloudflare** or via `wp-config.php` constants. A constant takes precedence over the value stored in the settings, which allows you to manage the credentials securely from the WordPress configuration file.
 
-To configure these options, add the following constants to your `wp-config.php` file:
+To configure these options, add the following constants to your `wp-config.php` file. Use either an API token (recommended) or the legacy Global API Key with the account email address. If an API token is configured, it is always used.
 
-### `CLOUDFLARE_EMAIL`
+### `CLOUDFLARE_API_TOKEN` (recommended)
 
-Your Cloudflare account email address used to authenticate API requests.
+A Cloudflare API token, used with Bearer authentication. You can create one in your Cloudflare dashboard under **My Profile > API Tokens**. Grant it only the permissions the plugin needs, such as **Zone > Cache Purge > Purge** for the zone, and **Zone > Zone > Read** for the `wp pronamic cloudflare zones` command.
+
+```php
+define( 'CLOUDFLARE_API_TOKEN', 'your-cloudflare-api-token' );
+```
+
+### `CLOUDFLARE_EMAIL` (legacy)
+
+Your Cloudflare account email address, used together with `CLOUDFLARE_API_KEY` to authenticate API requests.
 
 ```php
 define( 'CLOUDFLARE_EMAIL', 'your-email@example.com' );
 ```
 
-### `CLOUDFLARE_API_KEY`
+### `CLOUDFLARE_API_KEY` (legacy)
 
-The Cloudflare API key associated with your account. You can find this in your Cloudflare dashboard under **API Tokens**.
+The Global API Key of your Cloudflare account. You can find it in your Cloudflare dashboard under **My Profile > API Tokens > API Keys > Global API Key**. The Global API Key grants full access to your account, so an API token is preferred.
 
 ```php
-define( 'CLOUDFLARE_API_KEY', 'your-cloudflare-api-key' );
+define( 'CLOUDFLARE_API_KEY', 'your-cloudflare-global-api-key' );
 ```
 
 ### `PRONAMIC_CLOUDFLARE_ZONE_ID`
@@ -44,7 +52,7 @@ define( 'PRONAMIC_CLOUDFLARE_ZONE_ID', 'your-cloudflare-zone-id' );
 
 ### Security Note
 
-It's recommended to keep your API key and zone ID confidential by restricting access to the `wp-config.php` file.
+It's recommended to keep your API token, API key and zone ID confidential by restricting access to the `wp-config.php` file.
 
 ## Cache headers
 
@@ -61,7 +69,7 @@ The initial values are:
 
 Browser caches cannot be purged, so keep the browser TTL low. The edge cache is purged when content changes; if public pages contain nonces (for example in forms), keep the edge TTL below 12 hours.
 
-When enabled, the plugin adds `Cache-Control` for browsers and `Cloudflare-CDN-Cache-Control` for Cloudflare. Existing cache policy headers are left unchanged. Headers are limited to anonymous public `GET` responses with status 200. Search results, 404s, admin, previews, redirects, embeds, trackbacks, and authenticated requests are excluded; feeds remain eligible.
+When enabled, the plugin adds `Cache-Control` for browsers and `Cloudflare-CDN-Cache-Control` for Cloudflare. Existing cache policy headers are left unchanged. Headers are limited to anonymous `GET` responses with status 200 or 404, including search results, feeds and embeds. Admin requests, previews, redirects, other status codes and authenticated requests are excluded. WordPress itself sends `no-cache` headers on 404 responses; these are left unchanged, see [404 responses](#404-responses).
 
 The plugin does not create or manage Cloudflare Cache Rules. Cloudflare does not cache HTML by default, so it is up to you to configure Cache Rules in the Cloudflare dashboard that make the desired requests eligible for cache and respect the origin cache headers.
 

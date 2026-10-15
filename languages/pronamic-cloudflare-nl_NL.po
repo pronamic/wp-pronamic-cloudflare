@@ -244,8 +244,8 @@ msgid "Enable cache headers for eligible public responses"
 msgstr "Cache-headers inschakelen voor publieke HTTP-responses die daarvoor in aanmerking komen"
 
 #: php/SettingsController.php:369
-msgid "Existing cache policy headers are respected. Authenticated requests, search results and 404 responses will not be cached."
-msgstr "Bestaande headers met cachebeleid worden gerespecteerd. Geauthenticeerde verzoeken, zoekresultaten en 404-responses worden niet gecachet."
+msgid "Existing cache policy headers are respected. Authenticated requests, previews and non-GET requests never receive cache headers."
+msgstr "Bestaande headers met cachebeleid worden gerespecteerd. Geauthenticeerde verzoeken, voorbeeldweergaven en niet-GET-verzoeken krijgen nooit cache-headers."
 
 #. translators: 1: Constant name, 2: wp-config.php..
 #: php/SettingsController.php:416

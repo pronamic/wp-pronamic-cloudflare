@@ -15,6 +15,13 @@
 			"Pronamic\\WordPressCloudflare\\": "php/"
 		}
 	},
+	"repositories": [
+		{
+			"name": "wp-packages",
+			"type": "composer",
+			"url": "https://repo.wp-packages.org"
+		}
+	],
 	"require": {
 		"automattic/jetpack-autoloader": "^6.0",
 		"pronamic/wp-html": "^2.2",
@@ -45,10 +52,5 @@
 		],
 		"phpcbf": "XDEBUG_MODE=off vendor/bin/phpcbf",
 		"phpcs": "XDEBUG_MODE=off vendor/bin/phpcs -s -v"
-	},
-	"repositories": [{
-		"name": "wp-packages",
-		"type": "composer",
-		"url": "https://repo.wp-packages.org"
-	}]
+	}
 }
