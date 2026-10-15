@@ -15,7 +15,7 @@ use Rector\Config\RectorConfig;
 return RectorConfig::configure()
 	->withPaths(
 		[
-			__DIR__ . '/php',
+			__DIR__ . '/psr-4',
 		]
 	)
 	->withPhpSets()
