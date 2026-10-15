@@ -45,7 +45,7 @@ final class Plugin {
 	/**
 	 * Related post IDs.
 	 *
-	 * @var string[]
+	 * @var int[]
 	 */
 	private $related_post_ids = [];
 
