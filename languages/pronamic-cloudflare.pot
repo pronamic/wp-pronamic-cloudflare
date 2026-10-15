@@ -1,24 +1,24 @@
 # Copyright (C) 2026 Pronamic
-# This file is distributed under the GPL.
+# This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Pronamic Cloudflare 1.4.0\n"
+"Project-Id-Version: Pronamic Cloudflare 1.5.0-rc.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/pronamic-cloudflare\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-13T14:55:41+00:00\n"
+"POT-Creation-Date: 2026-10-15T09:12:24+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: pronamic-cloudflare\n"
 
 #. Plugin Name of the plugin
 #: pronamic-cloudflare.php:11
-#: php/Plugin.php:150
-#: php/SettingsController.php:468
-#: php/SettingsController.php:469
+#: psr-4/Plugin.php:150
+#: psr-4/SettingsController.php:474
+#: psr-4/SettingsController.php:475
 msgid "Pronamic Cloudflare"
 msgstr ""
 
@@ -33,12 +33,12 @@ msgid "The Pronamic Cloudflare plugin manages cache purging and adds WP-CLI comm
 msgstr ""
 
 #. Author of the plugin
-#: pronamic-cloudflare.php:18
+#: pronamic-cloudflare.php:19
 msgid "Pronamic"
 msgstr ""
 
 #. Author URI of the plugin
-#: pronamic-cloudflare.php:19
+#: pronamic-cloudflare.php:20
 msgid "https://www.pronamic.eu/"
 msgstr ""
 
@@ -151,116 +151,117 @@ msgid "Cloudflare documentation:"
 msgstr ""
 
 #. translators: %s: Emoji.
-#: php/Plugin.php:145
+#: psr-4/Plugin.php:145
 #, php-format
 msgid "Cloudflare %s"
 msgstr ""
 
 #. translators: %s: Number pending actions.
-#: php/Plugin.php:162
+#: psr-4/Plugin.php:162
 #, php-format
 msgid "Cache actions (%s)"
 msgstr ""
 
-#: php/SettingsController.php:168
+#: psr-4/SettingsController.php:171
 msgid "General"
 msgstr ""
 
-#: php/SettingsController.php:175
+#: psr-4/SettingsController.php:178
 msgid "Zone ID"
 msgstr ""
 
-#: php/SettingsController.php:189
-msgid "API Token (Recommended)"
-msgstr ""
-
-#: php/SettingsController.php:192
-msgid "Cloudflare recommends using API Tokens for improved security and better access control. API Tokens use Bearer authentication."
-msgstr ""
-
-#: php/SettingsController.php:200
+#: psr-4/SettingsController.php:192
+#: psr-4/SettingsController.php:203
 msgid "API Token"
 msgstr ""
 
-#: php/SettingsController.php:214
+#: psr-4/SettingsController.php:192
+msgid "API Token (Recommended)"
+msgstr ""
+
+#: psr-4/SettingsController.php:195
+msgid "Cloudflare recommends using API Tokens for improved security and better access control. API Tokens use Bearer authentication."
+msgstr ""
+
+#: psr-4/SettingsController.php:218
 msgid "Global API Key (Legacy)"
 msgstr ""
 
-#: php/SettingsController.php:217
+#: psr-4/SettingsController.php:221
 msgid "The Global API Key authentication method is still supported but not recommended. If an API Token is configured, it will be used instead."
 msgstr ""
 
-#: php/SettingsController.php:225
+#: psr-4/SettingsController.php:229
 msgid "API email"
 msgstr ""
 
-#: php/SettingsController.php:239
+#: psr-4/SettingsController.php:243
 msgid "API key"
 msgstr ""
 
-#: php/SettingsController.php:253
+#: psr-4/SettingsController.php:258
 msgid "Cache headers"
 msgstr ""
 
-#: php/SettingsController.php:256
+#: psr-4/SettingsController.php:261
 msgid "Configure browser and Cloudflare edge cache lifetimes for public responses."
 msgstr ""
 
-#: php/SettingsController.php:264
-#: php/SettingsController.php:365
+#: psr-4/SettingsController.php:269
+#: psr-4/SettingsController.php:370
 msgid "Enable cache headers"
 msgstr ""
 
-#: php/SettingsController.php:278
+#: psr-4/SettingsController.php:283
 msgid "Browser TTL"
 msgstr ""
 
-#: php/SettingsController.php:287
+#: psr-4/SettingsController.php:292
 msgid "Browser caches cannot be purged, so visitors may see an outdated page for this long after a change."
 msgstr ""
 
-#: php/SettingsController.php:293
+#: psr-4/SettingsController.php:298
 msgid "Cloudflare edge TTL"
 msgstr ""
 
-#: php/SettingsController.php:302
+#: psr-4/SettingsController.php:307
 msgid "The edge cache is purged when content changes. Keep this below 12 hours if public pages contain nonces, for example in forms."
 msgstr ""
 
-#: php/SettingsController.php:308
+#: psr-4/SettingsController.php:313
 msgid "Stale while revalidate"
 msgstr ""
 
-#: php/SettingsController.php:317
+#: psr-4/SettingsController.php:322
 msgid "How long Cloudflare may keep serving an expired page while it fetches a fresh copy in the background."
 msgstr ""
 
-#: php/SettingsController.php:323
+#: psr-4/SettingsController.php:328
 msgid "Stale if error"
 msgstr ""
 
-#: php/SettingsController.php:332
+#: psr-4/SettingsController.php:337
 msgid "How long Cloudflare may keep serving an expired page when the origin server returns an error or is unreachable."
 msgstr ""
 
-#: php/SettingsController.php:368
+#: psr-4/SettingsController.php:373
 msgid "Enable cache headers for eligible public responses"
 msgstr ""
 
-#: php/SettingsController.php:369
+#: psr-4/SettingsController.php:374
 msgid "Existing cache policy headers are respected. Authenticated requests, previews and requests other than GET and HEAD never receive cache headers."
 msgstr ""
 
 #. translators: 1: Constant name, 2: wp-config.php..
-#: php/SettingsController.php:416
+#: psr-4/SettingsController.php:422
 #, php-format
 msgid "This value is defined in the named constant %1$s, probably in the WordPress configuration file %2$s."
 msgstr ""
 
-#: php/SettingsController.php:453
+#: psr-4/SettingsController.php:459
 msgid "seconds"
 msgstr ""
 
-#: php/SettingsController.php:493
+#: psr-4/SettingsController.php:499
 msgid "Settings"
 msgstr ""
