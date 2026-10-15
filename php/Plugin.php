@@ -596,11 +596,21 @@ final class Plugin {
 	 * @return void
 	 */
 	private function request_invalidate_cache_tags( array $tags ): void {
-		$args = [
-			'tags' => $tags,
-		];
+		/**
+		 * Cloudflare allows a maximum of 100 tags per invalidate request.
+		 * Actions scheduled by older versions of this plugin can contain
+		 * more tags.
+		 *
+		 * @link https://developers.cloudflare.com/cache/how-to/purge-cache/purge-by-tags/
+		 * @link https://github.com/pronamic/wp-pronamic-cloudflare/issues/57
+		 */
+		foreach ( \array_chunk( $tags, 100 ) as $chunk ) {
+			$args = [
+				'tags' => $chunk,
+			];
 
-		$this->send_request( $args, true );
+			$this->send_request( $args, true );
+		}
 	}
 
 	/**
