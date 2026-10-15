@@ -191,6 +191,76 @@ final class CliController {
 				],
 			]
 		);
+
+		WP_CLI::add_command(
+			'pronamic cloudflare invalidate',
+			function ( $args, $assoc_args ): void {
+				$headers = Plugin::get_auth_headers();
+
+				if ( null === $headers ) {
+					WP_CLI::error( 'The Cloudflare API credentials are not configured. Define either `CLOUDFLARE_API_TOKEN` or both `CLOUDFLARE_EMAIL` and `CLOUDFLARE_API_KEY`.' );
+				}
+
+				$identifier = (string) ( $assoc_args['zone'] ?? \get_option( 'pronamic_cloudflare_zone_id' ) );
+
+				if ( '' === $identifier ) {
+					WP_CLI::error( 'The Cloudflare zone ID is not configured. Configure the zone ID in the settings or use the `--zone` argument.' );
+				}
+
+				$url = strtr(
+					'https://api.cloudflare.com/client/v4/zones/:identifier/invalidate_cache',
+					[
+						':identifier' => $identifier,
+					]
+				);
+
+				/**
+				 * Cloudflare allows a maximum of 100 tags per invalidate request.
+				 *
+				 * @link https://developers.cloudflare.com/cache/how-to/purge-cache/purge-by-tags/
+				 */
+				foreach ( \array_chunk( \array_values( \array_unique( $args ) ), 100 ) as $tags ) {
+					$response = wp_remote_post(
+						$url,
+						[
+							// phpcs:ignore WordPressVIPMinimum.Performance.RemoteRequestTimeout.timeout_timeout -- WP-CLI command, not a front-end request.
+							'timeout' => 30,
+							'headers' => [
+								'Content-Type' => 'application/json',
+								...$headers,
+							],
+							'body'    => wp_json_encode(
+								[
+									'tags' => $tags,
+								]
+							),
+						]
+					);
+
+					$this->get_response_data( $response, \sprintf( 'Cloudflare zone `%s` cache tags not invalidated', $identifier ) );
+
+					WP_CLI::success( \sprintf( 'Cloudflare zone `%s` cache tags invalidated: %s', $identifier, \implode( ', ', $tags ) ) );
+				}
+			},
+			[
+				'shortdesc' => 'Invalidates cache tags in Cloudflare’s cache, so Cloudflare revalidates the cached responses.',
+				'synopsis'  => [
+					[
+						'type'        => 'positional',
+						'name'        => 'tag',
+						'description' => 'Cache tag.',
+						'optional'    => false,
+						'repeating'   => true,
+					],
+					[
+						'type'        => 'assoc',
+						'name'        => 'zone',
+						'description' => 'Cloudflare zone identifier, defaults to the configured zone ID.',
+						'optional'    => true,
+					],
+				],
+			]
+		);
 	}
 
 	/**
