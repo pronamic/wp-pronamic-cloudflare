@@ -120,7 +120,7 @@ final class Plugin {
 	 *
 	 * @param WP_Admin_Bar $admin_bar Admin bar.
 	 */
-	public function admin_bar_menu( WP_Admin_Bar $admin_bar ) {
+	private function admin_bar_menu( WP_Admin_Bar $admin_bar ) {
 		if ( ! \current_user_can( 'manage_options' ) ) {
 			return;
 		}
@@ -735,7 +735,7 @@ final class Plugin {
 	 * @param WP_Post $post       WordPress post object.
 	 * @return void
 	 */
-	public function transition_post_status( $new_status, $old_status, WP_Post $post ): void {
+	private function transition_post_status( $new_status, $old_status, WP_Post $post ): void {
 		if ( \is_post_status_viewable( $new_status ) ) {
 			$this->invalidate_cache_by_post( $post->ID );
 

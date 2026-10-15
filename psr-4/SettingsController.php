@@ -76,7 +76,7 @@ final class SettingsController {
 	/**
 	 * Initialize.
 	 */
-	public function init() {
+	private function init() {
 		if ( ! $this->has_api_token() ) {
 			\register_setting(
 				'pronamic_cloudflare',
@@ -165,7 +165,7 @@ final class SettingsController {
 	/**
 	 * Admin initialize.
 	 */
-	public function admin_init() {
+	private function admin_init() {
 		\add_settings_section(
 			'pronamic_cloudflare_general',
 			\__( 'General', 'pronamic-cloudflare' ),
@@ -469,7 +469,7 @@ final class SettingsController {
 	 * @link https://developer.wordpress.org/reference/functions/add_options_page/
 	 * @return void
 	 */
-	public function admin_menu() {
+	private function admin_menu() {
 		\add_options_page(
 			\__( 'Pronamic Cloudflare', 'pronamic-cloudflare' ),
 			\__( 'Pronamic Cloudflare', 'pronamic-cloudflare' ),

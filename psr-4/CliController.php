@@ -26,7 +26,7 @@ final class CliController {
 	/**
 	 * CLI initialize.
 	 */
-	public function cli_init() {
+	private function cli_init() {
 		WP_CLI::add_command(
 			'pronamic cloudflare zones',
 			function ( $args, $assoc_args ): void {
