@@ -334,7 +334,9 @@ final class Plugin {
 		}
 
 		if ( is_post_type_archive() ) {
-			$tags[] = 'archive-' . get_post_type();
+			foreach ( (array) get_query_var( 'post_type' ) as $post_type ) {
+				$tags[] = 'archive-' . $post_type;
+			}
 		}
 
 		if ( is_tax() || is_category() || is_tag() ) {

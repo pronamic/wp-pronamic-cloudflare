@@ -12,6 +12,10 @@ This projects adheres to [Semantic Versioning](http://semver.org/) and [Keep a C
 - Updated the cache headers description on the settings page and the README to match the 1.5.0 behaviour for search results and 404 responses. The README now documents `CLOUDFLARE_API_TOKEN` and describes the plugin as standalone. ([#45](https://github.com/pronamic/wp-pronamic-cloudflare/issues/45), [#46](https://github.com/pronamic/wp-pronamic-cloudflare/pull/46))
 - Cache headers are now also sent for `HEAD` requests, so `curl -I` shows the same `Cache-Control` and `Cloudflare-CDN-Cache-Control` headers as a `GET` request. ([#49](https://github.com/pronamic/wp-pronamic-cloudflare/issues/49), [#50](https://github.com/pronamic/wp-pronamic-cloudflare/pull/50))
 
+### Fixed
+
+- Post type archives are now tagged with the queried post type(s) instead of the post type of the current post in the loop. Empty archives no longer get an `archive-` tag without post type, and archives for multiple post types get an `archive-{post_type}` tag for each post type. ([#51](https://github.com/pronamic/wp-pronamic-cloudflare/issues/51))
+
 ## [1.5.0-rc.1] - 2026-10-14
 
 ### Added
