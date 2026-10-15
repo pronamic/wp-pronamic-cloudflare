@@ -50,7 +50,7 @@ final class SettingsController {
 	}
 
 	/**
-	 * Maybe retrieve option from contstant.
+	 * Maybe retrieve option from constant.
 	 *
 	 * @param string $name The constant name.
 	 * @param mixed  $value The value.
