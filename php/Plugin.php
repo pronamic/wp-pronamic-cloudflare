@@ -1194,6 +1194,16 @@ final class Plugin {
 	 * @return void
 	 */
 	private function shutdown(): void {
+		/**
+		 * Without credentials or zone ID the scheduled actions would always
+		 * fail and fill the Action Scheduler tables, so don't schedule them.
+		 *
+		 * @link https://github.com/pronamic/wp-pronamic-cloudflare/issues/55
+		 */
+		if ( null === self::get_auth_headers() || '' === (string) \get_option( 'pronamic_cloudflare_zone_id' ) ) {
+			return;
+		}
+
 		// Purge everything.
 		if ( true === $this->purge_everything ) {
 			// Remove all scheduled tag actions as purge everything supersedes them.
