@@ -919,7 +919,20 @@ final class Plugin {
 	private function set_object_terms( $object_id, $terms, $tt_ids, $taxonomy, $append, $old_tt_ids ): void {
 		$post = \get_post( $object_id );
 
-		if ( $post instanceof WP_Post && ! \is_post_status_viewable( $post->post_status ) ) {
+		if ( ! ( $post instanceof WP_Post ) ) {
+			return;
+		}
+
+		/**
+		 * The `set_object_terms` action also fires for taxonomies on other
+		 * object types, such as users or links. Only handle posts of a post
+		 * type the taxonomy is registered for.
+		 */
+		if ( ! \is_object_in_taxonomy( $post->post_type, $taxonomy ) ) {
+			return;
+		}
+
+		if ( ! \is_post_status_viewable( $post->post_status ) ) {
 			return;
 		}
 
