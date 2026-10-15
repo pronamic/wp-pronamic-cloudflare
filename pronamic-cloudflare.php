@@ -22,7 +22,7 @@
  * Text Domain: pronamic-cloudflare
  * Domain Path: /languages/
  *
- * License: GPL
+ * License: GPL-2.0-or-later
  *
  * GitHub URI: https://github.com/pronamic/wp-pronamic-cloudflare
  */
