@@ -286,6 +286,16 @@ final class Plugin {
 			return false;
 		}
 
+		/*
+		 * Plugins such as WooCommerce define `DONOTCACHEPAGE` to signal that
+		 * the current page must not be cached by page caches.
+		 *
+		 * @link https://github.com/pronamic/wp-pronamic-cloudflare/issues/63
+		 */
+		if ( \defined( 'DONOTCACHEPAGE' ) && \constant( 'DONOTCACHEPAGE' ) ) {
+			return false;
+		}
+
 		$request_method = isset( $_SERVER['REQUEST_METHOD'] ) ? \strtoupper( \sanitize_text_field( \wp_unslash( $_SERVER['REQUEST_METHOD'] ) ) ) : '';
 
 		return \in_array( $request_method, [ 'GET', 'HEAD' ], true );
