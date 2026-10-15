@@ -9,7 +9,7 @@ This projects adheres to [Semantic Versioning](http://semver.org/) and [Keep a C
 
 ### Added
 
-- Added an "Origin IP address" setting and `PRONAMIC_CLOUDFLARE_ORIGIN_IP` constant to send loopback requests, such as WP-Cron spawns, background processes and cache preheating (SiteGround Optimizer), directly to the origin server instead of through Cloudflare. ([#71](https://github.com/pronamic/wp-pronamic-cloudflare/issues/71))
+- Added an "Origin IP address" setting and `PRONAMIC_CLOUDFLARE_ORIGIN_IP` constant to send loopback requests, such as WP-Cron spawns, background processes and cache preheating (SiteGround Optimizer), directly to the origin server instead of through Cloudflare. ([#71](https://github.com/pronamic/wp-pronamic-cloudflare/issues/71), [#72](https://github.com/pronamic/wp-pronamic-cloudflare/pull/72))
 
 ## [1.5.0] - 2026-10-15
 
