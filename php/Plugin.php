@@ -288,7 +288,7 @@ final class Plugin {
 
 		$request_method = isset( $_SERVER['REQUEST_METHOD'] ) ? \strtoupper( \sanitize_text_field( \wp_unslash( $_SERVER['REQUEST_METHOD'] ) ) ) : '';
 
-		return 'GET' === $request_method;
+		return \in_array( $request_method, [ 'GET', 'HEAD' ], true );
 	}
 
 	/**
