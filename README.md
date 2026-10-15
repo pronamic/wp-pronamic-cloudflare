@@ -142,6 +142,10 @@ $ wp pronamic cloudflare zones
 $ wp pronamic cloudflare purge $( wp pronamic cloudflare zones --format=ids )
 ```
 
+```bash
+$ wp pronamic cloudflare invalidate $( wp pronamic cloudflare zones --format=ids )
+```
+
 ## Links
 
 - https://api.cloudflare.com/#zone-list-zones

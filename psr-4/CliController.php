@@ -191,6 +191,59 @@ final class CliController {
 				],
 			]
 		);
+
+		WP_CLI::add_command(
+			'pronamic cloudflare invalidate',
+			function ( $args ): void {
+				$headers = Plugin::get_auth_headers();
+
+				if ( null === $headers ) {
+					WP_CLI::error( 'The Cloudflare API credentials are not configured. Define either `CLOUDFLARE_API_TOKEN` or both `CLOUDFLARE_EMAIL` and `CLOUDFLARE_API_KEY`.' );
+				}
+
+				foreach ( $args as $identifier ) {
+					$url = strtr(
+						'https://api.cloudflare.com/client/v4/zones/:identifier/invalidate_cache',
+						[
+							':identifier' => $identifier,
+						]
+					);
+
+					$response = wp_remote_post(
+						$url,
+						[
+							// phpcs:ignore WordPressVIPMinimum.Performance.RemoteRequestTimeout.timeout_timeout -- WP-CLI command, not a front-end request.
+							'timeout' => 30,
+							'headers' => [
+								'Content-Type' => 'application/json',
+								...$headers,
+							],
+							'body'    => wp_json_encode(
+								[
+									'purge_everything' => true,
+								]
+							),
+						]
+					);
+
+					$this->get_response_data( $response, \sprintf( 'Cloudflare zone `%s` cache not invalidated', $identifier ) );
+
+					WP_CLI::success( \sprintf( 'Cloudflare zone `%s` cache invalidated.', $identifier ) );
+				}
+			},
+			[
+				'shortdesc' => 'Invalidates ALL files in Cloudflare’s cache, so Cloudflare revalidates the cached responses.',
+				'synopsis'  => [
+					[
+						'type'        => 'positional',
+						'name'        => 'identifier',
+						'description' => 'Cloudflare zone identifier.',
+						'optional'    => false,
+						'repeating'   => true,
+					],
+				],
+			]
+		);
 	}
 
 	/**
