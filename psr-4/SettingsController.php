@@ -363,30 +363,39 @@ final class SettingsController {
 			'pronamic_cloudflare'
 		);
 
-		$origin_ip_description = \__( 'The IP address of the origin server, as configured in the DNS records of the Cloudflare zone. Leave empty to send loopback requests through Cloudflare. The origin server needs a publicly trusted certificate, a Cloudflare Origin CA certificate is not trusted by WordPress.', 'pronamic-cloudflare' );
-
 		$server_addr = \array_key_exists( 'SERVER_ADDR', $_SERVER ) ? LoopbackController::sanitize_ip( \sanitize_text_field( \wp_unslash( $_SERVER['SERVER_ADDR'] ) ) ) : '';
-
-		if ( '' !== $server_addr ) {
-			$origin_ip_description .= ' ' . \sprintf(
-				/* translators: %s: Server IP address. */
-				\__( 'The web server reports %s as its own IP address, behind a reverse proxy or load balancer this can be an internal IP address.', 'pronamic-cloudflare' ),
-				$server_addr
-			);
-		}
 
 		\add_settings_field(
 			'pronamic_cloudflare_origin_ip',
 			\__( 'Origin IP address', 'pronamic-cloudflare' ),
-			function ( $args ): void {
+			function ( $args ) use ( $server_addr ): void {
 				$this->input_text( $args );
+
+				if ( '' === $server_addr ) {
+					return;
+				}
+
+				echo '<p class="description">';
+
+				echo \wp_kses(
+					\sprintf(
+						/* translators: %s: Server IP address. */
+						\__( 'Server IP address: %s. Behind a reverse proxy or load balancer this can be an internal IP address.', 'pronamic-cloudflare' ),
+						'<code>' . \esc_html( $server_addr ) . '</code>'
+					),
+					[
+						'code' => [],
+					]
+				);
+
+				echo '</p>';
 			},
 			'pronamic_cloudflare',
 			'pronamic_cloudflare_loopback_requests',
 			[
 				'label_for'     => 'pronamic_cloudflare_origin_ip',
 				'constant_name' => 'PRONAMIC_CLOUDFLARE_ORIGIN_IP',
-				'description'   => $origin_ip_description,
+				'description'   => \__( 'The IP address of the origin server in the DNS records of the Cloudflare zone. Leave empty to send loopback requests through Cloudflare.', 'pronamic-cloudflare' ),
 			]
 		);
 	}

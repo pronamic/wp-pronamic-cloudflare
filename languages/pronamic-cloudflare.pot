@@ -9,16 +9,16 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-15T09:16:25+00:00\n"
+"POT-Creation-Date: 2026-10-15T11:18:42+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: pronamic-cloudflare\n"
 
 #. Plugin Name of the plugin
 #: pronamic-cloudflare.php:11
-#: psr-4/Plugin.php:150
-#: psr-4/SettingsController.php:474
-#: psr-4/SettingsController.php:475
+#: psr-4/Plugin.php:151
+#: psr-4/SettingsController.php:539
+#: psr-4/SettingsController.php:540
 msgid "Pronamic Cloudflare"
 msgstr ""
 
@@ -151,117 +151,139 @@ msgid "Cloudflare documentation:"
 msgstr ""
 
 #. translators: %s: Emoji.
-#: psr-4/Plugin.php:145
+#: psr-4/Plugin.php:146
 #, php-format
 msgid "Cloudflare %s"
 msgstr ""
 
 #. translators: %s: Number pending actions.
-#: psr-4/Plugin.php:162
+#: psr-4/Plugin.php:163
 #, php-format
 msgid "Cache actions (%s)"
 msgstr ""
 
-#: psr-4/SettingsController.php:171
+#: psr-4/SettingsController.php:185
 msgid "General"
 msgstr ""
 
-#: psr-4/SettingsController.php:178
+#: psr-4/SettingsController.php:192
 msgid "Zone ID"
 msgstr ""
 
-#: psr-4/SettingsController.php:192
-#: psr-4/SettingsController.php:203
+#: psr-4/SettingsController.php:206
+#: psr-4/SettingsController.php:217
 msgid "API Token"
 msgstr ""
 
-#: psr-4/SettingsController.php:192
+#: psr-4/SettingsController.php:206
 msgid "API Token (Recommended)"
 msgstr ""
 
-#: psr-4/SettingsController.php:195
+#: psr-4/SettingsController.php:209
 msgid "Cloudflare recommends using API Tokens for improved security and better access control. API Tokens use Bearer authentication."
 msgstr ""
 
-#: psr-4/SettingsController.php:218
+#: psr-4/SettingsController.php:232
 msgid "Global API Key (Legacy)"
 msgstr ""
 
-#: psr-4/SettingsController.php:221
+#: psr-4/SettingsController.php:235
 msgid "The Global API Key authentication method is still supported but not recommended. If an API Token is configured, it will be used instead."
 msgstr ""
 
-#: psr-4/SettingsController.php:229
+#: psr-4/SettingsController.php:243
 msgid "API email"
 msgstr ""
 
-#: psr-4/SettingsController.php:243
+#: psr-4/SettingsController.php:257
 msgid "API key"
 msgstr ""
 
-#: psr-4/SettingsController.php:258
+#: psr-4/SettingsController.php:272
 msgid "Cache headers"
 msgstr ""
 
-#: psr-4/SettingsController.php:261
+#: psr-4/SettingsController.php:275
 msgid "Configure browser and Cloudflare edge cache lifetimes for public responses."
 msgstr ""
 
-#: psr-4/SettingsController.php:269
-#: psr-4/SettingsController.php:370
+#: psr-4/SettingsController.php:283
+#: psr-4/SettingsController.php:431
 msgid "Enable cache headers"
 msgstr ""
 
-#: psr-4/SettingsController.php:283
+#: psr-4/SettingsController.php:297
 msgid "Browser TTL"
 msgstr ""
 
-#: psr-4/SettingsController.php:292
+#: psr-4/SettingsController.php:306
 msgid "Browser caches cannot be purged, so visitors may see an outdated page for this long after a change."
 msgstr ""
 
-#: psr-4/SettingsController.php:298
+#: psr-4/SettingsController.php:312
 msgid "Cloudflare edge TTL"
 msgstr ""
 
-#: psr-4/SettingsController.php:307
+#: psr-4/SettingsController.php:321
 msgid "The edge cache is purged when content changes. Keep this below 12 hours if public pages contain nonces, for example in forms."
 msgstr ""
 
-#: psr-4/SettingsController.php:313
+#: psr-4/SettingsController.php:327
 msgid "Stale while revalidate"
 msgstr ""
 
-#: psr-4/SettingsController.php:322
+#: psr-4/SettingsController.php:336
 msgid "How long Cloudflare may keep serving an expired page while it fetches a fresh copy in the background."
 msgstr ""
 
-#: psr-4/SettingsController.php:328
+#: psr-4/SettingsController.php:342
 msgid "Stale if error"
 msgstr ""
 
-#: psr-4/SettingsController.php:337
+#: psr-4/SettingsController.php:351
 msgid "How long Cloudflare may keep serving an expired page when the origin server returns an error or is unreachable."
 msgstr ""
 
-#: psr-4/SettingsController.php:373
+#: psr-4/SettingsController.php:357
+msgid "Loopback requests"
+msgstr ""
+
+#: psr-4/SettingsController.php:360
+msgid "WordPress sends HTTP requests to its own hostname, for example to run WP-Cron, background processes or to preheat a cache. Through Cloudflare these requests can be answered from the Cloudflare cache or blocked by security rules. With an origin IP address these requests are sent directly to the origin server."
+msgstr ""
+
+#: psr-4/SettingsController.php:370
+msgid "Origin IP address"
+msgstr ""
+
+#. translators: %s: Server IP address.
+#: psr-4/SettingsController.php:383
+#, php-format
+msgid "Server IP address: %s. Behind a reverse proxy or load balancer this can be an internal IP address."
+msgstr ""
+
+#: psr-4/SettingsController.php:398
+msgid "The IP address of the origin server in the DNS records of the Cloudflare zone. Leave empty to send loopback requests through Cloudflare."
+msgstr ""
+
+#: psr-4/SettingsController.php:434
 msgid "Enable cache headers for eligible public responses"
 msgstr ""
 
-#: psr-4/SettingsController.php:374
+#: psr-4/SettingsController.php:435
 msgid "Existing cache policy headers are respected. Authenticated requests, previews and requests other than GET and HEAD never receive cache headers."
 msgstr ""
 
 #. translators: 1: Constant name, 2: wp-config.php..
-#: psr-4/SettingsController.php:422
+#: psr-4/SettingsController.php:487
 #, php-format
 msgid "This value is defined in the named constant %1$s, probably in the WordPress configuration file %2$s."
 msgstr ""
 
-#: psr-4/SettingsController.php:459
+#: psr-4/SettingsController.php:524
 msgid "seconds"
 msgstr ""
 
-#: psr-4/SettingsController.php:499
+#: psr-4/SettingsController.php:564
 msgid "Settings"
 msgstr ""
