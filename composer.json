@@ -35,7 +35,8 @@
 		"roots/wordpress-no-content": "^7.1",
 		"wp-cli/dist-archive-command": "*",
 		"wp-cli/wp-cli": "*",
-		"wp-plugin/cloudflare": "^4.14"
+		"wp-plugin/cloudflare": "^4.14",
+		"wp-plugin/sg-cachepress": "^7.8"
 	},
 	"scripts": {
 		"build": [

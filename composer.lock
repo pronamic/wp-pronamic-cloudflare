@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "44c8997df0d285b4326ad684630823a5",
+    "content-hash": "a3fff07066b77371485a1708d363c10a",
     "packages": [
         {
             "name": "automattic/jetpack-autoloader",
@@ -6313,6 +6313,37 @@
                 "source": "https://plugins.svn.wordpress.org/cloudflare"
             },
             "time": "2026-10-05T19:09:40+00:00"
+        },
+        {
+            "name": "wp-plugin/sg-cachepress",
+            "version": "7.8.4",
+            "source": {
+                "type": "svn",
+                "url": "https://plugins.svn.wordpress.org/sg-cachepress/",
+                "reference": "tags/7.8.4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://downloads.wordpress.org/plugin/sg-cachepress.7.8.4.zip"
+            },
+            "require": {
+                "composer/installers": "~1.0|~2.0"
+            },
+            "type": "wordpress-plugin",
+            "notification-url": "https://wp-packages.org/downloads",
+            "authors": [
+                {
+                    "name": "SiteGround"
+                }
+            ],
+            "description": "Boost your website performance and page speed, and increase conversions with powerful caching, frontend, media, and environment optimizations.",
+            "homepage": "https://siteground.com",
+            "support": {
+                "changelog": "https://wordpress.org/plugins/sg-cachepress/#developers",
+                "issues": "https://wordpress.org/support/plugin/sg-cachepress",
+                "source": "https://plugins.svn.wordpress.org/sg-cachepress"
+            },
+            "time": "2026-10-07T07:34:30+00:00"
         }
     ],
     "aliases": [],
