@@ -228,9 +228,11 @@ final class CacheHeadersController {
 		$tags = [];
 
 		if ( is_singular() ) {
-			global $post;
+			$post = get_queried_object();
 
-			$tags = \array_merge( $tags, CacheTags::get_post_related_tags( $post ) );
+			if ( $post instanceof WP_Post ) {
+				$tags = \array_merge( $tags, CacheTags::get_post_related_tags( $post ) );
+			}
 		}
 
 		if ( is_post_type_archive() ) {
@@ -299,6 +301,10 @@ final class CacheHeadersController {
 		foreach ( $this->related_post_ids as $related_post_id ) {
 			$related_post = \get_post( $related_post_id );
 
+			if ( ! ( $related_post instanceof WP_Post ) ) {
+				continue;
+			}
+
 			$related_tags = CacheTags::get_post_related_tags( $related_post );
 
 			$tags = \array_merge( $tags, $related_tags );
@@ -310,7 +316,7 @@ final class CacheHeadersController {
 	/**
 	 * Add related post ID.
 	 *
-	 * @param string            $content Filtered content.
+	 * @param string           $content Filtered content.
 	 * @param WP_Post|int|null $post    Post.
 	 * @return string
 	 */

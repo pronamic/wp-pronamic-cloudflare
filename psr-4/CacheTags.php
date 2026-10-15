@@ -47,7 +47,7 @@ final class CacheTags {
 		if ( $comment->comment_post_ID ) {
 			$post = \get_post( $comment->comment_post_ID );
 
-			if ( false !== $post ) {
+			if ( $post instanceof WP_Post ) {
 				$tags = \array_merge( $tags, self::get_post_related_tags( $post ) );
 			}
 		}
