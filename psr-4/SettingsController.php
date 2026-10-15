@@ -47,6 +47,11 @@ final class SettingsController {
 			'pre_option_pronamic_cloudflare_zone_id',
 			fn( $value ) => $this->maybe_retrieve_option_from_constant( 'PRONAMIC_CLOUDFLARE_ZONE_ID', $value )
 		);
+
+		\add_filter(
+			'pre_option_pronamic_cloudflare_origin_ip',
+			fn( $value ) => $this->maybe_retrieve_option_from_constant( 'PRONAMIC_CLOUDFLARE_ORIGIN_IP', $value )
+		);
 	}
 
 	/**
@@ -108,6 +113,15 @@ final class SettingsController {
 			'pronamic_cloudflare_zone_id',
 			[
 				'type' => 'string',
+			]
+		);
+
+		\register_setting(
+			'pronamic_cloudflare',
+			'pronamic_cloudflare_origin_ip',
+			[
+				'type'              => 'string',
+				'sanitize_callback' => LoopbackController::sanitize_ip( ... ),
 			]
 		);
 
@@ -337,6 +351,53 @@ final class SettingsController {
 				'description' => \__( 'How long Cloudflare may keep serving an expired page when the origin server returns an error or is unreachable.', 'pronamic-cloudflare' ),
 			]
 		);
+
+		\add_settings_section(
+			'pronamic_cloudflare_loopback_requests',
+			\__( 'Loopback requests', 'pronamic-cloudflare' ),
+			function (): void {
+				echo '<p>';
+				\esc_html_e( 'WordPress sends HTTP requests to its own hostname, for example to run WP-Cron, background processes or to preheat a cache. Through Cloudflare these requests can be answered from the Cloudflare cache or blocked by security rules. With an origin IP address these requests are sent directly to the origin server.', 'pronamic-cloudflare' );
+				echo '</p>';
+			},
+			'pronamic_cloudflare'
+		);
+
+		$server_addr = \array_key_exists( 'SERVER_ADDR', $_SERVER ) ? LoopbackController::sanitize_ip( \sanitize_text_field( \wp_unslash( $_SERVER['SERVER_ADDR'] ) ) ) : '';
+
+		\add_settings_field(
+			'pronamic_cloudflare_origin_ip',
+			\__( 'Origin IP address', 'pronamic-cloudflare' ),
+			function ( $args ) use ( $server_addr ): void {
+				$this->input_text( $args );
+
+				if ( '' === $server_addr ) {
+					return;
+				}
+
+				echo '<p class="description">';
+
+				echo \wp_kses(
+					\sprintf(
+						/* translators: %s: Server IP address. */
+						\__( 'Server IP address: %s. Behind a reverse proxy or load balancer this can be an internal IP address.', 'pronamic-cloudflare' ),
+						'<code>' . \esc_html( $server_addr ) . '</code>'
+					),
+					[
+						'code' => [],
+					]
+				);
+
+				echo '</p>';
+			},
+			'pronamic_cloudflare',
+			'pronamic_cloudflare_loopback_requests',
+			[
+				'label_for'     => 'pronamic_cloudflare_origin_ip',
+				'constant_name' => 'PRONAMIC_CLOUDFLARE_ORIGIN_IP',
+				'description'   => \__( 'The IP address of the origin server in the DNS records of the Cloudflare zone. Leave empty to send loopback requests through Cloudflare.', 'pronamic-cloudflare' ),
+			]
+		);
 	}
 
 	/**
@@ -412,6 +473,10 @@ final class SettingsController {
 		$element = new Element( 'input', $attributes );
 
 		$element->output();
+
+		if ( \array_key_exists( 'description', $args ) ) {
+			echo '<p class="description">', \esc_html( $args['description'] ), '</p>';
+		}
 
 		if ( \defined( $constant_name ) ) {
 			echo '<p class="description">';

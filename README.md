@@ -52,6 +52,7 @@ Do you mainly want to change Cloudflare zone settings without opening the Cloudf
 - [Automatic Platform Optimization (APO)](#automatic-platform-optimization-apo)
 - [Cache invalidation](#cache-invalidation)
 - [404 responses](#404-responses)
+- [Loopback requests](#loopback-requests)
 - [WP-CLI](#wp-cli)
 - [Links](#links)
 
@@ -91,6 +92,14 @@ The Cloudflare Zone ID for the domain you are managing. You can locate this in y
 
 ```php
 define( 'PRONAMIC_CLOUDFLARE_ZONE_ID', 'your-cloudflare-zone-id' );
+```
+
+### `PRONAMIC_CLOUDFLARE_ORIGIN_IP`
+
+The IP address of the origin server, as configured in the DNS records of the Cloudflare zone. When set, loopback requests are sent directly to the origin server, see [Loopback requests](#loopback-requests).
+
+```php
+define( 'PRONAMIC_CLOUDFLARE_ORIGIN_IP', '192.0.2.10' );
 ```
 
 ### Security Note
@@ -166,6 +175,20 @@ See [Cache 404 responses at Cloudflare](documentation/cache-404-responses.md) fo
 > ```
 >
 > Replace `192.0.2.10` with the IP address of your origin server.
+
+## Loopback requests
+
+WordPress regularly sends HTTP requests to its own hostname: to spawn WP-Cron, to start background processes (`admin-ajax.php?action=…`), for the Site Health loopback checks and to preheat a cache, such as the "Preheat cache" feature of [SiteGround Optimizer](https://wordpress.org/plugins/sg-cachepress/). Behind Cloudflare, these requests also go through Cloudflare. They can be answered from the Cloudflare cache, so a cache preheater never reaches the origin, or be blocked by WAF rules, rate limiting or Bot Fight Mode.
+
+Configure the origin IP address under **Settings > Pronamic Cloudflare** or with the [`PRONAMIC_CLOUDFLARE_ORIGIN_IP`](#pronamic_cloudflare_origin_ip) constant to send these requests directly to the origin server. The plugin then uses the [`http_api_curl`](https://developer.wordpress.org/reference/hooks/http_api_curl/) hook to set [`CURLOPT_RESOLVE`](https://curl.se/libcurl/c/CURLOPT_RESOLVE.html) for requests to the hostname of `home_url()` and `site_url()`, the same as the `curl --resolve` option above. The URL, `Host` header and TLS (SNI) stay the same. Requests to other hosts are not affected.
+
+This makes Cloudflare rules that exclude "requests from the server itself" unnecessary. Such rules are risky: a `User-Agent` such as `WordPress/6.8; https://www.example.com` is easy to spoof, and the outgoing IP address of a hosting server is not always the IP address the site is served from.
+
+> [!NOTE]
+> WordPress verifies the certificate of the origin server for most requests. The origin server therefore needs a publicly trusted certificate, for example from Let's Encrypt. A [Cloudflare Origin CA certificate](https://developers.cloudflare.com/ssl/origin-configuration/origin-ca/) is only trusted by Cloudflare.
+
+> [!NOTE]
+> `499` responses in the access log for `wp-cron.php` and `admin-ajax.php?action=…` loopback requests are expected. WordPress and `WP_Async_Request` send these requests non-blocking with a very short timeout and close the connection right away, which nginx logs as `499 Client Closed Request`.
 
 ## WP-CLI
 

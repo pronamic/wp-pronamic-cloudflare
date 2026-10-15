@@ -62,6 +62,7 @@ final class Plugin {
 	public function __construct() {
 		$this->controllers = [
 			new CliController(),
+			new LoopbackController(),
 			new SettingsController(),
 		];
 	}
