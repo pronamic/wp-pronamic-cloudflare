@@ -20,7 +20,7 @@ final class CliController {
 	 * Setup.
 	 */
 	public function setup() {
-		\add_action( 'cli_init', [ $this, 'cli_init' ] );
+		\add_action( 'cli_init', $this->cli_init( ... ) );
 	}
 
 	/**
@@ -29,7 +29,7 @@ final class CliController {
 	public function cli_init() {
 		WP_CLI::add_command(
 			'pronamic cloudflare zones',
-			function ( $args, $assoc_args ) {
+			function ( $args, $assoc_args ): void {
 				$headers = Plugin::get_auth_headers();
 
 				if ( null === $headers ) {
@@ -60,13 +60,11 @@ final class CliController {
 				$data = json_decode( $body );
 
 				$items = \array_map(
-					function ( $item ) {
-						return [
-							'id'     => $item->id,
-							'name'   => $item->name,
-							'status' => $item->status,
-						];
-					},
+					fn( $item ) => [
+						'id'     => $item->id,
+						'name'   => $item->name,
+						'status' => $item->status,
+					],
 					$data->result
 				);
 
@@ -125,7 +123,7 @@ final class CliController {
 
 		WP_CLI::add_command(
 			'pronamic cloudflare purge',
-			function ( $args, $assoc_args ) {
+			function ( $args, $assoc_args ): void {
 				$headers = Plugin::get_auth_headers();
 
 				if ( null === $headers ) {

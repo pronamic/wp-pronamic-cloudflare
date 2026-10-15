@@ -72,7 +72,7 @@ final class Plugin {
 	 * @return void
 	 */
 	public function setup() {
-		\add_action( 'admin_bar_menu', [ $this, 'admin_bar_menu' ], 500 );
+		\add_action( 'admin_bar_menu', $this->admin_bar_menu( ... ), 500 );
 		\add_action( 'pronamic_cloudflare_purge_cache_tags', $this->request_purge_cache_tags( ... ) );
 		\add_action( 'pronamic_cloudflare_invalidate_cache_tags', $this->request_invalidate_cache_tags( ... ) );
 		\add_action( 'pronamic_cloudflare_purge_everything', $this->request_purge_everything( ... ) );
@@ -249,7 +249,7 @@ final class Plugin {
 			return;
 		}
 
-		$browser_ttl           = \absint( \get_option( 'pronamic_cloudflare_cache_browser_ttl' ) );
+		$browser_ttl            = \absint( \get_option( 'pronamic_cloudflare_cache_browser_ttl' ) );
 		$edge_ttl               = \absint( \get_option( 'pronamic_cloudflare_cache_edge_ttl' ) );
 		$stale_while_revalidate = \absint( \get_option( 'pronamic_cloudflare_cache_stale_while_revalidate' ) );
 		$stale_if_error         = \absint( \get_option( 'pronamic_cloudflare_cache_stale_if_error' ) );
@@ -413,9 +413,7 @@ final class Plugin {
 	 * @return string
 	 */
 	private function add_related_post_id( $content, $post = null ) {
-		if ( null === $post ) {
-			$post = \get_the_ID();
-		}
+		$post ??= \get_the_ID();
 
 		$post = \get_post( $post );
 

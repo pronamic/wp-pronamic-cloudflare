@@ -14,6 +14,7 @@
  *
  * Version: 1.5.0-rc.1
  * Requires at least: 6.8
+ * Requires PHP: 8.1
  *
  * Author: Pronamic
  * Author URI: https://www.pronamic.eu/

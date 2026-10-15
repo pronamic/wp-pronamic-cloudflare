@@ -20,40 +20,32 @@ final class SettingsController {
 	 * Setup.
 	 */
 	public function setup() {
-		\add_action( 'init', [ $this, 'init' ] );
+		\add_action( 'init', $this->init( ... ) );
 
-		\add_action( 'admin_init', [ $this, 'admin_init' ] );
+		\add_action( 'admin_init', $this->admin_init( ... ) );
 
-		\add_action( 'admin_menu', [ $this, 'admin_menu' ] );
+		\add_action( 'admin_menu', $this->admin_menu( ... ) );
 
 		\add_filter( 'plugin_action_links_' . \plugin_basename( \dirname( __DIR__ ) . '/pronamic-cloudflare.php' ), $this->plugin_action_links( ... ) );
 
 		\add_filter(
 			'pre_option_pronamic_cloudflare_api_email',
-			function ( $value ) {
-				return $this->maybe_retrieve_option_from_constant( 'CLOUDFLARE_EMAIL', $value );
-			}
+			fn( $value ) => $this->maybe_retrieve_option_from_constant( 'CLOUDFLARE_EMAIL', $value )
 		);
 
 		\add_filter(
 			'pre_option_pronamic_cloudflare_api_key',
-			function ( $value ) {
-				return $this->maybe_retrieve_option_from_constant( 'CLOUDFLARE_API_KEY', $value );
-			}
+			fn( $value ) => $this->maybe_retrieve_option_from_constant( 'CLOUDFLARE_API_KEY', $value )
 		);
 
 		\add_filter(
 			'pre_option_pronamic_cloudflare_api_token',
-			function ( $value ) {
-				return $this->maybe_retrieve_option_from_constant( 'CLOUDFLARE_API_TOKEN', $value );
-			}
+			fn( $value ) => $this->maybe_retrieve_option_from_constant( 'CLOUDFLARE_API_TOKEN', $value )
 		);
 
 		\add_filter(
 			'pre_option_pronamic_cloudflare_zone_id',
-			function ( $value ) {
-				return $this->maybe_retrieve_option_from_constant( 'PRONAMIC_CLOUDFLARE_ZONE_ID', $value );
-			}
+			fn( $value ) => $this->maybe_retrieve_option_from_constant( 'PRONAMIC_CLOUDFLARE_ZONE_ID', $value )
 		);
 	}
 
@@ -177,14 +169,14 @@ final class SettingsController {
 		\add_settings_section(
 			'pronamic_cloudflare_general',
 			\__( 'General', 'pronamic-cloudflare' ),
-			function () { },
+			function (): void { },
 			'pronamic_cloudflare'
 		);
 
 		\add_settings_field(
 			'pronamic_cloudflare_zone_id',
 			\__( 'Zone ID', 'pronamic-cloudflare' ),
-			function ( $args ) {
+			function ( $args ): void {
 				$this->input_text( $args );
 			},
 			'pronamic_cloudflare',
@@ -198,7 +190,7 @@ final class SettingsController {
 		\add_settings_section(
 			'pronamic_cloudflare_api_token',
 			$this->has_api_token() ? \__( 'API Token', 'pronamic-cloudflare' ) : \__( 'API Token (Recommended)', 'pronamic-cloudflare' ),
-			function () {
+			function (): void {
 				echo '<p>';
 				\esc_html_e( 'Cloudflare recommends using API Tokens for improved security and better access control. API Tokens use Bearer authentication.', 'pronamic-cloudflare' );
 				echo '</p>';
@@ -209,7 +201,7 @@ final class SettingsController {
 		\add_settings_field(
 			'pronamic_cloudflare_api_token',
 			\__( 'API Token', 'pronamic-cloudflare' ),
-			function ( $args ) {
+			function ( $args ): void {
 				$this->input_text( $args );
 			},
 			'pronamic_cloudflare',
@@ -224,7 +216,7 @@ final class SettingsController {
 			\add_settings_section(
 				'pronamic_cloudflare_global_api_key',
 				\__( 'Global API Key (Legacy)', 'pronamic-cloudflare' ),
-				function () {
+				function (): void {
 					echo '<p>';
 					\esc_html_e( 'The Global API Key authentication method is still supported but not recommended. If an API Token is configured, it will be used instead.', 'pronamic-cloudflare' );
 					echo '</p>';
@@ -235,7 +227,7 @@ final class SettingsController {
 			\add_settings_field(
 				'pronamic_cloudflare_api_email',
 				\__( 'API email', 'pronamic-cloudflare' ),
-				function ( $args ) {
+				function ( $args ): void {
 					$this->input_text( $args );
 				},
 				'pronamic_cloudflare',
@@ -249,7 +241,7 @@ final class SettingsController {
 			\add_settings_field(
 				'pronamic_cloudflare_api_key',
 				\__( 'API key', 'pronamic-cloudflare' ),
-				function ( $args ) {
+				function ( $args ): void {
 					$this->input_text( $args );
 				},
 				'pronamic_cloudflare',
@@ -264,7 +256,7 @@ final class SettingsController {
 		\add_settings_section(
 			'pronamic_cloudflare_cache_headers',
 			\__( 'Cache headers', 'pronamic-cloudflare' ),
-			function () {
+			function (): void {
 				echo '<p>';
 				\esc_html_e( 'Configure browser and Cloudflare edge cache lifetimes for public responses.', 'pronamic-cloudflare' );
 				echo '</p>';
@@ -289,7 +281,7 @@ final class SettingsController {
 		\add_settings_field(
 			'pronamic_cloudflare_cache_browser_ttl',
 			\__( 'Browser TTL', 'pronamic-cloudflare' ),
-			function ( $args ) {
+			function ( $args ): void {
 				$this->input_seconds( $args );
 			},
 			'pronamic_cloudflare',
@@ -304,7 +296,7 @@ final class SettingsController {
 		\add_settings_field(
 			'pronamic_cloudflare_cache_edge_ttl',
 			\__( 'Cloudflare edge TTL', 'pronamic-cloudflare' ),
-			function ( $args ) {
+			function ( $args ): void {
 				$this->input_seconds( $args );
 			},
 			'pronamic_cloudflare',
@@ -319,7 +311,7 @@ final class SettingsController {
 		\add_settings_field(
 			'pronamic_cloudflare_cache_stale_while_revalidate',
 			\__( 'Stale while revalidate', 'pronamic-cloudflare' ),
-			function ( $args ) {
+			function ( $args ): void {
 				$this->input_seconds( $args );
 			},
 			'pronamic_cloudflare',
@@ -334,7 +326,7 @@ final class SettingsController {
 		\add_settings_field(
 			'pronamic_cloudflare_cache_stale_if_error',
 			\__( 'Stale if error', 'pronamic-cloudflare' ),
-			function ( $args ) {
+			function ( $args ): void {
 				$this->input_seconds( $args );
 			},
 			'pronamic_cloudflare',
@@ -379,7 +371,7 @@ final class SettingsController {
 			<input type="hidden" name="pronamic_cloudflare_cache_headers_enabled" value="0" />
 			<label for="pronamic-cloudflare-cache-enabled"><input type="checkbox" name="pronamic_cloudflare_cache_headers_enabled" id="pronamic-cloudflare-cache-enabled" value="1" <?php \checked( self::get_cache_headers_enabled() ); ?> />
 			<?php \esc_html_e( 'Enable cache headers for eligible public responses', 'pronamic-cloudflare' ); ?></label>
-			<p class="description"><?php \esc_html_e( 'Existing cache policy headers are respected. Authenticated requests, search results and 404 responses will not be cached.', 'pronamic-cloudflare' ); ?></p>
+			<p class="description"><?php \esc_html_e( 'Existing cache policy headers are respected. Authenticated requests, previews and non-GET requests never receive cache headers.', 'pronamic-cloudflare' ); ?></p>
 		</fieldset>
 
 		<script>
@@ -483,7 +475,7 @@ final class SettingsController {
 			\__( 'Pronamic Cloudflare', 'pronamic-cloudflare' ),
 			'manage_options',
 			'pronamic_cloudflare',
-			function () {
+			function (): void {
 				include __DIR__ . '/../admin/page-settings.php';
 			}
 		);
