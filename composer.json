@@ -12,7 +12,7 @@
 	},
 	"autoload": {
 		"psr-4": {
-			"Pronamic\\WordPressCloudflare\\": "php/"
+			"Pronamic\\WordPressCloudflare\\": "psr-4/"
 		}
 	},
 	"repositories": [
