@@ -7,10 +7,6 @@ This projects adheres to [Semantic Versioning](http://semver.org/) and [Keep a C
 
 ## [Unreleased]
 
-### Added
-
-- Added the `pronamic_cloudflare_cache_headers_eligible` filter to change whether the current response is eligible for cache headers. ([#63](https://github.com/pronamic/wp-pronamic-cloudflare/issues/63))
-
 ### Changed
 
 - Updated the cache headers description on the settings page and the README to match the 1.5.0 behaviour for search results and 404 responses. The README now documents `CLOUDFLARE_API_TOKEN` and describes the plugin as standalone. ([#45](https://github.com/pronamic/wp-pronamic-cloudflare/issues/45), [#46](https://github.com/pronamic/wp-pronamic-cloudflare/pull/46))
