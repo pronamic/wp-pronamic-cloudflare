@@ -139,7 +139,7 @@ $ wp pronamic cloudflare zones
 ```
 
 ```bash
-$ wp pronamic cloudflare purge $( wp pronamic cloudflare zones )
+$ wp pronamic cloudflare purge $( wp pronamic cloudflare zones --format=ids )
 ```
 
 ## Links

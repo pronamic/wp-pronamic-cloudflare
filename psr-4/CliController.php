@@ -36,37 +36,56 @@ final class CliController {
 					WP_CLI::error( 'The Cloudflare API credentials are not configured. Define either `CLOUDFLARE_API_TOKEN` or both `CLOUDFLARE_EMAIL` and `CLOUDFLARE_API_KEY`.' );
 				}
 
-				$url = add_query_arg(
+				$query_args = \array_intersect_key(
 					$assoc_args,
-					'https://api.cloudflare.com/client/v4/zones'
-				);
-
-				$response = wp_remote_get(
-					$url,
 					[
-						'headers' => [
-							'Content-Type' => 'application/json',
-							...$headers,
-						],
+						'name'   => true,
+						'status' => true,
 					]
 				);
 
-				if ( is_wp_error( $response ) ) {
-					WP_CLI::error( $response->get_error_message() );
-				}
+				$items = [];
 
-				$body = wp_remote_retrieve_body( $response );
+				$page = 1;
 
-				$data = json_decode( $body );
+				do {
+					$url = add_query_arg(
+						[
+							...$query_args,
+							'page'     => $page,
+							'per_page' => 50,
+						],
+						'https://api.cloudflare.com/client/v4/zones'
+					);
 
-				$items = \array_map(
-					fn( $item ) => [
-						'id'     => $item->id,
-						'name'   => $item->name,
-						'status' => $item->status,
-					],
-					$data->result
-				);
+					$response = wp_remote_get(
+						$url,
+						[
+							'headers' => [
+								'Content-Type' => 'application/json',
+								...$headers,
+							],
+						]
+					);
+
+					$data = $this->get_response_data( $response, 'Cloudflare zones could not be retrieved' );
+
+					if ( ! \is_array( $data->result ?? null ) ) {
+						WP_CLI::error( 'Cloudflare zones could not be retrieved: the response does not contain a result.' );
+					}
+
+					foreach ( $data->result as $item ) {
+						$items[] = [
+							'id'     => $item->id,
+							'name'   => $item->name,
+							'status' => $item->status,
+						];
+					}
+
+					$total_pages = (int) ( $data->result_info->total_pages ?? 1 );
+
+					++$page;
+				} while ( $page <= $total_pages );
 
 				if ( 'ids' === $assoc_args['format'] ) {
 					$items = \wp_list_pluck( $items, 'id' );
@@ -155,27 +174,9 @@ final class CliController {
 						]
 					);
 
-					if ( is_wp_error( $response ) ) {
-						WP_CLI::error( $response->get_error_message() );
-					}
+					$this->get_response_data( $response, \sprintf( 'Cloudflare zone `%s` cache not purged', $identifier ) );
 
-					$body = wp_remote_retrieve_body( $response );
-
-					$data = json_decode( $body );
-
-					if ( true === $data->success ) {
-						WP_CLI::success( sprintf( 'Cloudflare zone `%s` cache purged.', $identifier ) );
-					}
-
-					if ( true !== $data->success ) {
-						WP_CLI::error(
-							\sprintf(
-								'Cloudflare zone `%s` cache not purged: %s',
-								$identifier,
-								\wp_json_encode( $data, JSON_PRETTY_PRINT )
-							)
-						);
-					}
+					WP_CLI::success( \sprintf( 'Cloudflare zone `%s` cache purged.', $identifier ) );
 				}
 			},
 			[
@@ -191,5 +192,45 @@ final class CliController {
 				],
 			]
 		);
+	}
+
+	/**
+	 * Get the decoded data of a Cloudflare API response or exit with an error.
+	 *
+	 * @param array|\WP_Error $response Response.
+	 * @param string          $message  Error message prefix.
+	 * @return object
+	 */
+	private function get_response_data( $response, string $message ): object {
+		if ( is_wp_error( $response ) ) {
+			WP_CLI::error( \sprintf( '%s: %s', $message, $response->get_error_message() ) );
+		}
+
+		$body = wp_remote_retrieve_body( $response );
+
+		$data = json_decode( $body );
+
+		if ( ! \is_object( $data ) ) {
+			WP_CLI::error(
+				\sprintf(
+					'%s: unexpected response (HTTP status code %s): %s',
+					$message,
+					wp_remote_retrieve_response_code( $response ),
+					$body
+				)
+			);
+		}
+
+		if ( true !== ( $data->success ?? null ) ) {
+			WP_CLI::error(
+				\sprintf(
+					'%s: %s',
+					$message,
+					\wp_json_encode( $data->errors ?? $data, JSON_PRETTY_PRINT )
+				)
+			);
+		}
+
+		return $data;
 	}
 }
