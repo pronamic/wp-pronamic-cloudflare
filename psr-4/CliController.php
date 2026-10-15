@@ -30,7 +30,7 @@ final class CliController {
 		WP_CLI::add_command(
 			'pronamic cloudflare zones',
 			function ( $args, $assoc_args ): void {
-				$headers = Plugin::get_auth_headers();
+				$headers = CloudflareClient::get_auth_headers();
 
 				if ( null === $headers ) {
 					WP_CLI::error( 'The Cloudflare API credentials are not configured. Define either `CLOUDFLARE_API_TOKEN` or both `CLOUDFLARE_EMAIL` and `CLOUDFLARE_API_KEY`.' );
@@ -142,7 +142,7 @@ final class CliController {
 		WP_CLI::add_command(
 			'pronamic cloudflare purge',
 			function ( $args ): void {
-				$headers = Plugin::get_auth_headers();
+				$headers = CloudflareClient::get_auth_headers();
 
 				if ( null === $headers ) {
 					WP_CLI::error( 'The Cloudflare API credentials are not configured. Define either `CLOUDFLARE_API_TOKEN` or both `CLOUDFLARE_EMAIL` and `CLOUDFLARE_API_KEY`.' );
@@ -195,7 +195,7 @@ final class CliController {
 		WP_CLI::add_command(
 			'pronamic cloudflare invalidate',
 			function ( $args ): void {
-				$headers = Plugin::get_auth_headers();
+				$headers = CloudflareClient::get_auth_headers();
 
 				if ( null === $headers ) {
 					WP_CLI::error( 'The Cloudflare API credentials are not configured. Define either `CLOUDFLARE_API_TOKEN` or both `CLOUDFLARE_EMAIL` and `CLOUDFLARE_API_KEY`.' );
