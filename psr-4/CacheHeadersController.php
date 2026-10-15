@@ -10,6 +10,7 @@
 
 namespace Pronamic\WordPressCloudflare;
 
+use WP_Post;
 use WP_Term;
 use WP_User;
 
@@ -310,13 +311,13 @@ final class CacheHeadersController {
 	 * Add related post ID.
 	 *
 	 * @param string            $content Filtered content.
-	 * @param \WP_Post|int|null $post    Post.
+	 * @param WP_Post|int|null $post    Post.
 	 * @return string
 	 */
 	private function add_related_post_id( $content, $post = null ) {
 		$post = \get_post( $post );
 
-		if ( ! ( $post instanceof \WP_Post ) ) {
+		if ( ! ( $post instanceof WP_Post ) ) {
 			return $content;
 		}
 

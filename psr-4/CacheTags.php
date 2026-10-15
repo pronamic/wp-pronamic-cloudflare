@@ -10,6 +10,7 @@
 
 namespace Pronamic\WordPressCloudflare;
 
+use WP_Comment;
 use WP_Post;
 use WP_Term;
 use WP_User;
@@ -25,13 +26,13 @@ final class CacheTags {
 	/**
 	 * Get comment related tags.
 	 *
-	 * @param \WP_Comment|null $comment Comment object.
+	 * @param WP_Comment|null $comment Comment object.
 	 * @return string[]
 	 */
 	public static function get_comment_related_tags( $comment ) {
 		$tags = [];
 
-		if ( ! ( $comment instanceof \WP_Comment ) ) {
+		if ( ! ( $comment instanceof WP_Comment ) ) {
 			return $tags;
 		}
 

@@ -10,7 +10,10 @@
 
 namespace Pronamic\WordPressCloudflare;
 
+use WP_Comment;
 use WP_Post;
+use WP_Term;
+use WP_User;
 
 /**
  * Invalidation controller class
@@ -127,7 +130,7 @@ final class InvalidationController {
 	private function cache_by_post( $post_id, bool $invalidate ): void {
 		$post = \get_post( $post_id );
 
-		if ( ! ( $post instanceof \WP_Post ) ) {
+		if ( ! ( $post instanceof WP_Post ) ) {
 			return;
 		}
 
@@ -231,10 +234,10 @@ final class InvalidationController {
 	 *
 	 * @param string      $new_status New status.
 	 * @param string      $old_status Old status.
-	 * @param \WP_Comment $comment    Comment object.
+	 * @param WP_Comment $comment    Comment object.
 	 * @return void
 	 */
-	private function transition_comment_status( $new_status, $old_status, \WP_Comment $comment ): void {
+	private function transition_comment_status( $new_status, $old_status, WP_Comment $comment ): void {
 		if ( 'approved' === $new_status ) {
 			$this->invalidate_cache_by_comment( $comment->comment_ID );
 
@@ -284,11 +287,11 @@ final class InvalidationController {
 	 * unapproved, spam or trashed comment does not require a purge.
 	 *
 	 * @param int         $comment_id Comment ID.
-	 * @param \WP_Comment $comment    Comment object.
+	 * @param WP_Comment $comment    Comment object.
 	 * @return void
 	 */
 	private function purge_cache_by_deleted_comment( $comment_id, $comment ): void {
-		if ( ! ( $comment instanceof \WP_Comment ) || 1 !== (int) $comment->comment_approved ) {
+		if ( ! ( $comment instanceof WP_Comment ) || 1 !== (int) $comment->comment_approved ) {
 			return;
 		}
 
@@ -305,7 +308,7 @@ final class InvalidationController {
 	private function cache_by_comment( $comment_id, bool $invalidate ): void {
 		$comment = \get_comment( $comment_id );
 
-		if ( ! ( $comment instanceof \WP_Comment ) ) {
+		if ( ! ( $comment instanceof WP_Comment ) ) {
 			return;
 		}
 
@@ -366,7 +369,7 @@ final class InvalidationController {
 			$term = \get_term( $term_id, $taxonomy );
 		}
 
-		if ( ! ( $term instanceof \WP_Term ) ) {
+		if ( ! ( $term instanceof WP_Term ) ) {
 			return;
 		}
 
@@ -392,11 +395,11 @@ final class InvalidationController {
 	 * @param int      $term_id      Term ID.
 	 * @param int      $tt_id        Term taxonomy ID.
 	 * @param string   $taxonomy     Taxonomy slug.
-	 * @param \WP_Term $deleted_term Deleted term object.
+	 * @param WP_Term $deleted_term Deleted term object.
 	 * @return void
 	 */
 	private function purge_cache_by_deleted_term( $term_id, $tt_id, $taxonomy, $deleted_term ): void {
-		if ( ! ( $deleted_term instanceof \WP_Term ) ) {
+		if ( ! ( $deleted_term instanceof WP_Term ) ) {
 			return;
 		}
 
@@ -441,7 +444,7 @@ final class InvalidationController {
 		foreach ( $terms as $term_id ) {
 			$term = \get_term( $term_id, $taxonomy );
 
-			if ( ! ( $term instanceof \WP_Term ) ) {
+			if ( ! ( $term instanceof WP_Term ) ) {
 				continue;
 			}
 
@@ -451,7 +454,7 @@ final class InvalidationController {
 		foreach ( $old_tt_ids as $tt_id ) {
 			$term = \get_term_by( 'term_taxonomy_id', $tt_id, $taxonomy );
 
-			if ( ! ( $term instanceof \WP_Term ) ) {
+			if ( ! ( $term instanceof WP_Term ) ) {
 				continue;
 			}
 
@@ -472,7 +475,7 @@ final class InvalidationController {
 	private function invalidate_cache_by_user( int $user_id ): void {
 		$user = get_user_by( 'ID', $user_id );
 
-		if ( ! ( $user instanceof \WP_User ) ) {
+		if ( ! ( $user instanceof WP_User ) ) {
 			return;
 		}
 
@@ -487,10 +490,10 @@ final class InvalidationController {
 	 * @param int      $id        ID of the deleted user.
 	 * @param int|null $reassign  ID of the user to reassign posts and links to.
 	 *                            Default null, for no reassignment.
-	 * @param \WP_User $user     WP_User object of the deleted user.
+	 * @param WP_User $user     WP_User object of the deleted user.
 	 * @return void
 	 */
-	private function purge_cache_by_deleted_user( $id, $reassign, \WP_User $user ): void {
+	private function purge_cache_by_deleted_user( $id, $reassign, WP_User $user ): void {
 		$tags = CacheTags::get_user_related_tags( $user );
 
 		$this->purge_by_tags( $tags );
