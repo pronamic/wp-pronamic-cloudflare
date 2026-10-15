@@ -26,3 +26,5 @@ phpcs.xml.dist
 gha-creds-*.json
 
 /rector.php
+
+/state/
