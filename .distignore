@@ -24,3 +24,5 @@ phpcs.xml.dist
 /wp-content/
 
 gha-creds-*.json
+
+/rector.php
