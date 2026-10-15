@@ -39,10 +39,9 @@ The official [Cloudflare plugin](https://wordpress.org/plugins/cloudflare/) purg
 | API token via `wp-config.php` constant | ✅ `CLOUDFLARE_API_TOKEN` | Via `CLOUDFLARE_API_KEY` |
 | WP-CLI commands | ✅ | ❌ |
 | Admin bar status of pending cache actions | ✅ | ❌ |
-| Change Cloudflare zone settings (security level, Always Online, development mode, …) from WordPress | ❌ | ✅ |
 | License | GPL-2.0-or-later | BSD-3-Clause |
 
-Do you mainly want to change Cloudflare zone settings without opening the Cloudflare dashboard? Then the official plugin is a better fit. Do you want your pages cached at Cloudflare and refreshed accurately and efficiently when content changes? Then Pronamic Cloudflare is the better choice.
+Do you want your pages cached at Cloudflare and refreshed accurately and efficiently when content changes? Then Pronamic Cloudflare is the better choice.
 
 ## Table of contents
 
