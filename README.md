@@ -2,8 +2,51 @@
 
 The Pronamic Cloudflare plugin integrates WordPress with Cloudflare. It adds cache headers and cache tags to public responses, invalidates or purges those tags when content changes, supports Automatic Platform Optimization (APO) and offers WP-CLI commands. It works on its own and does not require the official Cloudflare plugin.
 
+## Why Pronamic Cloudflare?
+
+The official [Cloudflare plugin](https://wordpress.org/plugins/cloudflare/) purges a fixed list of URLs whenever a post changes and leaves HTML caching to Automatic Platform Optimization (APO), a paid add-on on the free plan. Pronamic Cloudflare takes a different approach: every page gets **cache tags** that describe the content on it, and when that content changes, only the pages that show it are refreshed. That approach has some clear advantages:
+
+- 🎯 **It purges exactly the right pages.** Each response carries a `Cache-Tag` header with the post, terms, author, archives, dates, feeds and even the posts shown elsewhere on the page (related posts, query loops, widgets). When content changes, every page that shows it is refreshed, not only a guessed list of URLs.
+- ⚡ **Saving content stays fast.** Cache actions are collected during the request, deduplicated and handed off to [Action Scheduler](https://actionscheduler.org/) in the background. The official plugin calls the Cloudflare API during the save request, in batches of 30 URLs, and repeats them for `http://` and mobile variants.
+- 🔄 **It invalidates instead of purging.** Content that changes but stays public is invalidated, so Cloudflare revalidates it and can keep serving the stale copy with `stale-while-revalidate` and `stale-if-error`. Only deleted, trashed or unpublished content is hard-purged.
+- 🌍 **It works with or without APO.** The plugin sends the `cf-edge-cache` header that APO uses, and can also send `Cache-Control` and `Cloudflare-CDN-Cache-Control` headers, so you can cache HTML on any Cloudflare plan with your own Cache Rules.
+- 🧩 **It covers more changes.** Besides posts and comments, it reacts to term changes, term assignments, user profile changes, deleted users, block theme templates, template parts and global styles.
+- 🛡️ **It helps against 404 floods.** 404 responses are tagged, so you can safely cache them at Cloudflare and protect your origin against attacks with random URLs.
+- 🔐 **It is secure by default.** Configure a scoped API token via the `CLOUDFLARE_API_TOKEN` constant and keep secrets out of the database. Visitors with comment author cookies and pages that define `DONOTCACHEPAGE` (WooCommerce cart, checkout and my account) never get cache headers.
+- 💻 **It has WP-CLI commands.** List zones, purge or invalidate a zone from the command line or a deployment script.
+- 🪶 **It is lightweight.** A small PHP plugin with a classic settings page, without a bundled JavaScript admin application, and an admin bar indicator that shows pending cache actions.
+
+### Comparison
+
+| | Pronamic Cloudflare | Official Cloudflare plugin |
+| --- | :---: | :---: |
+| Purge strategy | Cache tags | List of URLs |
+| Refresh pages that show a changed post elsewhere (related posts, query loops, widgets) | ✅ | ❌ |
+| Invalidate (revalidate) instead of hard purge | ✅ | ❌ |
+| API calls in the background (Action Scheduler) | ✅ | ❌ (during the save request) |
+| Deduplicated cache actions for bulk changes | ✅ | ❌ |
+| Purge all cached variants (device type, `http`/`https`, query strings) at once | ✅ | Partly |
+| `cf-edge-cache` header for APO | ✅ | ✅ |
+| `Cache-Control` and `Cloudflare-CDN-Cache-Control` headers (cache HTML without APO) | ✅ | ❌ |
+| Configurable browser TTL, edge TTL, `stale-while-revalidate` and `stale-if-error` | ✅ | ❌ |
+| Posts and comments | ✅ | ✅ |
+| Terms (create, edit, delete, assign) | ✅ | ❌ |
+| Users (profile update, delete) | ✅ | ❌ |
+| Theme switch and Customizer | ✅ | ✅ |
+| Block theme templates, template parts and global styles | ✅ | ❌ |
+| Search results and 404 responses | ✅ | ❌ |
+| No cache headers for visitors with comment author cookies and `DONOTCACHEPAGE` pages | ✅ | n/a |
+| API token via `wp-config.php` constant | ✅ `CLOUDFLARE_API_TOKEN` | Via `CLOUDFLARE_API_KEY` |
+| WP-CLI commands | ✅ | ❌ |
+| Admin bar status of pending cache actions | ✅ | ❌ |
+| Change Cloudflare zone settings (security level, Always Online, development mode, …) from WordPress | ❌ | ✅ |
+| License | GPL-2.0-or-later | BSD-3-Clause |
+
+Do you mainly want to change Cloudflare zone settings without opening the Cloudflare dashboard? Then the official plugin is a better fit. Do you want your pages cached at Cloudflare and refreshed accurately and efficiently when content changes? Then Pronamic Cloudflare is the better choice.
+
 ## Table of contents
 
+- [Why Pronamic Cloudflare?](#why-pronamic-cloudflare)
 - [Configuration](#configuration)
 - [Cache headers](#cache-headers)
 - [Automatic Platform Optimization (APO)](#automatic-platform-optimization-apo)
