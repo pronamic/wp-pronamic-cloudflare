@@ -1,10 +1,18 @@
 # Pronamic Cloudflare
 
-The Pronamic Cloudflare plugin integrates WordPress with Cloudflare. It adds cache headers and cache tags to public responses, invalidates or purges those tags when content changes, supports Automatic Platform Optimization (APO) and offers WP-CLI commands. It works on its own and does not require the official Cloudflare plugin.
-
+[![Latest release](https://img.shields.io/github/v/release/pronamic/wp-pronamic-cloudflare?label=Release)](https://github.com/pronamic/wp-pronamic-cloudflare/releases/latest)
+[![PHP 8.1+](https://img.shields.io/badge/PHP-8.1%2B-777BB4?logo=php&logoColor=white)](https://www.php.net/)
+[![WordPress 6.8+](https://img.shields.io/badge/WordPress-6.8%2B-21759B?logo=wordpress&logoColor=white)](https://wordpress.org/)
+[![License: GPL v2+](https://img.shields.io/badge/License-GPL%20v2%2B-blue.svg)](https://www.gnu.org/licenses/gpl-2.0.html)
+[![Cloudflare](https://img.shields.io/badge/Built%20for-Cloudflare-F38020?logo=cloudflare&logoColor=white)](https://www.cloudflare.com/)
+[![Action Scheduler](https://img.shields.io/badge/Powered%20by-Action%20Scheduler-96588A)](https://actionscheduler.org/)
 [![Live Preview](https://img.shields.io/badge/WordPress_Playground-Live_Preview-3858e9?logo=wordpress)](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/pronamic/wp-pronamic-cloudflare/main/.wordpress-org/blueprints/blueprint.json)
 
+The Pronamic Cloudflare plugin integrates WordPress with Cloudflare. It adds cache headers and cache tags to public responses, invalidates or purges those tags when content changes, supports Automatic Platform Optimization (APO) and offers WP-CLI commands. It works on its own and does not require the official Cloudflare plugin.
+
 Try the plugin in [WordPress Playground](https://playground.wordpress.net/) with the Live Preview link above. The preview opens the settings page; connecting to the Cloudflare API requires your own credentials and zone.
+
+![Pronamic Cloudflare settings page in the WordPress admin, with the Zone ID, API credentials, cache headers, loopback requests and APO sections](documentation/wordpress-admin-options-pronamic-cloudflare.png)
 
 ## Why Pronamic Cloudflare?
 
