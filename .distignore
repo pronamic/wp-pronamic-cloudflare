@@ -9,6 +9,8 @@
 .gitattributes
 .gitignore
 
+/.wordpress-org/
+
 .wp-env.json
 
 /AGENTS.md

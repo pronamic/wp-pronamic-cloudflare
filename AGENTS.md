@@ -40,3 +40,10 @@ composer make-pot  # Build, update languages/pronamic-cloudflare.pot and the .po
 ## Distribution
 
 Files and directories listed in `.distignore` (such as this file, `documentation/` and development configuration) are not included in the plugin distribution.
+
+When publishing a GitHub release, upload the distribution zip twice: as `pronamic-cloudflare.X.Y.Z.zip` and as `pronamic-cloudflare.zip`. The Live Preview blueprint (`.wordpress-org/blueprints/blueprint.json`) installs the plugin from `releases/latest/download/pronamic-cloudflare.zip`.
+
+```bash
+cp pronamic-cloudflare.X.Y.Z.zip pronamic-cloudflare.zip
+gh release upload vX.Y.Z pronamic-cloudflare.X.Y.Z.zip pronamic-cloudflare.zip
+```

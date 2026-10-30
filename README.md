@@ -2,6 +2,10 @@
 
 The Pronamic Cloudflare plugin integrates WordPress with Cloudflare. It adds cache headers and cache tags to public responses, invalidates or purges those tags when content changes, supports Automatic Platform Optimization (APO) and offers WP-CLI commands. It works on its own and does not require the official Cloudflare plugin.
 
+[![Live Preview](https://img.shields.io/badge/WordPress_Playground-Live_Preview-3858e9?logo=wordpress)](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/pronamic/wp-pronamic-cloudflare/main/.wordpress-org/blueprints/blueprint.json)
+
+Try the plugin in [WordPress Playground](https://playground.wordpress.net/) with the Live Preview link above. The preview opens the settings page; connecting to the Cloudflare API requires your own credentials and zone.
+
 ## Why Pronamic Cloudflare?
 
 The official [Cloudflare plugin](https://wordpress.org/plugins/cloudflare/) purges a fixed list of URLs whenever a post changes and leaves HTML caching to Automatic Platform Optimization (APO), a paid add-on on the free plan. Pronamic Cloudflare takes a different approach: every page gets **cache tags** that describe the content on it, and when that content changes, only the pages that show it are refreshed. That approach has some clear advantages:
