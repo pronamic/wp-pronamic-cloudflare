@@ -5,6 +5,7 @@
 [![WordPress 6.8+](https://img.shields.io/badge/WordPress-6.8%2B-21759B?logo=wordpress&logoColor=white)](https://wordpress.org/)
 [![License: GPL v2+](https://img.shields.io/badge/License-GPL%20v2%2B-blue.svg)](https://www.gnu.org/licenses/gpl-2.0.html)
 [![Cloudflare](https://img.shields.io/badge/Built%20for-Cloudflare-F38020?logo=cloudflare&logoColor=white)](https://www.cloudflare.com/)
+[![WP-CLI](https://img.shields.io/badge/WP--CLI-Commands-3D4D58?logo=gnubash&logoColor=white)](#wp-cli)
 [![Action Scheduler](https://img.shields.io/badge/Powered%20by-Action%20Scheduler-96588A)](https://actionscheduler.org/)
 [![Live Preview](https://img.shields.io/badge/WordPress_Playground-Live_Preview-3858e9?logo=wordpress)](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/pronamic/wp-pronamic-cloudflare/main/.wordpress-org/blueprints/blueprint.json)
 
