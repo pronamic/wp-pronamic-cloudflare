@@ -45,11 +45,11 @@ final class InvalidationController {
 	private $invalidate_tags = [];
 
 	/**
-	 * Purge all HTML of the current blog.
+	 * Invalidate all HTML of the current blog.
 	 *
 	 * @var bool
 	 */
-	private $purge_blog = false;
+	private $invalidate_blog = false;
 
 	/**
 	 * Construct invalidation controller.
@@ -95,16 +95,18 @@ final class InvalidationController {
 		\add_action( 'deleted_user', $this->purge_cache_by_deleted_user( ... ), 10, 3 );
 
 		/**
-		 * Theme changes can affect every page, so purge all HTML of the blog.
-		 * Static files are not purged, these are versioned.
+		 * Theme changes can affect every page, so invalidate all HTML of the
+		 * blog. Invalidating instead of purging lets Cloudflare serve the
+		 * stale pages while it revalidates them, so not every page hits the
+		 * origin at once. Static files are kept, these are versioned.
 		 *
 		 * @link https://github.com/pronamic/casinonieuws-v2/issues/20
 		 */
-		\add_action( 'switch_theme', $this->purge_blog( ... ) );
-		\add_action( 'customize_save_after', $this->purge_blog( ... ) );
-		\add_action( 'save_post_wp_template', $this->purge_blog( ... ) );
-		\add_action( 'save_post_wp_template_part', $this->purge_blog( ... ) );
-		\add_action( 'save_post_wp_global_styles', $this->purge_blog( ... ) );
+		\add_action( 'switch_theme', $this->invalidate_blog( ... ) );
+		\add_action( 'customize_save_after', $this->invalidate_blog( ... ) );
+		\add_action( 'save_post_wp_template', $this->invalidate_blog( ... ) );
+		\add_action( 'save_post_wp_template_part', $this->invalidate_blog( ... ) );
+		\add_action( 'save_post_wp_global_styles', $this->invalidate_blog( ... ) );
 	}
 
 	/**
@@ -507,12 +509,12 @@ final class InvalidationController {
 	}
 
 	/**
-	 * Purge all HTML of the current blog.
+	 * Invalidate all HTML of the current blog.
 	 *
 	 * @return void
 	 */
-	private function purge_blog(): void {
-		$this->purge_blog = true;
+	private function invalidate_blog(): void {
+		$this->invalidate_blog = true;
 	}
 
 	/**
@@ -522,7 +524,7 @@ final class InvalidationController {
 	 * @return void
 	 */
 	private function invalidate_by_tags( $tags ): void {
-		if ( 0 === \count( $tags ) || true === $this->purge_blog ) {
+		if ( 0 === \count( $tags ) || true === $this->invalidate_blog ) {
 			return;
 		}
 
@@ -542,7 +544,7 @@ final class InvalidationController {
 	 * @return void
 	 */
 	private function purge_by_tags( $tags ) {
-		if ( 0 === \count( $tags ) || true === $this->purge_blog ) {
+		if ( 0 === \count( $tags ) ) {
 			return;
 		}
 
@@ -574,29 +576,22 @@ final class InvalidationController {
 			return;
 		}
 
-		// Purge all HTML of the current blog.
-		if ( true === $this->purge_blog ) {
-			// Remove all scheduled tag actions as the blog tag supersedes them.
-			\as_unschedule_all_actions(
-				'pronamic_cloudflare_purge_cache_tags',
-				null,
-				'pronamic-cloudflare'
-			);
-
+		// Invalidate all HTML of the current blog.
+		if ( true === $this->invalidate_blog ) {
+			/**
+			 * Remove the scheduled invalidate actions as the blog tag
+			 * supersedes them. Purge actions are kept, deleted content must
+			 * not be served stale.
+			 */
 			\as_unschedule_all_actions(
 				'pronamic_cloudflare_invalidate_cache_tags',
 				null,
 				'pronamic-cloudflare'
 			);
 
-			$this->enqueue_tags_actions(
-				'pronamic_cloudflare_purge_cache_tags',
-				[
-					CacheTags::get_blog_tag(),
-				]
-			);
-
-			return;
+			$this->invalidate_tags = [
+				CacheTags::get_blog_tag(),
+			];
 		}
 
 		$this->enqueue_tags_actions( 'pronamic_cloudflare_invalidate_cache_tags', $this->invalidate_tags );
