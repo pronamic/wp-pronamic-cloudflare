@@ -239,8 +239,8 @@ final class InvalidationController {
 	/**
 	 * Handle a comment status transition.
 	 *
-	 * @param string      $new_status New status.
-	 * @param string      $old_status Old status.
+	 * @param string     $new_status New status.
+	 * @param string     $old_status Old status.
 	 * @param WP_Comment $comment    Comment object.
 	 * @return void
 	 */
@@ -293,7 +293,7 @@ final class InvalidationController {
 	 * Only approved comments are publicly visible, so deleting an
 	 * unapproved, spam or trashed comment does not require a purge.
 	 *
-	 * @param int         $comment_id Comment ID.
+	 * @param int        $comment_id Comment ID.
 	 * @param WP_Comment $comment    Comment object.
 	 * @return void
 	 */
@@ -399,9 +399,9 @@ final class InvalidationController {
 	/**
 	 * Purge cache by deleted term.
 	 *
-	 * @param int      $term_id      Term ID.
-	 * @param int      $tt_id        Term taxonomy ID.
-	 * @param string   $taxonomy     Taxonomy slug.
+	 * @param int     $term_id      Term ID.
+	 * @param int     $tt_id        Term taxonomy ID.
+	 * @param string  $taxonomy     Taxonomy slug.
 	 * @param WP_Term $deleted_term Deleted term object.
 	 * @return void
 	 */
@@ -497,7 +497,7 @@ final class InvalidationController {
 	 * @param int      $id        ID of the deleted user.
 	 * @param int|null $reassign  ID of the user to reassign posts and links to.
 	 *                            Default null, for no reassignment.
-	 * @param WP_User $user     WP_User object of the deleted user.
+	 * @param WP_User  $user     WP_User object of the deleted user.
 	 * @return void
 	 */
 	private function purge_cache_by_deleted_user( $id, $reassign, WP_User $user ): void {
