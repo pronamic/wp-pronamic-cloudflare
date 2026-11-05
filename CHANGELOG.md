@@ -7,6 +7,24 @@ This projects adheres to [Semantic Versioning](http://semver.org/) and [Keep a C
 
 ## [Unreleased]
 
+## [1.7.0] - 2026-11-05
+
+### Added
+
+- Every page now carries a `blog-{id}` cache tag, so all cached HTML of a blog can be refreshed at once while images, scripts and styles stay cached. Pages cached before this update don't carry the tag yet; purge the zone once or wait until the edge cache TTL expires. ([72a347f](https://github.com/pronamic/wp-pronamic-cloudflare/commit/72a347fe1761f49ed70e3e850e8c62c4a3510f52))
+- Added the `wp pronamic cloudflare blog invalidate [<blog-id>...]` and `wp pronamic cloudflare blog purge [<blog-id>...]` WP-CLI commands to invalidate or purge all cached HTML of one or more blogs, for example after a theme deployment. ([72a347f](https://github.com/pronamic/wp-pronamic-cloudflare/commit/72a347fe1761f49ed70e3e850e8c62c4a3510f52))
+- Added the `wp pronamic cloudflare purge-prefix <prefix>...` WP-CLI command to purge cached files by URL prefix, for example theme files without a version parameter. ([72a347f](https://github.com/pronamic/wp-pronamic-cloudflare/commit/72a347fe1761f49ed70e3e850e8c62c4a3510f52))
+- Added a WordPress Playground Live Preview, badges and a settings screenshot to the README. ([9f82c04](https://github.com/pronamic/wp-pronamic-cloudflare/commit/9f82c04d138c563fc95b05fd7066b6c3ef3ff9c9), [2e2ce2e](https://github.com/pronamic/wp-pronamic-cloudflare/commit/2e2ce2e1c1ee2bd0783c360d13531134373a2de4))
+- Added a Dutch glossary to the README. ([2f882f1](https://github.com/pronamic/wp-pronamic-cloudflare/commit/2f882f1f11cb0172a956a8f0e9a39a08af4b807f))
+
+### Changed
+
+- Theme switches, Customizer saves and changes to block theme templates, template parts and global styles now invalidate the `blog-{id}` cache tag instead of purging the entire zone. Cloudflare can keep serving stale pages while it revalidates them, so the origin isn't hit by every page at once, and static files stay cached. ([ea4622a](https://github.com/pronamic/wp-pronamic-cloudflare/commit/ea4622a05b6cb230e9dd8d3b84259f99580d4bc4))
+- Purge actions for deleted, trashed or unpublished content are no longer dropped after a theme change. ([ea4622a](https://github.com/pronamic/wp-pronamic-cloudflare/commit/ea4622a05b6cb230e9dd8d3b84259f99580d4bc4))
+- Dutch translations now use "origin" instead of "oorsprong", following the new glossary. ([2f882f1](https://github.com/pronamic/wp-pronamic-cloudflare/commit/2f882f1f11cb0172a956a8f0e9a39a08af4b807f))
+
+Full set of changes: [`v1.6.0...v1.7.0`][1.7.0]
+
 ## [1.6.0] - 2026-10-15
 
 ### Added
@@ -171,6 +189,7 @@ Full set of changes: [`v1.2.0...v1.3.0-rc.1`][1.3.0-rc.1]
 Full set of changes: [`1.1.2...1.2.0`][1.2.0]
 
 
+[1.7.0]: https://github.com/pronamic/wp-pronamic-cloudflare/compare/v1.6.0...v1.7.0
 [1.6.0]: https://github.com/pronamic/wp-pronamic-cloudflare/compare/v1.5.0...v1.6.0
 [1.5.0]: https://github.com/pronamic/wp-pronamic-cloudflare/compare/v1.5.0-rc.1...v1.5.0
 [1.5.0-rc.1]: https://github.com/pronamic/wp-pronamic-cloudflare/compare/v1.4.0...v1.5.0-rc.1
