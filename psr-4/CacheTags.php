@@ -29,7 +29,6 @@ final class CacheTags {
 	 * Every HTML response carries this tag, so all cached HTML of a blog can
 	 * be purged or invalidated at once without removing static files.
 	 *
-	 * @link https://github.com/pronamic/casinonieuws-v2/issues/20
 	 * @param int|null $blog_id Blog ID, defaults to the current blog ID.
 	 * @return string
 	 */

@@ -99,8 +99,6 @@ final class InvalidationController {
 		 * blog. Invalidating instead of purging lets Cloudflare serve the
 		 * stale pages while it revalidates them, so not every page hits the
 		 * origin at once. Static files are kept, these are versioned.
-		 *
-		 * @link https://github.com/pronamic/casinonieuws-v2/issues/20
 		 */
 		\add_action( 'switch_theme', $this->invalidate_blog( ... ) );
 		\add_action( 'customize_save_after', $this->invalidate_blog( ... ) );
