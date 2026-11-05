@@ -45,11 +45,11 @@ final class InvalidationController {
 	private $invalidate_tags = [];
 
 	/**
-	 * Purge everything.
+	 * Purge all HTML of the current blog.
 	 *
 	 * @var bool
 	 */
-	private $purge_everything = false;
+	private $purge_blog = false;
 
 	/**
 	 * Construct invalidation controller.
@@ -68,6 +68,8 @@ final class InvalidationController {
 	public function setup() {
 		\add_action( 'pronamic_cloudflare_purge_cache_tags', $this->client->purge_cache_tags( ... ) );
 		\add_action( 'pronamic_cloudflare_invalidate_cache_tags', $this->client->invalidate_cache_tags( ... ) );
+
+		// Handle purge everything actions scheduled by older versions of this plugin.
 		\add_action( 'pronamic_cloudflare_purge_everything', $this->client->purge_everything( ... ) );
 
 		\add_action( 'shutdown', $this->shutdown( ... ) );
@@ -92,12 +94,17 @@ final class InvalidationController {
 		\add_action( 'profile_update', $this->invalidate_cache_by_user( ... ), 10, 1 );
 		\add_action( 'deleted_user', $this->purge_cache_by_deleted_user( ... ), 10, 3 );
 
-		// Purge everything actions.
-		\add_action( 'switch_theme', $this->purge_everything( ... ) );
-		\add_action( 'customize_save_after', $this->purge_everything( ... ) );
-		\add_action( 'save_post_wp_template', $this->purge_everything( ... ) );
-		\add_action( 'save_post_wp_template_part', $this->purge_everything( ... ) );
-		\add_action( 'save_post_wp_global_styles', $this->purge_everything( ... ) );
+		/**
+		 * Theme changes can affect every page, so purge all HTML of the blog.
+		 * Static files are not purged, these are versioned.
+		 *
+		 * @link https://github.com/pronamic/casinonieuws-v2/issues/20
+		 */
+		\add_action( 'switch_theme', $this->purge_blog( ... ) );
+		\add_action( 'customize_save_after', $this->purge_blog( ... ) );
+		\add_action( 'save_post_wp_template', $this->purge_blog( ... ) );
+		\add_action( 'save_post_wp_template_part', $this->purge_blog( ... ) );
+		\add_action( 'save_post_wp_global_styles', $this->purge_blog( ... ) );
 	}
 
 	/**
@@ -500,12 +507,12 @@ final class InvalidationController {
 	}
 
 	/**
-	 * Purge everything.
+	 * Purge all HTML of the current blog.
 	 *
 	 * @return void
 	 */
-	private function purge_everything(): void {
-		$this->purge_everything = true;
+	private function purge_blog(): void {
+		$this->purge_blog = true;
 	}
 
 	/**
@@ -515,7 +522,7 @@ final class InvalidationController {
 	 * @return void
 	 */
 	private function invalidate_by_tags( $tags ): void {
-		if ( 0 === \count( $tags ) || true === $this->purge_everything ) {
+		if ( 0 === \count( $tags ) || true === $this->purge_blog ) {
 			return;
 		}
 
@@ -535,7 +542,7 @@ final class InvalidationController {
 	 * @return void
 	 */
 	private function purge_by_tags( $tags ) {
-		if ( 0 === \count( $tags ) || true === $this->purge_everything ) {
+		if ( 0 === \count( $tags ) || true === $this->purge_blog ) {
 			return;
 		}
 
@@ -567,9 +574,9 @@ final class InvalidationController {
 			return;
 		}
 
-		// Purge everything.
-		if ( true === $this->purge_everything ) {
-			// Remove all scheduled tag actions as purge everything supersedes them.
+		// Purge all HTML of the current blog.
+		if ( true === $this->purge_blog ) {
+			// Remove all scheduled tag actions as the blog tag supersedes them.
 			\as_unschedule_all_actions(
 				'pronamic_cloudflare_purge_cache_tags',
 				null,
@@ -582,11 +589,11 @@ final class InvalidationController {
 				'pronamic-cloudflare'
 			);
 
-			\as_enqueue_async_action(
-				'pronamic_cloudflare_purge_everything',
-				[],
-				'pronamic-cloudflare',
-				true
+			$this->enqueue_tags_actions(
+				'pronamic_cloudflare_purge_cache_tags',
+				[
+					CacheTags::get_blog_tag(),
+				]
 			);
 
 			return;

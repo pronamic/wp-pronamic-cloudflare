@@ -244,6 +244,152 @@ final class CliController {
 				],
 			]
 		);
+
+		WP_CLI::add_command(
+			'pronamic cloudflare blog invalidate',
+			function ( $args ): void {
+				$client = $this->get_client();
+
+				$tags = \array_map(
+					fn( $blog_id ) => CacheTags::get_blog_tag( $blog_id ),
+					$this->get_blog_ids( $args )
+				);
+
+				try {
+					$client->invalidate_cache_tags( $tags );
+				} catch ( \Exception $e ) {
+					WP_CLI::error( \sprintf( 'Cloudflare cache tags not invalidated: %s', \html_entity_decode( $e->getMessage(), ENT_QUOTES ) ) );
+				}
+
+				foreach ( $tags as $tag ) {
+					WP_CLI::log( \sprintf( 'Cache tag `%s` invalidated.', $tag ) );
+				}
+
+				WP_CLI::success( \sprintf( 'Cloudflare cache invalidated for %d blog(s).', \count( $tags ) ) );
+			},
+			[
+				'shortdesc' => 'Invalidates all cached HTML of one or more blogs in the configured Cloudflare zone, static files are kept.',
+				'synopsis'  => [
+					[
+						'type'        => 'positional',
+						'name'        => 'blog-id',
+						'description' => 'One or more blog IDs, defaults to the current blog ID.',
+						'optional'    => true,
+						'repeating'   => true,
+					],
+				],
+			]
+		);
+
+		WP_CLI::add_command(
+			'pronamic cloudflare blog purge',
+			function ( $args ): void {
+				$client = $this->get_client();
+
+				$tags = \array_map(
+					fn( $blog_id ) => CacheTags::get_blog_tag( $blog_id ),
+					$this->get_blog_ids( $args )
+				);
+
+				try {
+					$client->purge_cache_tags( $tags );
+				} catch ( \Exception $e ) {
+					WP_CLI::error( \sprintf( 'Cloudflare cache tags not purged: %s', \html_entity_decode( $e->getMessage(), ENT_QUOTES ) ) );
+				}
+
+				foreach ( $tags as $tag ) {
+					WP_CLI::log( \sprintf( 'Cache tag `%s` purged.', $tag ) );
+				}
+
+				WP_CLI::success( \sprintf( 'Cloudflare cache purged for %d blog(s).', \count( $tags ) ) );
+			},
+			[
+				'shortdesc' => 'Purges all cached HTML of one or more blogs from the configured Cloudflare zone, static files are kept.',
+				'synopsis'  => [
+					[
+						'type'        => 'positional',
+						'name'        => 'blog-id',
+						'description' => 'One or more blog IDs, defaults to the current blog ID.',
+						'optional'    => true,
+						'repeating'   => true,
+					],
+				],
+			]
+		);
+
+		WP_CLI::add_command(
+			'pronamic cloudflare purge-prefix',
+			function ( $args ): void {
+				$client = $this->get_client();
+
+				try {
+					$client->purge_prefixes( $args );
+				} catch ( \Exception $e ) {
+					WP_CLI::error( \sprintf( 'Cloudflare cache not purged by prefix: %s', \html_entity_decode( $e->getMessage(), ENT_QUOTES ) ) );
+				}
+
+				foreach ( $args as $prefix ) {
+					WP_CLI::log( \sprintf( 'Purged prefix `%s`.', $prefix ) );
+				}
+
+				WP_CLI::success( \sprintf( 'Cloudflare cache purged for %d prefix(es).', \count( $args ) ) );
+			},
+			[
+				'shortdesc' => 'Purges cached files by URL prefix from the configured Cloudflare zone.',
+				'synopsis'  => [
+					[
+						'type'        => 'positional',
+						'name'        => 'prefix',
+						'description' => 'URL prefix, for example `https://www.example.com/wp-content/themes/example/`.',
+						'optional'    => false,
+						'repeating'   => true,
+					],
+				],
+			]
+		);
+	}
+
+	/**
+	 * Get the Cloudflare client or exit with an error if it is not configured.
+	 *
+	 * @return CloudflareClient
+	 */
+	private function get_client(): CloudflareClient {
+		if ( null === CloudflareClient::get_auth_headers() ) {
+			WP_CLI::error( 'The Cloudflare API credentials are not configured. Define either `CLOUDFLARE_API_TOKEN` or both `CLOUDFLARE_EMAIL` and `CLOUDFLARE_API_KEY`.' );
+		}
+
+		if ( ! CloudflareClient::is_configured() ) {
+			WP_CLI::error( 'The Cloudflare zone ID is not configured. Define `PRONAMIC_CLOUDFLARE_ZONE_ID` or set it on the settings page.' );
+		}
+
+		return new CloudflareClient();
+	}
+
+	/**
+	 * Get the blog IDs from the positional arguments or exit with an error.
+	 *
+	 * @param array $args Positional arguments.
+	 * @return int[]
+	 */
+	private function get_blog_ids( array $args ): array {
+		if ( 0 === \count( $args ) ) {
+			return [ \get_current_blog_id() ];
+		}
+
+		$blog_ids = [];
+
+		foreach ( $args as $arg ) {
+			$blog_id = \filter_var( $arg, FILTER_VALIDATE_INT, [ 'options' => [ 'min_range' => 1 ] ] );
+
+			if ( false === $blog_id ) {
+				WP_CLI::error( \sprintf( 'Invalid blog ID: `%s`.', $arg ) );
+			}
+
+			$blog_ids[] = $blog_id;
+		}
+
+		return \array_values( \array_unique( $blog_ids ) );
 	}
 
 	/**

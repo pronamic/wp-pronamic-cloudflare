@@ -173,6 +173,37 @@ final class CloudflareClient {
 	}
 
 	/**
+	 * Purge prefixes.
+	 *
+	 * Cloudflare expects prefixes without scheme, for example
+	 * `www.example.com/wp-content/themes/example/`.
+	 *
+	 * @link https://developers.cloudflare.com/cache/how-to/purge-cache/purge_by_prefix/
+	 * @param string[] $prefixes Prefixes to purge, with or without scheme.
+	 * @return void
+	 */
+	public function purge_prefixes( array $prefixes ): void {
+		$prefixes = \array_map(
+			fn( $prefix ) => \preg_replace( '#^https?://#i', '', $prefix ),
+			$prefixes
+		);
+
+		/**
+		 * Cloudflare allows a maximum of 30 prefixes per purge request on
+		 * the Free, Pro and Business plans.
+		 *
+		 * @link https://developers.cloudflare.com/cache/how-to/purge-cache/purge_by_prefix/
+		 */
+		foreach ( \array_chunk( $prefixes, 30 ) as $chunk ) {
+			$args = [
+				'prefixes' => $chunk,
+			];
+
+			$this->send_request( $args );
+		}
+	}
+
+	/**
 	 * Purge everything.
 	 *
 	 * @return void

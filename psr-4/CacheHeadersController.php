@@ -230,7 +230,9 @@ final class CacheHeadersController {
 	 * @return array
 	 */
 	private function get_current_cache_tags(): array {
-		$tags = [];
+		$tags = [
+			CacheTags::get_blog_tag(),
+		];
 
 		if ( is_singular() ) {
 			$post = get_queried_object();

@@ -24,9 +24,10 @@ The official [Cloudflare plugin](https://wordpress.org/plugins/cloudflare/) purg
 - 🔄 **It invalidates instead of purging.** Content that changes but stays public is invalidated, so Cloudflare revalidates it and can keep serving the stale copy with `stale-while-revalidate` and `stale-if-error`. Only deleted, trashed or unpublished content is hard-purged.
 - 🌍 **It works with or without APO.** The plugin sends the `cf-edge-cache` header that APO uses, and can also send `Cache-Control` and `Cloudflare-CDN-Cache-Control` headers, so you can cache HTML on any Cloudflare plan with your own Cache Rules.
 - 🧩 **It covers more changes.** Besides posts and comments, it reacts to term changes, term assignments, user profile changes, deleted users, block theme templates, template parts and global styles.
+- 🎨 **Theme changes keep static files cached.** Every page also carries a `blog-{id}` tag. A theme switch, Customizer save or template change purges only that tag, so all HTML is refreshed while images, scripts and styles stay in Cloudflare's cache.
 - 🛡️ **It helps against 404 floods.** 404 responses are tagged, so you can safely cache them at Cloudflare and protect your origin against attacks with random URLs.
 - 🔐 **It is secure by default.** Configure a scoped API token via the `CLOUDFLARE_API_TOKEN` constant and keep secrets out of the database. Visitors with comment author cookies and pages that define `DONOTCACHEPAGE` (WooCommerce cart, checkout and my account) never get cache headers.
-- 💻 **It has WP-CLI commands.** List zones, purge or invalidate a zone from the command line or a deployment script.
+- 💻 **It has WP-CLI commands.** List zones, purge or invalidate a zone, refresh all HTML of a blog or purge by URL prefix from the command line or a deployment script.
 - 🪶 **It is lightweight.** A small PHP plugin with a classic settings page, without a bundled JavaScript admin application, and an admin bar indicator that shows pending cache actions.
 
 ### Comparison
@@ -224,6 +225,23 @@ $ wp pronamic cloudflare purge $( wp pronamic cloudflare zones --format=ids )
 ```bash
 $ wp pronamic cloudflare invalidate $( wp pronamic cloudflare zones --format=ids )
 ```
+
+The `purge` and `invalidate` commands remove or invalidate everything in a zone, including static files. On high-traffic sites this can cause a spike in origin requests, so prefer the commands below, for example after a theme deployment.
+
+Invalidate or purge all cached HTML of one or more blogs (the `blog-{id}` cache tag) in the configured zone. The blog ID defaults to the current blog:
+
+```bash
+$ wp pronamic cloudflare blog invalidate
+$ wp pronamic cloudflare blog purge 2 3 4
+```
+
+Purge cached files by URL prefix, for example theme files without a version parameter:
+
+```bash
+$ wp pronamic cloudflare purge-prefix https://www.example.com/wp-content/themes/example/
+```
+
+Pages cached before the `blog-{id}` tag was introduced don't carry this tag yet. Purge the zone once after updating, or wait until the edge cache TTL expires.
 
 ## Translations
 

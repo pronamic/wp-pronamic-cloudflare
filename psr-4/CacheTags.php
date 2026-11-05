@@ -24,6 +24,20 @@ use WP_User;
  */
 final class CacheTags {
 	/**
+	 * Get the blog tag.
+	 *
+	 * Every HTML response carries this tag, so all cached HTML of a blog can
+	 * be purged or invalidated at once without removing static files.
+	 *
+	 * @link https://github.com/pronamic/casinonieuws-v2/issues/20
+	 * @param int|null $blog_id Blog ID, defaults to the current blog ID.
+	 * @return string
+	 */
+	public static function get_blog_tag( ?int $blog_id = null ): string {
+		return 'blog-' . ( $blog_id ?? \get_current_blog_id() );
+	}
+
+	/**
 	 * Get comment related tags.
 	 *
 	 * @param WP_Comment|null $comment Comment object.
